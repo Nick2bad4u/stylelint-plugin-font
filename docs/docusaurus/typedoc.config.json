@@ -1,0 +1,111 @@
+{
+    "$schema": "https://typedoc-plugin-markdown.org/schema.json",
+    "alwaysCreateEntryPointModule": false,
+    "categorizeByGroup": false,
+    "cleanOutputDir": true,
+    "commentStyle": "all",
+    "emit": "docs",
+    "entryPointStrategy": "expand",
+    "entryPoints": [
+        "../../src/plugin.ts",
+        "../../src/_internal"
+    ],
+    "exclude": [
+        "**/dist/**",
+        "**/node_modules/**",
+        "**/coverage/**",
+        "**/build/**",
+        "**/out/**"
+    ],
+    "excludeExternals": false,
+    "excludeInternal": false,
+    "excludeNotDocumented": false,
+    "excludePrivate": false,
+    "externalPattern": [
+        "**/node_modules/**"
+    ],
+    "externalSymbolLinkMappings": {
+        "javascript": {
+            "Array": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+            "Error": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+            "Map": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+            "Object": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+            "Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+            "Set": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+            "String": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String"
+        },
+        "node": {
+            "Buffer": "https://nodejs.org/docs/latest/api/buffer.html#class-buffer",
+            "EventEmitter": "https://nodejs.org/docs/latest/api/events.html#class-eventemitter",
+            "path": "https://nodejs.org/docs/latest/api/path.html",
+            "process": "https://nodejs.org/docs/latest/api/process.html",
+            "url": "https://nodejs.org/docs/latest/api/url.html"
+        },
+        "postcss": {
+            "Declaration": "https://postcss.org/api/#declaration",
+            "Plugin": "https://postcss.org/api/#plugin",
+            "Root": "https://postcss.org/api/#root",
+            "Rule": "https://postcss.org/api/#rule"
+        },
+        "stylelint": {
+            "Config": "https://stylelint.io/user-guide/configure",
+            "Plugin": "https://stylelint.io/developer-guide/plugins",
+            "Rule": "https://stylelint.io/developer-guide/plugins",
+            "RuleMessages": "https://stylelint.io/developer-guide/plugins",
+            "RuleMeta": "https://stylelint.io/developer-guide/plugins"
+        }
+    },
+    "gitRemote": "origin",
+    "hostedBaseUrl": "https://nick2bad4u.github.io/stylelint-plugin-docusaurus/",
+    "json": "docs/typedoc.json",
+    "lightHighlightTheme": "light-plus",
+    "markdownItOptions": {
+        "html": true,
+        "linkify": true
+    },
+    "markdownLinkExternal": true,
+    "name": "stylelint-plugin-docusaurus Documentation",
+    "navigation": {
+        "compactFolders": false,
+        "excludeReferences": false,
+        "includeCategories": true,
+        "includeFolders": true,
+        "includeGroups": true
+    },
+    "out": "site-docs/developer/api",
+    "plugin": [
+        "./typedoc-plugins/hashToBangLinks.mjs",
+        "./typedoc-plugins/prefixDocLinks.mjs",
+        "typedoc-plugin-remark",
+        "typedoc-plugin-missing-exports",
+        "typedoc-plugin-replace-text",
+        "typedoc-plugin-markdown",
+        "typedoc-plugin-mdn-links",
+        "typedoc-plugin-dt-links",
+        "typedoc-plugin-external-package-links",
+        "typedoc-plugin-rename-defaults",
+        "typedoc-plugin-coverage",
+        "typedoc-docusaurus-theme"
+    ],
+    "preserveLinkText": true,
+    "readme": "none",
+    "replaceText": {
+        "inCodeCommentTags": true,
+        "inCodeCommentText": true,
+        "inMarkdownText": false,
+        "replacements": [
+            {
+                "pattern": "\\bTODO:",
+                "replace": "**TODO:**"
+            },
+            {
+                "pattern": "\\bFIXME:",
+                "replace": "**FIXME:**"
+            }
+        ]
+    },
+    "sort": [
+        "source-order"
+    ],
+    "tsconfig": "../../tsconfig.build.json"
+}

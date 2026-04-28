@@ -111,6 +111,90 @@ const cases: readonly RuleCase[] = [
         reject: '@font-face{font-family:"Inter";src:url("/fonts/inter.woff2") format("woff2");}',
         ruleId: "font/no-absolute-font-url",
     },
+    {
+        accept: '@font-face{font-family:"Inter";font-style:normal;font-weight:400;src:url("./inter-basic.woff2") format("woff2");unicode-range:U+0000-00FF;}@font-face{font-family:"Inter";font-style:normal;font-weight:400;src:url("./inter-ext.woff2") format("woff2");unicode-range:U+0100-024F;}',
+        reject: '@font-face{font-family:"Inter";font-style:normal;font-weight:400;src:url("./inter-basic.woff2") format("woff2");unicode-range:U+0000-00FF;}@font-face{font-family:"Inter";font-style:normal;font-weight:400;src:url("./inter-ext.woff2") format("woff2");unicode-range:U+00A0-024F;}',
+        ruleId: "font/no-overlapping-unicode-range",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:sans-serif;src:url("./inter.woff2") format("woff2");}',
+        ruleId: "font/no-generic-family-in-font-face",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:"Inter";src:url("//cdn.example.com/inter.woff2") format("woff2");}',
+        ruleId: "font/no-protocol-relative-font-url",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:"Inter";}',
+        ruleId: "font/require-src-in-font-face",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: "@font-face{}",
+        ruleId: "font/no-empty-font-face",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2"),url("./inter.woff") format("woff");}',
+        reject: '@font-face{font-family:"Inter";src:url("./inter-a.woff2") format("woff2"),url("./inter-b.woff2") format("woff2");}',
+        ruleId: "font/no-duplicate-src-format",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: '@media screen{@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}}',
+        ruleId: "font/no-font-face-in-media-query",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{src:url("./inter.woff2") format("woff2");}',
+        ruleId: "font/require-font-family-in-font-face",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        fixed: {
+            input: "@font-face{font-family:Inter;src:url('./inter.woff2') format('woff2');}",
+            output: "@font-face{font-family:\"Inter\";src:url('./inter.woff2') format('woff2');}",
+        },
+        reject: "@font-face{font-family:Inter;src:url('./inter.woff2') format('woff2');}",
+        ruleId: "font/no-unquoted-font-family-in-font-face",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("https://fonts.example.com/inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:"Inter";src:url("http://fonts.example.com/inter.woff2") format("woff2");}',
+        ruleId: "font/no-http-font-url",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:"Inter";font-family:"Roboto";src:url("./inter.woff2") format("woff2");}',
+        ruleId: "font/no-duplicate-descriptors-in-font-face",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:"Inter";src:local("Inter"),url("./inter.woff2") format("woff2");}',
+        ruleId: "font/no-local-src-in-font-face",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff");}',
+        ruleId: "font/no-src-format-mismatch",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";font-weight:400;src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:"Inter";font-weight:999999;src:url("./inter.woff2") format("woff2");}',
+        ruleId: "font/no-invalid-font-weight",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";font-style:italic;src:url("./inter.woff2") format("woff2");}',
+        reject: '@font-face{font-family:"Inter";font-style:skew;src:url("./inter.woff2") format("woff2");}',
+        ruleId: "font/no-invalid-font-style",
+    },
+    {
+        accept: '@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}',
+        reject: 'body{@font-face{font-family:"Inter";src:url("./inter.woff2") format("woff2");}}',
+        ruleId: "font/no-font-face-in-selectors",
+    },
 ] as const;
 
 type FixableRuleCase = RuleCase & { fixed: NonNullable<RuleCase["fixed"]> };
@@ -122,7 +206,7 @@ const fixableCases = cases.filter(
 describe("font plugin rules", () => {
     it("exports exactly the requested rule catalog", () => {
         expect.hasAssertions();
-        expect(ruleIds).toHaveLength(18);
+        expect(ruleIds).toHaveLength(34);
         expect(ruleIds).toContain("font/require-font-display");
         expect(ruleIds).toContain("font/no-duplicate-font-face");
         expect(fontPluginConfigs["font-recommended"].rules).toBeDefined();

@@ -164,6 +164,86 @@ const sidebars: SidebarsConfig = {
                     label: "R018 no-absolute-font-url",
                     type: "doc",
                 },
+                {
+                    id: "no-overlapping-unicode-range",
+                    label: "R019 no-overlapping-unicode-range",
+                    type: "doc",
+                },
+                {
+                    id: "no-generic-family-in-font-face",
+                    label: "R020 no-generic-family-in-font-face",
+                    type: "doc",
+                },
+                {
+                    id: "no-protocol-relative-font-url",
+                    label: "R021 no-protocol-relative-font-url",
+                    type: "doc",
+                },
+                {
+                    id: "require-src-in-font-face",
+                    label: "R022 require-src-in-font-face",
+                    type: "doc",
+                },
+                {
+                    id: "no-empty-font-face",
+                    label: "R023 no-empty-font-face",
+                    type: "doc",
+                },
+                {
+                    id: "no-duplicate-src-format",
+                    label: "R024 no-duplicate-src-format",
+                    type: "doc",
+                },
+                {
+                    id: "no-font-face-in-media-query",
+                    label: "R025 no-font-face-in-media-query",
+                    type: "doc",
+                },
+                {
+                    id: "require-font-family-in-font-face",
+                    label: "R026 require-font-family-in-font-face",
+                    type: "doc",
+                },
+                {
+                    id: "no-unquoted-font-family-in-font-face",
+                    label: "R027 no-unquoted-font-family-in-font-face",
+                    type: "doc",
+                },
+                {
+                    id: "no-http-font-url",
+                    label: "R028 no-http-font-url",
+                    type: "doc",
+                },
+                {
+                    id: "no-duplicate-descriptors-in-font-face",
+                    label: "R029 no-duplicate-descriptors-in-font-face",
+                    type: "doc",
+                },
+                {
+                    id: "no-local-src-in-font-face",
+                    label: "R030 no-local-src-in-font-face",
+                    type: "doc",
+                },
+                {
+                    id: "no-src-format-mismatch",
+                    label: "R031 no-src-format-mismatch",
+                    type: "doc",
+                },
+                {
+                    id: "no-invalid-font-weight",
+                    label: "R032 no-invalid-font-weight",
+                    type: "doc",
+                },
+                {
+                    id: "no-invalid-font-style",
+                    label: "R033 no-invalid-font-style",
+                    type: "doc",
+                },
+                {
+                    id: "no-font-face-in-selectors",
+                    label: "R034 no-font-face-in-selectors",
+                    type: "doc",
+                },
             ],
             label: "Rules",
             link: {

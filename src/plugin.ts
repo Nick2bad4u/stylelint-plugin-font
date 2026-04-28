@@ -1,6 +1,6 @@
 /**
  * @packageDocumentation
- * Public plugin entrypoint for `stylelint-plugin-docusaurus` exports and
+ * Public plugin entrypoint for `stylelint-plugin-font` exports and
  * shareable config wiring.
  */
 import type { Config, Plugin as StylelintPlugin } from "stylelint";
@@ -11,46 +11,40 @@ import type { StylelintPluginRuleContract } from "./_internal/create-stylelint-r
 
 import {
     CONFIG_NAMES as configNamesValue,
-    type DocusaurusConfigName as InternalDocusaurusConfigName,
+    type FontConfigName as InternalFontConfigName,
     PACKAGE_NAME as packageNameValue,
     PACKAGE_VERSION as packageVersionValue,
     PLUGIN_NAMESPACE as pluginNamespaceValue,
 } from "./_internal/plugin-constants.js";
-import { docusaurusRules as docusaurusRulesValue } from "./_internal/rules-registry.js";
+import { fontRules as fontRulesValue } from "./_internal/rules-registry.js";
 
 /** Public shareable config map exported by this package. */
-export type DocusaurusConfigMap = Record<
-    DocusaurusConfigName,
-    DocusaurusShareableConfig
->;
+export type FontConfigMap = Record<FontConfigName, FontShareableConfig>;
 /** Shareable config names exposed by this package. */
-export type DocusaurusConfigName = InternalDocusaurusConfigName;
+export type FontConfigName = InternalFontConfigName;
 /** Public fully-qualified rule ids supported by this package. */
-export type DocusaurusRuleId = `${typeof pluginNamespaceValue}/${string}`;
+export type FontRuleId = `${typeof pluginNamespaceValue}/${string}`;
 
 /** Public unqualified rule names supported by this package. */
-export type DocusaurusRuleName = Extract<
-    keyof typeof docusaurusRulesValue,
-    string
->;
+export type FontRuleName = Extract<keyof typeof fontRulesValue, string>;
 
 /** Shareable config shape exported by this package. */
-export type DocusaurusShareableConfig = Config & {
+export type FontShareableConfig = Config & {
     plugins: (string | StylelintPlugin)[];
     rules: NonNullable<Config["rules"]>;
 };
 
 /** Internal ordered registry entry tuple. */
-type DocusaurusRuleEntry = readonly [string, StylelintPluginRuleContract];
+type FontRuleEntry = readonly [string, StylelintPluginRuleContract];
 /** Internal runtime rule registry shape. */
-type DocusaurusRulesMap = Readonly<Record<string, StylelintPluginRuleContract>>;
+type FontRulesMap = Readonly<Record<string, StylelintPluginRuleContract>>;
 
 /** Local package metadata values used to avoid import re-export warnings. */
 const packageMetaName = packageNameValue;
 const packageMetaNamespace = pluginNamespaceValue;
 const packageMetaVersion = packageVersionValue;
 /** Local rule registry alias used to avoid import re-export warnings. */
-const runtimeRules = docusaurusRulesValue;
+const runtimeRules = fontRulesValue;
 /** Local config-name alias used to avoid import re-export warnings. */
 const publicConfigNames = configNamesValue;
 
@@ -66,7 +60,7 @@ export const meta: Readonly<{
 };
 
 /** Public rule registry keyed by unqualified rule name. */
-export const rules: DocusaurusRulesMap = runtimeRules;
+export const rules: FontRulesMap = runtimeRules;
 
 /** Stable ordered unqualified rule names. */
 export const ruleNames: readonly string[] = objectKeys(rules).toSorted(
@@ -74,8 +68,8 @@ export const ruleNames: readonly string[] = objectKeys(rules).toSorted(
 );
 
 /** Stable ordered registry entries used to derive configs and ids. */
-const docusaurusRuleEntries: readonly DocusaurusRuleEntry[] = (() => {
-    const entries: DocusaurusRuleEntry[] = [];
+const fontRuleEntries: readonly FontRuleEntry[] = (() => {
+    const entries: FontRuleEntry[] = [];
 
     for (const ruleName of ruleNames) {
         const rule = rules[ruleName];
@@ -91,19 +85,19 @@ const docusaurusRuleEntries: readonly DocusaurusRuleEntry[] = (() => {
 })();
 
 /** Default plugin-pack export consumed by Stylelint. */
-export const plugins: readonly StylelintPlugin[] = docusaurusRuleEntries.map(
+export const plugins: readonly StylelintPlugin[] = fontRuleEntries.map(
     ([, rule]) => rule
 );
 
 /** Stable ordered fully qualified rule ids. */
-export const ruleIds: readonly DocusaurusRuleId[] = docusaurusRuleEntries.map(
-    ([, rule]) => rule.ruleName as DocusaurusRuleId
+export const ruleIds: readonly FontRuleId[] = fontRuleEntries.map(
+    ([, rule]) => rule.ruleName as FontRuleId
 );
 
 /** Rule ids included in the recommended shareable config. */
-const recommendedRuleIds: readonly DocusaurusRuleId[] = docusaurusRuleEntries
+const recommendedRuleIds: readonly FontRuleId[] = fontRuleEntries
     .filter(([, rule]) => rule.docs.recommended)
-    .map(([, rule]) => rule.ruleName as DocusaurusRuleId);
+    .map(([, rule]) => rule.ruleName as FontRuleId);
 
 /**
  * Build one shareable Stylelint config.
@@ -113,8 +107,8 @@ const recommendedRuleIds: readonly DocusaurusRuleId[] = docusaurusRuleEntries
  * @returns Shareable Stylelint config.
  */
 function createConfig(
-    enabledRuleIds: readonly DocusaurusRuleId[]
-): DocusaurusShareableConfig {
+    enabledRuleIds: readonly FontRuleId[]
+): FontShareableConfig {
     return {
         plugins: [...plugins],
         rules: (() => {
@@ -129,15 +123,54 @@ function createConfig(
     };
 }
 
+/**
+ * Build one shareable config while applying explicit severity per rule.
+ *
+ * @param enabledRuleIds - Rule ids to enable.
+ */
+function createConfigWithSeverity(
+    enabledRuleIds: readonly FontRuleId[]
+): FontShareableConfig {
+    const config = createConfig(enabledRuleIds);
+
+    const severityByRule: Readonly<Record<FontRuleId, "error" | "warning">> = {
+        "font/consistent-font-display": "warning",
+        "font/consistent-font-family-casing": "warning",
+        "font/local-src-before-url": "error",
+        "font/no-absolute-font-url": "warning",
+        "font/no-data-uri-src": "warning",
+        "font/no-duplicate-font-face": "error",
+        "font/no-legacy-formats": "warning",
+        "font/no-missing-fallback-before-web-font": "warning",
+        "font/no-whitespace-in-unquoted-family": "error",
+        "font/prefer-variable-fonts": "warning",
+        "font/prefer-woff2": "warning",
+        "font/require-font-display": "error",
+        "font/require-font-style": "warning",
+        "font/require-font-weight": "warning",
+        "font/require-format-hint": "warning",
+        "font/require-system-font-fallback": "warning",
+        "font/require-unicode-range-for-large-family": "warning",
+        "font/woff2-before-woff": "warning",
+    };
+
+    for (const ruleId of enabledRuleIds) {
+        const severity = severityByRule[ruleId];
+
+        config.rules[ruleId] = [true, { severity }];
+    }
+
+    return config;
+}
+
 /** Shareable config exports exposed by the package. */
-export const docusaurusPluginConfigs: DocusaurusConfigMap = {
-    "docusaurus-all": createConfig(ruleIds),
-    "docusaurus-docs-safe": createConfig(recommendedRuleIds),
-    "docusaurus-recommended": createConfig(recommendedRuleIds),
+export const fontPluginConfigs: FontConfigMap = {
+    "font-all": createConfigWithSeverity(ruleIds),
+    "font-recommended": createConfigWithSeverity(recommendedRuleIds),
 };
 
 /** Stable ordered shareable config names. */
-export const configNames: readonly DocusaurusConfigName[] = publicConfigNames;
+export const configNames: readonly FontConfigName[] = publicConfigNames;
 
 /** Default export consumed by Stylelint when the package is used as a plugin. */
 export default plugins;

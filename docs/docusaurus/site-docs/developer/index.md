@@ -1,11 +1,11 @@
 ---
 title: Developer Docs
-description: Maintainer and contributor documentation for the stylelint-plugin-docusaurus template.
+description: Maintainer and contributor documentation for the stylelint-plugin-font repository.
 ---
 
 # Developer Docs
 
-This section covers the maintainer-facing side of `stylelint-plugin-docusaurus`.
+This section covers the maintainer-facing side of `stylelint-plugin-font`.
 
 ## What lives here
 

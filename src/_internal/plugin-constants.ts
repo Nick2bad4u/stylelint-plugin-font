@@ -5,26 +5,22 @@
 import packageJson from "../../package.json" with { type: "json" };
 
 /** Public npm package name. */
-export const PACKAGE_NAME = "stylelint-plugin-docusaurus";
+export const PACKAGE_NAME = "stylelint-plugin-font";
 /** Public Stylelint rule namespace. */
-export const PLUGIN_NAMESPACE = "docusaurus";
+export const PLUGIN_NAMESPACE = "font";
 /** Public GitHub repository URL. */
 export const REPOSITORY_URL =
-    "https://github.com/Nick2bad4u/stylelint-plugin-docusaurus";
+    "https://github.com/Nick2bad4u/stylelint-plugin-font";
 /** Public documentation site URL. */
 export const DOCS_SITE_URL =
-    "https://nick2bad4u.github.io/stylelint-plugin-docusaurus";
+    "https://nick2bad4u.github.io/stylelint-plugin-font";
 /** Base URL for authored rule documentation. */
 export const DOCS_RULES_BASE_URL: `${string}/docs/rules` = `${DOCS_SITE_URL}/docs/rules`;
-/** Supported shareable config names exported by this template. */
-export const CONFIG_NAMES = [
-    "docusaurus-recommended",
-    "docusaurus-all",
-    "docusaurus-docs-safe",
-] as const;
+/** Supported shareable config names exported by this package. */
+export const CONFIG_NAMES = ["font-recommended", "font-all"] as const;
 
 /** Shareable config names exported by the plugin runtime. */
-export type DocusaurusConfigName = (typeof CONFIG_NAMES)[number];
+export type FontConfigName = (typeof CONFIG_NAMES)[number];
 
 /**
  * Resolve package version from package.json data.

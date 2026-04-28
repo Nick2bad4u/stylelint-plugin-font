@@ -1,8 +1,8 @@
-# Contributing to stylelint-plugin-docusaurus
+# Contributing to stylelint-plugin-font
 
 Thanks for your interest in contributing.
 
-This repository contains a Stylelint plugin template focused on Docusaurus styling conventions and future Docusaurus-specific CSS rules.
+This repository contains a Stylelint plugin focused on font loading quality, `@font-face` correctness, and fallback-performance rules for CSS/SCSS.
 
 ## Prerequisites
 

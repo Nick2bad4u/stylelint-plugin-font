@@ -1,18 +1,17 @@
 ---
 title: Configs
-description: Shareable Stylelint configs exported by stylelint-plugin-docusaurus.
+description: Shareable Stylelint configs exported by stylelint-plugin-font.
 ---
 
 # Configs
 
-`stylelint-plugin-docusaurus` exports these shareable configs:
+`stylelint-plugin-font` exports these shareable configs:
 
-- `docusaurus-recommended`
-- `docusaurus-all`
-- `docusaurus-docs-safe`
+- `font-recommended`
+- `font-all`
 
-Use them from `docusaurusPluginConfigs` or from `extends` subpath exports.
+Use them from `fontPluginConfigs` or via subpath exports.
 
-`docusaurus-recommended` stays focused on broadly applicable, low-noise guardrails, while `docusaurus-all` additionally enables stricter opt-in rules such as `docusaurus/no-unscoped-content-element-overrides`, `docusaurus/no-unanchored-infima-subcomponent-selectors`, `docusaurus/no-navbar-breakpoint-desync`, `docusaurus/require-docsearch-color-mode-pairs`, and cascade-layer safety rules.
+`font-recommended` provides a practical baseline for modern web-font loading and fallback quality.
 
-`docusaurus-docs-safe` currently mirrors `docusaurus-recommended` and exists as a stable home for docs-surface guidance.
+`font-all` enables the full `font/*` rule catalog.

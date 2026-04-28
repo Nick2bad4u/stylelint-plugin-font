@@ -1,28 +1,29 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
-    "name": "stylelint-plugin-docusaurus",
+    "name": "stylelint-plugin-font",
     "version": "1.0.3",
     "private": false,
-    "description": "Stylelint rules and shareable configs for Docusaurus stylesheets.",
+    "description": "Stylelint rules and shareable configs for web-font loading quality and fallback performance.",
     "keywords": [
         "stylelint",
         "stylelint-plugin",
         "stylelint-config",
         "stylelintconfig",
         "stylelintplugin",
-        "docusaurus",
-        "infima",
+        "font-face",
+        "fonts",
+        "font-loading",
         "css",
         "postcss"
     ],
-    "homepage": "https://github.com/Nick2bad4u/stylelint-plugin-docusaurus",
+    "homepage": "https://github.com/Nick2bad4u/stylelint-plugin-font",
     "bugs": {
-        "url": "https://github.com/Nick2bad4u/stylelint-plugin-docusaurus/issues",
+        "url": "https://github.com/Nick2bad4u/stylelint-plugin-font/issues",
         "email": "20943337+Nick2bad4u@users.noreply.github.com"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Nick2bad4u/stylelint-plugin-docusaurus.git"
+        "url": "git+https://github.com/Nick2bad4u/stylelint-plugin-font.git"
     },
     "license": "MIT",
     "author": "Nick2bad4u <20943337+Nick2bad4u@users.noreply.github.com> (https://github.com/Nick2bad4u)",
@@ -47,34 +48,24 @@
             },
             "default": "./dist/plugin.js"
         },
-        "./configs/docusaurus-all": {
+        "./configs/font-all": {
             "import": {
-                "types": "./dist/configs/docusaurus-all.d.ts",
-                "default": "./dist/configs/docusaurus-all.js"
+                "types": "./dist/configs/font-all.d.ts",
+                "default": "./dist/configs/font-all.js"
             },
             "require": {
-                "types": "./dist/configs/docusaurus-all.d.cts",
-                "default": "./dist/configs/docusaurus-all.cjs"
+                "types": "./dist/configs/font-all.d.cts",
+                "default": "./dist/configs/font-all.cjs"
             }
         },
-        "./configs/docusaurus-docs-safe": {
+        "./configs/font-recommended": {
             "import": {
-                "types": "./dist/configs/docusaurus-docs-safe.d.ts",
-                "default": "./dist/configs/docusaurus-docs-safe.js"
+                "types": "./dist/configs/font-recommended.d.ts",
+                "default": "./dist/configs/font-recommended.js"
             },
             "require": {
-                "types": "./dist/configs/docusaurus-docs-safe.d.cts",
-                "default": "./dist/configs/docusaurus-docs-safe.cjs"
-            }
-        },
-        "./configs/docusaurus-recommended": {
-            "import": {
-                "types": "./dist/configs/docusaurus-recommended.d.ts",
-                "default": "./dist/configs/docusaurus-recommended.js"
-            },
-            "require": {
-                "types": "./dist/configs/docusaurus-recommended.d.cts",
-                "default": "./dist/configs/docusaurus-recommended.cjs"
+                "types": "./dist/configs/font-recommended.d.cts",
+                "default": "./dist/configs/font-recommended.cjs"
             }
         },
         "./package.json": "./package.json"
@@ -83,14 +74,11 @@
     "types": "./dist/plugin.d.ts",
     "typesVersions": {
         "*": {
-            "configs/docusaurus-all": [
-                "./dist/configs/docusaurus-all.d.ts"
+            "configs/font-all": [
+                "./dist/configs/font-all.d.ts"
             ],
-            "configs/docusaurus-docs-safe": [
-                "./dist/configs/docusaurus-docs-safe.d.ts"
-            ],
-            "configs/docusaurus-recommended": [
-                "./dist/configs/docusaurus-recommended.d.ts"
+            "configs/font-recommended": [
+                "./dist/configs/font-recommended.d.ts"
             ]
         }
     },
@@ -120,10 +108,10 @@
         "build": "tsc -b tsconfig.build.json --force && npm run build:types:cjs && npm run build:cjs && npm run build:configs:cjs",
         "build:cjs": "esbuild dist/plugin.js --bundle --format=cjs --platform=node --packages=external --sourcemap --outfile=dist/plugin.cjs --footer:js=\"module.exports = Object.assign(module.exports.default, module.exports);\"",
         "build:clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
-        "build:configs:cjs": "node -e \"const fs=require('node:fs');['docusaurus-all','docusaurus-docs-safe','docusaurus-recommended'].forEach(n=>{fs.writeFileSync('dist/configs/'+n+'.cjs','\\\"use strict\\\";\\nconst{docusaurusPluginConfigs}=require(\\\"../plugin.cjs\\\");\\nmodule.exports=docusaurusPluginConfigs[\\\"'+n+'\\\"];\\n','utf8');fs.writeFileSync('dist/configs/'+n+'.d.cts','import type{DocusaurusShareableConfig}from\\\"../plugin.cjs\\\";\\ndeclare const config:DocusaurusShareableConfig;\\nexport=config;\\n','utf8');})\"",
-        "build:eslint-inspector": "npx -y @eslint/config-inspector@1.4.2 build --outDir \"docs/docusaurus/static/eslint-inspector\" --base \"/stylelint-plugin-docusaurus/eslint-inspector/\"",
+        "build:configs:cjs": "node -e \"const fs=require('node:fs');['font-all','font-recommended'].forEach(n=>{fs.writeFileSync('dist/configs/'+n+'.cjs','\\\"use strict\\\";\\nconst{fontPluginConfigs}=require(\\\"../plugin.cjs\\\");\\nmodule.exports=fontPluginConfigs[\\\"'+n+'\\\"];\\n','utf8');fs.writeFileSync('dist/configs/'+n+'.d.cts','import type{FontShareableConfig}from\\\"../plugin.cjs\\\";\\ndeclare const config:FontShareableConfig;\\nexport=config;\\n','utf8');})\"",
+        "build:eslint-inspector": "npx -y @eslint/config-inspector@1.4.2 build --outDir \"docs/docusaurus/static/eslint-inspector\" --base \"/stylelint-plugin-font/eslint-inspector/\"",
         "build:eslint-inspector:local": "npx @eslint/config-inspector",
-        "build:stylelint-inspector": "npx -y stylelint-config-inspector@latest build --outDir \"docs/docusaurus/static/stylelint-inspector\" --base \"/stylelint-plugin-docusaurus/stylelint-inspector/\"",
+        "build:stylelint-inspector": "npx -y stylelint-config-inspector@latest build --outDir \"docs/docusaurus/static/stylelint-inspector\" --base \"/stylelint-plugin-font/stylelint-inspector/\"",
         "build:stylelint-inspector:local": "npx stylelint-config-inspector@latest",
         "build:types:cjs": "node -e \"require('node:fs').copyFileSync('dist/plugin.d.ts','dist/plugin.d.cts')\"",
         "changelog:generate": "git-cliff --config cliff.toml --output CHANGELOG.md",
@@ -191,7 +179,7 @@
         "lint:exports": "ts-unused-exports tsconfig.json src/plugin.ts --excludePathsFromReport=plugin.ts",
         "lint:fix": "cross-env NODE_OPTIONS=--max_old_space_size=16384 eslint --cache --cache-strategy content --cache-location .cache/.eslintcache --fix",
         "lint:fix:quiet": "cross-env ESLINT_PROGRESS=off NODE_OPTIONS=--max_old_space_size=16384 eslint --cache --cache-strategy content --cache-location .cache/.eslintcache --fix && echo \"Eslint fix done!\"",
-        "lint:grype": "grype . -c .grype.yaml --name stylelint-plugin-docusaurus",
+        "lint:grype": "grype . -c .grype.yaml --name stylelint-plugin-font",
         "lint:knip": "npm run knip",
         "lint:knip:exports": "npm run knip -- --include exports,nsExports,classMembers,types,nsTypes,enumMembers,duplicates",
         "lint:knip:unused:exports": "npm run knip -- --dependencies --exports",

@@ -64,7 +64,7 @@ const typecheckTestFilePatterns = [
 ];
 
 /**
- * Vitest configuration for stylelint-plugin-docusaurus.
+ * Vitest configuration for stylelint-plugin-font.
  */
 const vitestConfig: ReturnType<typeof defineConfig> = defineConfig({
     cacheDir: "./.cache/vitest",

@@ -7,8 +7,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 /** Route base path where docs site is deployed (GitHub Pages project path). */
-const baseUrl =
-    process.env["DOCUSAURUS_BASE_URL"] ?? "/stylelint-plugin-docusaurus/";
+const baseUrl = process.env["DOCUSAURUS_BASE_URL"] ?? "/stylelint-plugin-font/";
 /** Opt-in flag for experimental Docusaurus performance features. */
 const enableExperimentalFaster =
     process.env["DOCUSAURUS_ENABLE_EXPERIMENTAL"] === "true";
@@ -16,14 +15,14 @@ const enableExperimentalFaster =
 /** GitHub organization used for edit links and project metadata. */
 const organizationName = "Nick2bad4u";
 /** Repository name used for edit links and project metadata. */
-const projectName = "stylelint-plugin-docusaurus";
+const projectName = "stylelint-plugin-font";
 /** Public origin for the published documentation site. */
 const siteOrigin = "https://nick2bad4u.github.io";
 /** Canonical public site URL including the GitHub Pages project path. */
 const siteUrl = `${siteOrigin}${baseUrl}`;
 /** Global site description used for SEO and social cards. */
 const siteDescription =
-    "Stylelint rules and shareable configs for Docusaurus stylesheets, theme tokens, and component styling conventions.";
+    "Stylelint rules and shareable configs for font loading quality, @font-face correctness, and fallback performance.";
 /** Social preview image used for Open Graph and Twitter cards. */
 const socialCardImagePath = "img/logo.png";
 /** Absolute social preview image URL. */
@@ -204,7 +203,7 @@ const config = {
                 "@type": "WebSite",
                 description: siteDescription,
                 image: socialCardImageUrl,
-                name: "stylelint-plugin-docusaurus",
+                name: "stylelint-plugin-font",
                 publisher: {
                     "@type": "Person",
                     name: "Nick2bad4u",
@@ -312,18 +311,18 @@ const config = {
             {
                 blog: {
                     blogDescription:
-                        "Updates, architecture notes, and practical guidance for stylelint-plugin-docusaurus users.",
+                        "Updates, architecture notes, and practical guidance for stylelint-plugin-font users.",
                     blogSidebarCount: "ALL",
                     blogSidebarTitle: "All posts",
-                    blogTitle: "stylelint-plugin-docusaurus Blog",
+                    blogTitle: "stylelint-plugin-font Blog",
                     editUrl: `https://github.com/${organizationName}/${projectName}/blob/main/docs/docusaurus/`,
                     feedOptions: {
                         type: ["rss", "atom"],
                         xslt: true,
-                        title: "stylelint-plugin-docusaurus Blog",
+                        title: "stylelint-plugin-font Blog",
                         copyright: `© ${new Date().getFullYear()} Nick2bad4u`,
                         description:
-                            "Updates, architecture notes, and practical guidance for stylelint-plugin-docusaurus users.",
+                            "Updates, architecture notes, and practical guidance for stylelint-plugin-font users.",
                         language: "en",
                     },
                     onInlineAuthors: "warn",
@@ -409,7 +408,8 @@ const config = {
         ],
     ],
     projectName,
-    tagline: "Stylelint rules and shareable configs for Docusaurus styling.",
+    tagline:
+        "Stylelint rules and shareable configs for modern font loading and fallback quality.",
     themeConfig: {
         colorMode: {
             defaultMode: "dark",
@@ -419,7 +419,7 @@ const config = {
         metadata: [
             {
                 content:
-                    "stylelint, stylelint-plugin, docusaurus, infima, css, postcss, docs tooling",
+                    "stylelint, stylelint-plugin, font-face, web fonts, css, postcss, docs tooling",
                 name: "keywords",
             },
             {
@@ -427,7 +427,7 @@ const config = {
                 name: "twitter:card",
             },
             {
-                content: "stylelint-plugin-docusaurus",
+                content: "stylelint-plugin-font",
                 property: "og:site_name",
             },
         ],
@@ -462,16 +462,16 @@ const config = {
                             label: "\ueb09 Releases",
                         },
                         {
-                            href: `https://nick2bad4u.github.io/stylelint-plugin-docusaurus/stylelint-inspector/`,
+                            href: `https://nick2bad4u.github.io/stylelint-plugin-font/stylelint-inspector/`,
                             label: "\ue7d2 Stylelint Inspector",
                         },
                         {
-                            href: "https://docusaurus.io/docs/styling-layout",
-                            label: "\uf02d Docusaurus Styling",
+                            href: "https://developer.mozilla.org/docs/Web/CSS/@font-face",
+                            label: "\uf02d @font-face",
                         },
                         {
-                            href: "https://infima.dev/",
-                            label: "\ue65b Infima",
+                            href: "https://developer.mozilla.org/docs/Web/CSS/font-family",
+                            label: "\ue65b font-family",
                         },
                     ],
                     title: "📁 Project",
@@ -483,7 +483,7 @@ const config = {
                             label: "\uea84 GitHub Repository",
                         },
                         {
-                            href: `https://nick2bad4u.github.io/stylelint-plugin-docusaurus/eslint-inspector/`,
+                            href: `https://nick2bad4u.github.io/stylelint-plugin-font/eslint-inspector/`,
                             label: "\ue7d2 ESLint Inspector",
                         },
                         {
@@ -499,7 +499,7 @@ const config = {
                 },
             ],
             logo: {
-                alt: "stylelint-plugin-docusaurus logo",
+                alt: "stylelint-plugin-font logo",
                 href: `https://github.com/${organizationName}/${projectName}`,
                 src: "img/logo.svg",
                 width: 60,
@@ -545,12 +545,12 @@ const config = {
                             to: "/docs/rules/configs",
                         },
                         {
-                            label: "🟡 recommended",
-                            to: "/docs/rules/configs/docusaurus-recommended",
+                            label: "🟡 font-recommended",
+                            to: "/docs/rules/configs/font-recommended",
                         },
                         {
-                            label: "🟣 all",
-                            to: "/docs/rules/configs/docusaurus-all",
+                            label: "🟣 font-all",
+                            to: "/docs/rules/configs/font-all",
                         },
                     ],
                 },
@@ -574,13 +574,13 @@ const config = {
                             label: "🧪 \ue709 Stylelint Plugin Guide",
                         },
                         {
-                            href: "https://docusaurus.io/docs/styling-layout",
-                            label: "🎨 \ue616 Docusaurus Styling",
+                            href: "https://developer.mozilla.org/docs/Web/CSS/@font-face",
+                            label: "🎨 \ue616 @font-face",
                         },
                         {
-                            href: "https://infima.dev/",
+                            href: "https://developer.mozilla.org/docs/Web/CSS/font-family",
                             className: "navbar-dropdown-divider-before",
-                            label: "📐 \ue709 Infima",
+                            label: "📐 \ue709 font-family",
                         },
                     ],
                 },
@@ -614,13 +614,13 @@ const config = {
                 },
             ],
             logo: {
-                alt: "stylelint-plugin-docusaurus logo",
+                alt: "stylelint-plugin-font logo",
                 height: 32,
                 href: baseUrl,
                 src: "img/favicon.ico",
                 width: 32,
             },
-            title: "stylelint-plugin-docusaurus",
+            title: "stylelint-plugin-font",
         },
         prism: {
             additionalLanguages: [
@@ -679,7 +679,7 @@ const config = {
             },
         ],
     ],
-    title: "stylelint-plugin-docusaurus",
+    title: "stylelint-plugin-font",
     trailingSlash: false,
     url: siteOrigin,
 } satisfies Config;

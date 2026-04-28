@@ -1,6 +1,9 @@
 import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
-/** Rule and config docs sidebar for the Stylelint plugin docs section. */
+/**
+ * Rule and config docs sidebar for the font-focused Stylelint plugin docs
+ * section.
+ */
 const sidebars: SidebarsConfig = {
     rules: [
         {
@@ -23,21 +26,15 @@ const sidebars: SidebarsConfig = {
             },
             items: [
                 {
-                    className: "sb-config-docusaurus-recommended",
-                    id: "configs/docusaurus-recommended",
-                    label: "🟡 docusaurus-recommended",
+                    className: "sb-config-font-recommended",
+                    id: "configs/font-recommended",
+                    label: "🟡 font-recommended",
                     type: "doc",
                 },
                 {
-                    className: "sb-config-docusaurus-all",
-                    id: "configs/docusaurus-all",
-                    label: "🟣 docusaurus-all",
-                    type: "doc",
-                },
-                {
-                    className: "sb-config-docusaurus-docs-safe",
-                    id: "configs/docusaurus-docs-safe",
-                    label: "🛡️ docusaurus-docs-safe",
+                    className: "sb-config-font-all",
+                    id: "configs/font-all",
+                    label: "🟣 font-all",
                     type: "doc",
                 },
             ],
@@ -64,7 +61,7 @@ const sidebars: SidebarsConfig = {
             label: "Guides",
             link: {
                 description:
-                    "Migration notes and template status for the Stylelint conversion.",
+                    "Status and maintenance notes for the font-focused rule catalog.",
                 title: "Guides",
                 type: "generated-index",
             },
@@ -78,175 +75,100 @@ const sidebars: SidebarsConfig = {
             },
             items: [
                 {
-                    id: "no-invalid-theme-custom-property-scope",
-                    label: "R001 no-invalid-theme-custom-property-scope",
+                    id: "require-font-display",
+                    label: "R001 require-font-display",
                     type: "doc",
                 },
                 {
-                    id: "require-ifm-color-primary-scale",
-                    label: "R002 require-ifm-color-primary-scale",
+                    id: "require-font-style",
+                    label: "R002 require-font-style",
                     type: "doc",
                 },
                 {
-                    id: "prefer-data-theme-color-mode",
-                    label: "R003 prefer-data-theme-color-mode",
+                    id: "require-font-weight",
+                    label: "R003 require-font-weight",
                     type: "doc",
                 },
                 {
-                    id: "no-mobile-navbar-backdrop-filter",
-                    label: "R004 no-mobile-navbar-backdrop-filter",
+                    id: "require-unicode-range-for-large-family",
+                    label: "R004 require-unicode-range-for-large-family",
                     type: "doc",
                 },
                 {
-                    id: "prefer-data-theme-docsearch-overrides",
-                    label: "R005 prefer-data-theme-docsearch-overrides",
+                    id: "require-format-hint",
+                    label: "R005 require-format-hint",
                     type: "doc",
                 },
                 {
-                    id: "no-unstable-docusaurus-generated-class-selectors",
-                    label: "R006 no-unstable-docusaurus-generated-class-selectors",
+                    id: "local-src-before-url",
+                    label: "R006 local-src-before-url",
                     type: "doc",
                 },
                 {
-                    id: "prefer-stable-docusaurus-theme-class-names",
-                    label: "R007 prefer-stable-docusaurus-theme-class-names",
+                    id: "prefer-woff2",
+                    label: "R007 prefer-woff2",
                     type: "doc",
                 },
                 {
-                    id: "no-mobile-navbar-stacking-context-traps",
-                    label: "R008 no-mobile-navbar-stacking-context-traps",
+                    id: "no-legacy-formats",
+                    label: "R008 no-legacy-formats",
                     type: "doc",
                 },
                 {
-                    id: "no-unwrapped-global-theme-selectors-in-css-modules",
-                    label: "R009 no-unwrapped-global-theme-selectors-in-css-modules",
+                    id: "woff2-before-woff",
+                    label: "R009 woff2-before-woff",
                     type: "doc",
                 },
                 {
-                    id: "no-unscoped-content-element-overrides",
-                    label: "R010 no-unscoped-content-element-overrides",
+                    id: "no-data-uri-src",
+                    label: "R010 no-data-uri-src",
                     type: "doc",
                 },
                 {
-                    id: "no-unanchored-infima-subcomponent-selectors",
-                    label: "R011 no-unanchored-infima-subcomponent-selectors",
+                    id: "no-duplicate-font-face",
+                    label: "R011 no-duplicate-font-face",
                     type: "doc",
                 },
                 {
-                    id: "no-subtree-data-theme-selectors",
-                    label: "R012 no-subtree-data-theme-selectors",
+                    id: "consistent-font-display",
+                    label: "R012 consistent-font-display",
                     type: "doc",
                 },
                 {
-                    id: "no-navbar-breakpoint-desync",
-                    label: "R013 no-navbar-breakpoint-desync",
+                    id: "consistent-font-family-casing",
+                    label: "R013 consistent-font-family-casing",
                     type: "doc",
                 },
                 {
-                    id: "require-ifm-color-primary-scale-per-color-mode",
-                    label: "R014 require-ifm-color-primary-scale-per-color-mode",
+                    id: "no-whitespace-in-unquoted-family",
+                    label: "R014 no-whitespace-in-unquoted-family",
                     type: "doc",
                 },
                 {
-                    id: "require-docsearch-color-mode-pairs",
-                    label: "R015 require-docsearch-color-mode-pairs",
+                    id: "require-system-font-fallback",
+                    label: "R015 require-system-font-fallback",
                     type: "doc",
                 },
                 {
-                    id: "prefer-infima-theme-tokens-over-structural-overrides",
-                    label: "R016 prefer-infima-theme-tokens-over-structural-overrides",
+                    id: "no-missing-fallback-before-web-font",
+                    label: "R016 no-missing-fallback-before-web-font",
                     type: "doc",
                 },
                 {
-                    id: "no-unsafe-theme-internal-selectors",
-                    label: "R017 no-unsafe-theme-internal-selectors",
+                    id: "prefer-variable-fonts",
+                    label: "R017 prefer-variable-fonts",
                     type: "doc",
                 },
                 {
-                    id: "require-html-prefix-for-docusaurus-data-attribute-selectors",
-                    label: "R018 require-html-prefix-for-docusaurus-data-attribute-selectors",
-                    type: "doc",
-                },
-                {
-                    id: "no-docusaurus-layer-name-collisions",
-                    label: "R019 no-docusaurus-layer-name-collisions",
-                    type: "doc",
-                },
-                {
-                    id: "no-revert-layer-outside-isolation-subtrees",
-                    label: "R020 no-revert-layer-outside-isolation-subtrees",
-                    type: "doc",
-                },
-                {
-                    id: "no-direct-theme-token-consumption-in-css-modules",
-                    label: "R021 no-direct-theme-token-consumption-in-css-modules",
-                    type: "doc",
-                },
-                {
-                    id: "prefer-data-theme-over-prefers-color-scheme",
-                    label: "R022 prefer-data-theme-over-prefers-color-scheme",
-                    type: "doc",
-                },
-                {
-                    id: "require-local-anchor-for-global-theme-overrides-in-css-modules",
-                    label: "R023 require-local-anchor-for-global-theme-overrides-in-css-modules",
-                    type: "doc",
-                },
-                {
-                    id: "prefer-docsearch-theme-tokens-over-structural-overrides",
-                    label: "R024 prefer-docsearch-theme-tokens-over-structural-overrides",
-                    type: "doc",
-                },
-                {
-                    id: "no-broad-all-resets-outside-isolation-subtrees",
-                    label: "R025 no-broad-all-resets-outside-isolation-subtrees",
-                    type: "doc",
-                },
-                {
-                    id: "require-docsearch-root-scope-for-docsearch-token-overrides",
-                    label: "R026 require-docsearch-root-scope-for-docsearch-token-overrides",
-                    type: "doc",
-                },
-                {
-                    id: "require-reduced-motion-override-for-interactive-transitions",
-                    label: "R027 require-reduced-motion-override-for-interactive-transitions",
-                    type: "doc",
-                },
-                {
-                    id: "no-hardcoded-docusaurus-breakpoint-values",
-                    label: "R028 no-hardcoded-docusaurus-breakpoint-values",
-                    type: "doc",
-                },
-                {
-                    id: "require-font-display-on-font-face",
-                    label: "R029 require-font-display-on-font-face",
-                    type: "doc",
-                },
-                {
-                    id: "require-font-face-local-src-before-remote",
-                    label: "R030 require-font-face-local-src-before-remote",
-                    type: "doc",
-                },
-                {
-                    id: "no-direct-project-token-consumption-in-css-modules",
-                    label: "R031 no-direct-project-token-consumption-in-css-modules",
-                    type: "doc",
-                },
-                {
-                    id: "no-color-scheme-on-docusaurus-html-root",
-                    label: "R032 no-color-scheme-on-docusaurus-html-root",
-                    type: "doc",
-                },
-                {
-                    id: "no-important-on-infima-or-docusaurus-selector-overrides",
-                    label: "R033 no-important-on-infima-or-docusaurus-selector-overrides",
+                    id: "no-absolute-font-url",
+                    label: "R018 no-absolute-font-url",
                     type: "doc",
                 },
             ],
             label: "Rules",
             link: {
                 description:
-                    "Reference documentation for the public Docusaurus-specific Stylelint rule catalog in this package.",
+                    "Reference documentation for the public font-loading and fallback rule catalog in this package.",
                 title: "Rules",
                 type: "generated-index",
             },

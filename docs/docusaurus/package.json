@@ -1,9 +1,9 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
-    "name": "@stylelint-plugin-docusaurus/docs",
+    "name": "@stylelint-plugin-font/docs",
     "version": "0.1.0",
     "private": true,
-    "description": "Docusaurus documentation site for stylelint-plugin-docusaurus.",
+    "description": "Docusaurus documentation site for stylelint-plugin-font.",
     "keywords": [
         "docusaurus",
         "documentation",
@@ -11,13 +11,13 @@
         "stylelint-plugin",
         "css"
     ],
-    "homepage": "https://nick2bad4u.github.io/stylelint-plugin-docusaurus/",
+    "homepage": "https://nick2bad4u.github.io/stylelint-plugin-font/",
     "bugs": {
-        "url": "https://github.com/Nick2bad4u/stylelint-plugin-docusaurus/issues"
+        "url": "https://github.com/Nick2bad4u/stylelint-plugin-font/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Nick2bad4u/stylelint-plugin-docusaurus.git"
+        "url": "git+https://github.com/Nick2bad4u/stylelint-plugin-font.git"
     },
     "license": "MIT",
     "author": "Nick2bad4u",
@@ -25,7 +25,7 @@
         {
             "name": "Nick2bad4u",
             "email": "20943337+Nick2bad4u@users.noreply.github.com",
-            "url": "https://nick2bad4u.github.io/stylelint-plugin-docusaurus"
+            "url": "https://nick2bad4u.github.io/stylelint-plugin-font"
         }
     ],
     "sideEffects": false,

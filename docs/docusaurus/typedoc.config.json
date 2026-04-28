@@ -56,7 +56,7 @@
         }
     },
     "gitRemote": "origin",
-    "hostedBaseUrl": "https://nick2bad4u.github.io/stylelint-plugin-docusaurus/",
+    "hostedBaseUrl": "https://nick2bad4u.github.io/stylelint-plugin-font/",
     "json": "docs/typedoc.json",
     "lightHighlightTheme": "light-plus",
     "markdownItOptions": {
@@ -64,7 +64,7 @@
         "linkify": true
     },
     "markdownLinkExternal": true,
-    "name": "stylelint-plugin-docusaurus Documentation",
+    "name": "stylelint-plugin-font Documentation",
     "navigation": {
         "compactFolders": false,
         "excludeReferences": false,

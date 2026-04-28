@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest a new rule or improvement for stylelint-plugin-docusaurus
+about: Suggest a new rule or improvement for stylelint-plugin-font
 title: "Feature: "
 labels:
     - enhancement

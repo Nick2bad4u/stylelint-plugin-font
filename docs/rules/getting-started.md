@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Install and use stylelint-plugin-docusaurus in an ESM Stylelint config.
+description: Install and use stylelint-plugin-font in an ESM Stylelint config.
 ---
 
 # Getting Started
@@ -8,15 +8,15 @@ description: Install and use stylelint-plugin-docusaurus in an ESM Stylelint con
 ## Installation
 
 ```sh
-npm install --save-dev stylelint stylelint-plugin-docusaurus
+npm install --save-dev stylelint stylelint-plugin-font
 ```
 
 ## Quick start with a shareable config
 
 ```js
-import { docusaurusPluginConfigs } from "stylelint-plugin-docusaurus";
+import { fontPluginConfigs } from "stylelint-plugin-font";
 
-export default docusaurusPluginConfigs["docusaurus-recommended"];
+export default fontPluginConfigs["font-recommended"];
 ```
 
 ## Quick start with `extends`
@@ -29,7 +29,7 @@ export default {
   "stylelint-config-idiomatic-order",
   "stylelint-config-standard-scss",
   "stylelint-config-tailwindcss",
-  "stylelint-plugin-docusaurus/configs/docusaurus-recommended",
+    "stylelint-plugin-font/configs/font-recommended",
  ],
 };
 ```
@@ -39,14 +39,14 @@ export default {
 If you prefer to compose rules manually:
 
 ```js
-import docusaurusPlugin from "stylelint-plugin-docusaurus";
+import fontPlugin from "stylelint-plugin-font";
 
 export default {
- plugins: ["stylelint-plugin-docusaurus"],
+ plugins: ["stylelint-plugin-font"],
  // Alternative explicit pack form:
- // plugins: [...docusaurusPlugin],
+ // plugins: [...fontPlugin],
  rules: {
-  "docusaurus/no-mobile-navbar-backdrop-filter": true,
+    "font/require-font-display": true,
  },
 };
 ```

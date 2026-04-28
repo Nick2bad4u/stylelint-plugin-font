@@ -1136,7 +1136,14 @@ export default defineConfig([
             "@typescript-eslint/no-unused-expressions": "warn",
             "@typescript-eslint/no-unused-private-class-members": "warn",
             "@typescript-eslint/no-unused-vars": "warn",
-            "@typescript-eslint/no-use-before-define": "warn",
+            "@typescript-eslint/no-use-before-define": [
+                "warn",
+                {
+                    // Function declarations are hoisted; calling them before their
+                    // textual definition is safe and allows natural top-down grouping.
+                    functions: false,
+                },
+            ],
             "@typescript-eslint/no-useless-constructor": "warn",
             "@typescript-eslint/no-useless-empty-export": "warn",
             "@typescript-eslint/no-wrapper-object-types": "error",
@@ -1203,6 +1210,21 @@ export default defineConfig([
                                 "TypeChecker",
                             ],
                             package: "typescript",
+                        },
+                        {
+                            // PostCSS AST node types are mutable by design;
+                            // walkers receive them as live nodes for mutation.
+                            from: "package",
+                            name: [
+                                "AtRule",
+                                "ChildNode",
+                                "Container",
+                                "Declaration",
+                                "Node",
+                                "Root",
+                                "Rule",
+                            ],
+                            package: "postcss",
                         },
                     ],
                     ignoreInferredTypes: true,

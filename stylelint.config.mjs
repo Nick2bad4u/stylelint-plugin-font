@@ -54,7 +54,7 @@ import defineConfig from "stylelint-define-config";
 import plugin from "./plugin.mjs";
 
 /**
- * Local dogfood rule set for validating the repository's own Docusaurus site
+ * Local dogfood rule set for validating the repository's own stylesheets
  * against the built plugin runtime.
  *
  * @remarks
@@ -64,15 +64,13 @@ import plugin from "./plugin.mjs";
  * `lint:css` and `lint:css:fix` ensure `dist/` exists before Stylelint loads
  * this config.
  */
-const localDocusaurusDogfoodRules = Object.freeze({
-    "docusaurus/no-invalid-theme-custom-property-scope": true,
-    "docusaurus/no-mobile-navbar-backdrop-filter": true,
-    "docusaurus/no-mobile-navbar-stacking-context-traps": true,
-    "docusaurus/no-unstable-docusaurus-generated-class-selectors": true,
-    "docusaurus/prefer-data-theme-color-mode": true,
-    "docusaurus/prefer-data-theme-docsearch-overrides": true,
-    "docusaurus/prefer-stable-docusaurus-theme-class-names": true,
-    "docusaurus/require-ifm-color-primary-scale": true,
+const localFontDogfoodRules = Object.freeze({
+    "font/local-src-before-url": true,
+    "font/no-data-uri-src": true,
+    "font/require-font-display": true,
+    "font/require-font-style": true,
+    "font/require-font-weight": true,
+    "font/require-format-hint": true,
 });
 
 /**
@@ -298,7 +296,7 @@ const config = defineConfig({
             rules: {
                 // Dogfood the local plugin against the repository's own
                 // Docusaurus site styles.
-                ...localDocusaurusDogfoodRules,
+                ...localFontDogfoodRules,
                 // Relax accessibility rules for documentation UI elements
                 "a11y/content-property-no-static-value": null,
                 "a11y/font-size-is-readable": null,

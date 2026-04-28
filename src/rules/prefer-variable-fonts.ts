@@ -98,8 +98,10 @@ const ruleFunction: RuleBase<boolean, undefined> =
         }
     };
 
-/** Prefer variable font declarations over multiple static `@font-face` blocks
-for the same family. */
+/**
+ * Prefer variable font declarations over multiple static `@font-face` blocks
+ * for the same family.
+ */
 const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     createStylelintRule({
         docs,

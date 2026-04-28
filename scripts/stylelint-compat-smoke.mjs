@@ -84,12 +84,12 @@ const toFileHref = (filePath) => {
 
 /**
  * @typedef {Readonly<{
- *     "docusaurus-all": import("stylelint").Config &
+ *     "font-all": import("stylelint").Config &
  *         Readonly<{
  *             plugins: StylelintConfigPluginArray;
  *             rules: Readonly<Record<string, unknown>>;
  *         }>;
- *     "docusaurus-recommended": import("stylelint").Config &
+ *     "font-recommended": import("stylelint").Config &
  *         Readonly<{
  *             plugins: StylelintConfigPluginArray;
  *             rules: Readonly<Record<string, unknown>>;
@@ -101,7 +101,7 @@ const toFileHref = (filePath) => {
  * @typedef {Readonly<{
  *     builtPluginCjs: unknown;
  *     configNames: readonly string[];
- *     docusaurusPluginConfigs: BuiltPluginConfigs;
+ *     fontPluginConfigs: BuiltPluginConfigs;
  *     meta: Readonly<{
  *         name: string;
  *         namespace: string;
@@ -365,12 +365,10 @@ export function assertStylelintMajor(
  */
 function createSurfaceSnapshot(candidate) {
     const candidateRecord = toRecord(candidate);
-    const pluginConfigsRecord = toRecord(
-        candidateRecord["docusaurusPluginConfigs"]
-    );
-    const allConfigRecord = toRecord(pluginConfigsRecord["docusaurus-all"]);
+    const pluginConfigsRecord = toRecord(candidateRecord["fontPluginConfigs"]);
+    const allConfigRecord = toRecord(pluginConfigsRecord["font-all"]);
     const recommendedConfigRecord = toRecord(
-        pluginConfigsRecord["docusaurus-recommended"]
+        pluginConfigsRecord["font-recommended"]
     );
 
     return {
@@ -417,8 +415,8 @@ async function loadBuiltPluginSurface({
             configNames: /** @type {readonly string[]} */ (
                 builtPluginModule["configNames"]
             ),
-            docusaurusPluginConfigs: /** @type {BuiltPluginConfigs} */ (
-                builtPluginModule["docusaurusPluginConfigs"]
+            fontPluginConfigs: /** @type {BuiltPluginConfigs} */ (
+                builtPluginModule["fontPluginConfigs"]
             ),
             meta: /** @type {BuiltPluginSurface["meta"]} */ (
                 builtPluginModule["meta"]
@@ -453,7 +451,7 @@ export function assertPluginSurface(surface, { logger = console } = {}) {
     const {
         builtPluginCjs,
         configNames,
-        docusaurusPluginConfigs,
+        fontPluginConfigs,
         meta,
         plugin,
         ruleIds,
@@ -471,19 +469,17 @@ export function assertPluginSurface(surface, { logger = console } = {}) {
         throw new TypeError("Plugin metadata is missing a package name.");
     }
 
-    if (meta.namespace !== "docusaurus") {
+    if (meta.namespace !== "font") {
         throw new TypeError(
-            `Expected plugin namespace 'docusaurus', received '${meta.namespace}'.`
+            `Expected plugin namespace 'font', received '${meta.namespace}'.`
         );
     }
 
     if (
         !Array.isArray(configNames) ||
         configNames.length === 0 ||
-        !Array.isArray(
-            docusaurusPluginConfigs["docusaurus-recommended"].plugins
-        ) ||
-        !Array.isArray(docusaurusPluginConfigs["docusaurus-all"].plugins)
+        !Array.isArray(fontPluginConfigs["font-recommended"].plugins) ||
+        !Array.isArray(fontPluginConfigs["font-all"].plugins)
     ) {
         throw new TypeError("Config names export is unavailable.");
     }
@@ -510,7 +506,7 @@ export function assertPluginSurface(surface, { logger = console } = {}) {
         !isDeepStrictEqual(
             createSurfaceSnapshot({
                 configNames,
-                docusaurusPluginConfigs,
+                fontPluginConfigs,
                 meta,
                 ruleIds,
                 ruleNames,
@@ -579,125 +575,62 @@ export async function runConfigScenario(
 }
 
 /**
- * @param {Pick<BuiltPluginSurface, "docusaurusPluginConfigs" | "plugin">} input
+ * @param {Pick<BuiltPluginSurface, "fontPluginConfigs" | "plugin">} input
  *
  * @returns {readonly ConfigScenario[]}
  */
-export function createScenarios({ docusaurusPluginConfigs, plugin }) {
-    const baselineCssModule = `
-.heroBanner {
-    --hero-banner-color: var(--ifm-color-primary);
-    color: var(--hero-banner-color);
-}
-`.trim();
-
-    const baselineGlobalCss = `
-:root {
-    --ifm-color-primary: #4e89e8;
-    --ifm-color-primary-dark: #3576d4;
-    --ifm-color-primary-darker: #2c68be;
-    --ifm-color-primary-darkest: #234f92;
-    --ifm-color-primary-light: #6d9ef0;
-    --ifm-color-primary-lighter: #89b1f4;
-    --ifm-color-primary-lightest: #b8d0fa;
+export function createScenarios({ fontPluginConfigs, plugin }) {
+    // A minimal @font-face block that satisfies all require-* font rules,
+    // plus a class with a compliant font stack (web font + system-ui fallback).
+    const baselineFontCss = `
+@font-face {
+    font-family: "Inter";
+    font-display: swap;
+    font-style: normal;
+    font-weight: 400;
+    src: local("Inter"), url("./fonts/inter.woff2") format("woff2");
 }
 
-html[data-theme='light'] .DocSearch {
-    --docsearch-primary-color: #4f46e5;
-}
-
-html[data-theme='dark'] .DocSearch {
-    --docsearch-primary-color: #818cf8;
-}
-
-[data-theme='dark'] {
-    --ifm-color-primary: #8ab4f8;
-    --ifm-color-primary-dark: #6ea3f5;
-    --ifm-color-primary-darker: #5a97f3;
-    --ifm-color-primary-darkest: #2f7ce9;
-    --ifm-color-primary-light: #a6c5fb;
-    --ifm-color-primary-lighter: #bad1fc;
-    --ifm-color-primary-lightest: #ebf3fe;
-}
-
-.theme-doc-markdown h2 {
-    margin-block-start: 2rem;
-}
-
-.theme-doc-sidebar-menu .menu__link {
-    font-weight: 700;
-}
-
-.heroBanner {
-    color: var(--ifm-color-primary);
+.body-text {
+    font-family: "Inter", system-ui;
 }
 `.trim();
 
     return [
         {
-            code: baselineCssModule,
-            codeFilename: "Component.module.css",
+            code: baselineFontCss,
+            codeFilename: "src/styles/fonts.css",
             config: {
                 plugins: Array.from(plugin),
                 rules: {},
             },
-            name: "direct-plugin-pack-modules",
+            name: "direct-plugin-pack",
         },
         {
-            code: baselineCssModule,
-            codeFilename: "Component.module.css",
+            code: baselineFontCss,
+            codeFilename: "src/styles/fonts.css",
             config: {
-                ...docusaurusPluginConfigs["docusaurus-recommended"],
+                ...fontPluginConfigs["font-recommended"],
                 plugins: Array.from(
-                    docusaurusPluginConfigs["docusaurus-recommended"].plugins
+                    fontPluginConfigs["font-recommended"].plugins
                 ),
                 rules: {
-                    ...docusaurusPluginConfigs["docusaurus-recommended"].rules,
+                    ...fontPluginConfigs["font-recommended"].rules,
                 },
             },
-            name: "recommended-config-modules",
+            name: "recommended-config",
         },
         {
-            code: baselineCssModule,
-            codeFilename: "Component.module.css",
+            code: baselineFontCss,
+            codeFilename: "src/styles/fonts.css",
             config: {
-                ...docusaurusPluginConfigs["docusaurus-all"],
-                plugins: Array.from(
-                    docusaurusPluginConfigs["docusaurus-all"].plugins
-                ),
+                ...fontPluginConfigs["font-all"],
+                plugins: Array.from(fontPluginConfigs["font-all"].plugins),
                 rules: {
-                    ...docusaurusPluginConfigs["docusaurus-all"].rules,
+                    ...fontPluginConfigs["font-all"].rules,
                 },
             },
-            name: "all-config-modules",
-        },
-        {
-            code: baselineGlobalCss,
-            codeFilename: "src/css/custom.css",
-            config: {
-                ...docusaurusPluginConfigs["docusaurus-recommended"],
-                plugins: Array.from(
-                    docusaurusPluginConfigs["docusaurus-recommended"].plugins
-                ),
-                rules: {
-                    ...docusaurusPluginConfigs["docusaurus-recommended"].rules,
-                },
-            },
-            name: "recommended-config-global",
-        },
-        {
-            code: baselineGlobalCss,
-            codeFilename: "src/css/custom.css",
-            config: {
-                ...docusaurusPluginConfigs["docusaurus-all"],
-                plugins: Array.from(
-                    docusaurusPluginConfigs["docusaurus-all"].plugins
-                ),
-                rules: {
-                    ...docusaurusPluginConfigs["docusaurus-all"].rules,
-                },
-            },
-            name: "all-config-global",
+            name: "all-config",
         },
     ];
 }
@@ -749,7 +682,7 @@ export async function runStylelintCompatSmoke({
     assertPluginSurface(builtPluginSurface, { logger });
 
     for (const scenario of createScenarios({
-        docusaurusPluginConfigs: builtPluginSurface.docusaurusPluginConfigs,
+        fontPluginConfigs: builtPluginSurface.fontPluginConfigs,
         plugin: builtPluginSurface.plugin,
     })) {
         await runConfigScenario(scenario, {

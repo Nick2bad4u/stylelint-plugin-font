@@ -88,8 +88,10 @@ const ruleFunction: RuleBase<boolean, undefined> =
         }
     };
 
-/** Require explicit `format(...)` hints for all `url(...)` entries in
-`@font-face src`. */
+/**
+ * Require explicit `format(...)` hints for all `url(...)` entries in
+ * `@font-face src`.
+ */
 const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     createStylelintRule({
         docs,

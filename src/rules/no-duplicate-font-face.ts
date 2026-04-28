@@ -66,8 +66,10 @@ const ruleFunction: RuleBase<boolean, undefined> =
         }
     };
 
-/** Disallow duplicate `@font-face` declarations with the same family, weight,
-and style. */
+/**
+ * Disallow duplicate `@font-face` declarations with the same family, weight,
+ * and style.
+ */
 const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     createStylelintRule({
         docs,

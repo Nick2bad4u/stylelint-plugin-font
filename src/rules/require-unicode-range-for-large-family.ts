@@ -76,8 +76,10 @@ const ruleFunction: RuleBase<boolean, undefined> =
         }
     };
 
-/** Require `unicode-range` in `@font-face` for families with many declared
-faces. */
+/**
+ * Require `unicode-range` in `@font-face` for families with many declared
+ * faces.
+ */
 const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     createStylelintRule({
         docs,

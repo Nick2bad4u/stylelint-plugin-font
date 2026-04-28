@@ -189,12 +189,11 @@ const getRuleFixIndicator = (ruleModule) =>
  *
  * Mapping:
  *
- * - 🟢 = `docusaurusPluginConfigs["docusaurus-recommended"]`
- * - 🟣 = `docusaurusPluginConfigs["docusaurus-all"]`
- * - 🛡️ = `docusaurusPluginConfigs["docusaurus-docs-safe"]`
+ * - 🟢 = `fontPluginConfigs["font-recommended"]`
+ * - 🟣 = `fontPluginConfigs["font-all"]`
  *
- * Rules in `docusaurus-recommended` are also in `docusaurus-docs-safe`, so they
- * show all three badges. Rules only in `docusaurus-all` show just 🟣.
+ * Rules in `font-recommended` are also in `font-all`, so they show both badges.
+ * Rules only in `font-all` show just 🟣.
  *
  * @param {RuleModule} ruleModule
  *
@@ -202,8 +201,8 @@ const getRuleFixIndicator = (ruleModule) =>
  */
 const getPresetKeyIndicator = (ruleModule) =>
     ruleModule.docs?.recommended === true
-        ? "[🟢](./docs/rules/configs/docusaurus-recommended.md) [🛡️](./docs/rules/configs/docusaurus-docs-safe.md) [🟣](./docs/rules/configs/docusaurus-all.md)"
-        : "[🟣](./docs/rules/configs/docusaurus-all.md)";
+        ? "[🟢](./docs/rules/configs/font-recommended.md) [🟣](./docs/rules/configs/font-all.md)"
+        : "[🟣](./docs/rules/configs/font-all.md)";
 
 /**
  * Legend block prepended to the Rules section.
@@ -219,9 +218,8 @@ const RULES_SECTION_LEGEND = [
     "",
     "**Preset key legend:**",
     "",
-    '- [🟢](./docs/rules/configs/docusaurus-recommended.md) — `docusaurusPluginConfigs["docusaurus-recommended"]`',
-    '- [🟣](./docs/rules/configs/docusaurus-all.md) — `docusaurusPluginConfigs["docusaurus-all"]`',
-    '- [🛡️](./docs/rules/configs/docusaurus-docs-safe.md) — `docusaurusPluginConfigs["docusaurus-docs-safe"]`',
+    '- [🟢](./docs/rules/configs/font-recommended.md) — `fontPluginConfigs["font-recommended"]`',
+    '- [🟣](./docs/rules/configs/font-all.md) — `fontPluginConfigs["font-all"]`',
 ].join("\n");
 
 /** @param {readonly [string, RuleModule]} entry */
@@ -245,9 +243,9 @@ export const generateReadmeRulesSectionFromRules = (rules) => {
         return [
             "## Rules",
             "",
-            "The public `docusaurus/*` rule catalog is currently empty on purpose.",
+            "The public `font/*` rule catalog is currently empty on purpose.",
             "",
-            "This repository already ships the runtime, tests, docs, and build scaffolding required for future Docusaurus-specific Stylelint rules.",
+            "This repository already ships the runtime, tests, docs, and build scaffolding required for future font-specific Stylelint rules.",
             "",
         ].join("\n");
     }

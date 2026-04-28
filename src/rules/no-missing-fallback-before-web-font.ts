@@ -74,8 +74,10 @@ const ruleFunction: RuleBase<boolean, undefined> =
         });
     };
 
-/** Require a local or system font before each web-font URL in `font-family`
-stacks. */
+/**
+ * Require a local or system font before each web-font URL in `font-family`
+ * stacks.
+ */
 const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     createStylelintRule({
         docs,

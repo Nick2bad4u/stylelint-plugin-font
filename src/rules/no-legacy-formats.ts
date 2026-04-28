@@ -92,8 +92,10 @@ const ruleFunction: RuleBase<boolean, undefined> =
         }
     };
 
-/** Disallow legacy `@font-face` formats (`eot`, `svg`, `truetype`) in modern
-projects. */
+/**
+ * Disallow legacy `@font-face` formats (`eot`, `svg`, `truetype`) in modern
+ * projects.
+ */
 const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     createStylelintRule({
         docs,

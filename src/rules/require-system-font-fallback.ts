@@ -63,8 +63,10 @@ const ruleFunction: RuleBase<boolean, undefined> =
         });
     };
 
-/** Require `font-family` stacks in regular rules to end with a system-font
-fallback. */
+/**
+ * Require `font-family` stacks in regular rules to end with a system-font
+ * fallback.
+ */
 const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     createStylelintRule({
         docs,

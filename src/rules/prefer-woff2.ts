@@ -69,8 +69,10 @@ const ruleFunction: RuleBase<boolean, undefined> =
         }
     };
 
-/** Prefer `woff2` format entries in `@font-face src` declarations over older
-formats. */
+/**
+ * Prefer `woff2` format entries in `@font-face src` declarations over older
+ * formats.
+ */
 const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     createStylelintRule({
         docs,

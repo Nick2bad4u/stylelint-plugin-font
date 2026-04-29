@@ -52,7 +52,8 @@ function isValidFontWeight(value: string): boolean {
 
     // Range: "100 900" format
     if (/^\d+\s+\d+$/u.test(trimmed)) {
-        const parts = stringSplit(trimmed, /\s+/u);
+        const normalizedRange = trimmed.replaceAll(/\s+/gu, " ");
+        const parts = stringSplit(normalizedRange, " ");
         const min = Number.parseInt(arrayAt(parts, 0) ?? "0", 10);
         const max = Number.parseInt(arrayAt(parts, 1) ?? "0", 10);
 

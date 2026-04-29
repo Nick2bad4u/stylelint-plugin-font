@@ -35,22 +35,22 @@ const heroBadges = [
     },
     {
         description:
-            "Focused on Docusaurus theme tokens, Infima usage, and component CSS boundaries.",
+            "Focused on font management, like validation of `@font-face` rules and `font-weight` descriptors.",
         icon: "\uf5fd",
-        label: "Docusaurus-aware",
+        label: "Font-focused",
     },
     {
         description:
-            "Template-first infrastructure for rules, docs, sync scripts, and tests.",
+            "Prioritizes developer experience with clear error messages, helpful documentation, and intuitive configuration.",
         icon: "\uf0ad",
-        label: "Template-ready",
+        label: "DX-first",
     },
 ] as const satisfies readonly HeroBadge[];
 
 const heroStats = [
     {
         description:
-            "The plugin now ships focused guardrails for theme scopes, CSS Modules boundaries, selector stability, color mode, DocSearch pairing, navbar/mobile behavior, cascade-layer safety, and Infima token usage.",
+            "Rules based around common font management pitfalls and best practices.",
         headline: `\uf0ca ${String(docsCatalogStats.publicRuleCount)} Public Rule${docsCatalogStats.publicRuleCount === 1 ? "" : "s"}`,
     },
     {
@@ -60,8 +60,8 @@ const heroStats = [
     },
     {
         description:
-            "Typed helper scaffolding, docs sync, and Vitest integration are already in place.",
-        headline: "\udb80\udc68 DX-first Template",
+            "Designed for a smooth onboarding experience and iterative improvement based on user feedback.",
+        headline: "\udb80\udc68 DX-first Design",
     },
 ] as const satisfies readonly HeroStat[];
 
@@ -70,24 +70,24 @@ const compareConfigsButtonIcon = "\udb85\udc92";
 const heroKickerIcon = "\uf0ad";
 const heroKickerIcon2 = "\uf135";
 const homepageDescription =
-    "Explore stylelint-plugin-docusaurus documentation, configs, and template guidance for Docusaurus-focused CSS linting.";
+    "Explore stylelint-plugin-font documentation, configs, and template guidance for Docusaurus-focused CSS linting.";
 const homepageKeywords =
-    "stylelint-plugin-docusaurus, stylelint, docusaurus, infima, css linting, postcss, docs tooling";
+    "stylelint-plugin-font, stylelint, docusaurus, infima, css linting, postcss, docs tooling";
 const homepageStructuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
-    codeRepository: "https://github.com/Nick2bad4u/stylelint-plugin-docusaurus",
+    codeRepository: "https://github.com/Nick2bad4u/stylelint-plugin-font",
     description: homepageDescription,
-    image: "https://nick2bad4u.github.io/stylelint-plugin-docusaurus/img/logo.png",
+    image: "https://nick2bad4u.github.io/stylelint-plugin-font/img/logo.png",
     license:
-        "https://github.com/Nick2bad4u/stylelint-plugin-docusaurus/blob/main/LICENSE",
-    name: "stylelint-plugin-docusaurus",
+        "https://github.com/Nick2bad4u/stylelint-plugin-font/blob/main/LICENSE",
+    name: "stylelint-plugin-font",
     programmingLanguage: "TypeScript",
     runtimePlatform: "Node.js",
-    url: "https://nick2bad4u.github.io/stylelint-plugin-docusaurus/",
+    url: "https://nick2bad4u.github.io/stylelint-plugin-font/",
 } as const;
 const homepageSocialImageUrl =
-    "https://nick2bad4u.github.io/stylelint-plugin-docusaurus/img/logo.png";
+    "https://nick2bad4u.github.io/stylelint-plugin-font/img/logo.png";
 
 const homeCards = [
     {
@@ -106,7 +106,7 @@ const homeCards = [
     },
     {
         description:
-            "Read the migration status and template roadmap before designing the first public Docusaurus rules.",
+            "Track the current development status, ongoing improvements, and upcoming features.",
         icon: "\uf02d",
         title: "Current Status",
         to: "/docs/rules/guides/current-status",
@@ -139,27 +139,23 @@ export default function Home() {
                                 {`${heroKickerIcon} Stylelint template for Docusaurus teams ${heroKickerIcon2}`}
                             </p>
                             <Heading as="h1" className={styles.heroTitle}>
-                                stylelint-plugin-docusaurus
+                                stylelint-plugin-font
                             </Heading>
                             <p className={styles.heroSubtitle}>
-                                A Stylelint-first plugin scaffold for Docusaurus
-                                stylesheets, built around{" "}
+                                A Stylelint plugin for font management, start
+                                with{" "}
                                 <Link
                                     className={`${styles.heroInlineLink} ${styles.heroInlineLinkStylelint}`}
-                                    href="https://stylelint.io/developer-guide/plugins/"
-                                    rel="noopener noreferrer"
-                                    target="_blank"
+                                    to="/docs/rules/overview"
                                 >
-                                    Stylelint
+                                    Rule Overview
                                 </Link>{" "}
                                 and{" "}
                                 <Link
                                     className={`${styles.heroInlineLink} ${styles.heroInlineLinkDocusaurus}`}
-                                    href="https://docusaurus.io/docs/styling-layout"
-                                    rel="noopener noreferrer"
-                                    target="_blank"
+                                    to="/docs/rules/getting-started"
                                 >
-                                    Docusaurus styling
+                                    Getting Started
                                 </Link>
                                 .
                             </p>
@@ -208,7 +204,7 @@ export default function Home() {
 
                         <aside className={styles.heroPanel}>
                             <img
-                                alt="stylelint-plugin-docusaurus logo"
+                                alt="stylelint-plugin-font logo"
                                 className={styles.heroPanelLogo}
                                 decoding="async"
                                 height="240"

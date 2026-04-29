@@ -48,59 +48,59 @@
 }
 
 :root {
-    --ifm-color-primary: #4f46e5;
-    --ifm-color-primary-dark: #4338ca;
-    --ifm-color-primary-darker: #3730a3;
-    --ifm-color-primary-darkest: #312e81;
-    --ifm-color-primary-light: #6366f1;
-    --ifm-color-primary-lighter: #818cf8;
-    --ifm-color-primary-lightest: #a5b4fc;
+    --ifm-color-primary: #0f766e;
+    --ifm-color-primary-dark: #0f5f59;
+    --ifm-color-primary-darker: #134e4a;
+    --ifm-color-primary-darkest: #115e59;
+    --ifm-color-primary-light: #0d9488;
+    --ifm-color-primary-lighter: #14b8a6;
+    --ifm-color-primary-lightest: #5eead4;
     --ifm-code-font-size: 95%;
     --ifm-font-family-base:
         "Inter var", "Inter", "Segoe UI", "NerdFontSymbols Nerd Font Symbols",
         system-ui, -apple-system, sans-serif;
-    --sb-accent-overview: #22c55e;
-    --sb-accent-started: #0ea5e9;
-    --sb-accent-developer: #8b5cf6;
-    --sb-accent-developer-ops: #ec4899;
-    --sb-accent-rules: #f97316;
-    --sb-accent-presets: #eab308;
-    --sb-accent-guides: #06b6d4;
-    --sb-accent-api-overview: #6366f1;
-    --sb-accent-api-types: #14b8a6;
-    --sb-accent-api-runtime: #f43f5e;
-    --sb-accent-dev-charts: #38bdf8;
-    --sb-accent-dev-links: #10b981;
-    --sb-accent-adr: #f59e0b;
-    --sb-accent-rules-guides: #22c55e;
-    --sb-accent-rules-catalog: #a855f7;
-    --sb-prefix-rule-number: #52525b;
-    --sb-config-recommended: #facc15;
-    --sb-config-all: #a855f7;
+    --sb-accent-overview: #0891b2;
+    --sb-accent-started: #0284c7;
+    --sb-accent-developer: #7c3aed;
+    --sb-accent-developer-ops: #db2777;
+    --sb-accent-rules: #ea580c;
+    --sb-accent-presets: #ca8a04;
+    --sb-accent-guides: #0d9488;
+    --sb-accent-api-overview: #0f766e;
+    --sb-accent-api-types: #0ea5a4;
+    --sb-accent-api-runtime: #e11d48;
+    --sb-accent-dev-charts: #0369a1;
+    --sb-accent-dev-links: #059669;
+    --sb-accent-adr: #d97706;
+    --sb-accent-rules-guides: #0f766e;
+    --sb-accent-rules-catalog: #7c3aed;
+    --sb-prefix-rule-number: #3f3f46;
+    --sb-config-recommended: #ca8a04;
+    --sb-config-all: #7c3aed;
 }
 
 [data-theme="dark"] {
-    --ifm-color-primary: #818cf8;
-    --ifm-color-primary-dark: #6366f1;
-    --ifm-color-primary-darker: #4f46e5;
-    --ifm-color-primary-darkest: #4338ca;
-    --ifm-color-primary-light: #a5b4fc;
-    --ifm-color-primary-lighter: #c7d2fe;
-    --ifm-color-primary-lightest: #e0e7ff;
-    --sb-accent-overview: #4ade80;
+    --ifm-color-primary: #2dd4bf;
+    --ifm-color-primary-dark: #14b8a6;
+    --ifm-color-primary-darker: #0d9488;
+    --ifm-color-primary-darkest: #0f766e;
+    --ifm-color-primary-light: #5eead4;
+    --ifm-color-primary-lighter: #99f6e4;
+    --ifm-color-primary-lightest: #ccfbf1;
+    --sb-accent-overview: #22d3ee;
     --sb-accent-started: #38bdf8;
     --sb-accent-developer: #c084fc;
     --sb-accent-developer-ops: #f472b6;
     --sb-accent-rules: #fb923c;
     --sb-accent-presets: #facc15;
-    --sb-accent-guides: #67e8f9;
-    --sb-accent-api-overview: #a5b4fc;
+    --sb-accent-guides: #5eead4;
+    --sb-accent-api-overview: #2dd4bf;
     --sb-accent-api-types: #2dd4bf;
     --sb-accent-api-runtime: #fb7185;
     --sb-accent-dev-charts: #7dd3fc;
     --sb-accent-dev-links: #34d399;
     --sb-accent-adr: #fbbf24;
-    --sb-accent-rules-guides: #4ade80;
+    --sb-accent-rules-guides: #5eead4;
     --sb-accent-rules-catalog: #c084fc;
     --sb-prefix-rule-number: #a1a1aa;
     --sb-config-recommended: #fde047;
@@ -413,6 +413,69 @@
 
 .sb-cat-rules .theme-doc-sidebar-item-link-level-2 > .menu__link {
     border-inline-start: 2px solid rgb(249 115 22 / 45%);
+}
+
+.sb-cat-rules {
+    counter-reset: sb-rule-index;
+}
+
+.sb-cat-rules .theme-doc-sidebar-item-link-level-2 {
+    counter-increment: sb-rule-index;
+}
+
+.sb-cat-rules .theme-doc-sidebar-item-link-level-2 > .menu__link {
+    display: flex;
+    align-items: center;
+    gap: 0.54rem;
+    border-inline-start-width: 3px;
+    border-inline-start-style: solid;
+    line-height: 1.35;
+    padding-inline-start: calc(var(--ifm-menu-link-padding-horizontal) - 3px);
+}
+
+.sb-cat-rules .theme-doc-sidebar-item-link-level-2 > .menu__link::before {
+    color: var(--sb-prefix-rule-number);
+    content: counter(sb-rule-index, decimal-leading-zero);
+    font-size: 0.68rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    inline-size: 1.45rem;
+    opacity: 0.92;
+    text-align: end;
+}
+
+.sb-cat-rules
+    .theme-doc-sidebar-item-link-level-2:nth-child(6n + 1)
+    > .menu__link {
+    border-inline-start-color: #f97316;
+}
+
+.sb-cat-rules
+    .theme-doc-sidebar-item-link-level-2:nth-child(6n + 2)
+    > .menu__link {
+    border-inline-start-color: #ef4444;
+}
+
+.sb-cat-rules
+    .theme-doc-sidebar-item-link-level-2:nth-child(6n + 3)
+    > .menu__link {
+    border-inline-start-color: #eab308;
+}
+
+.sb-cat-rules
+    .theme-doc-sidebar-item-link-level-2:nth-child(6n + 4)
+    > .menu__link {
+    border-inline-start-color: #22c55e;
+}
+
+.sb-cat-rules
+    .theme-doc-sidebar-item-link-level-2:nth-child(6n + 5)
+    > .menu__link {
+    border-inline-start-color: #06b6d4;
+}
+
+.sb-cat-rules .theme-doc-sidebar-item-link-level-2:nth-child(6n) > .menu__link {
+    border-inline-start-color: #8b5cf6;
 }
 
 .sb-cat-guides .theme-doc-sidebar-item-link-level-2 > .menu__link {
@@ -770,13 +833,23 @@
 }
 
 .sb-cat-configs .sb-config-recommended > .menu__link,
-.sb-cat-configs .menu__link.sb-config-recommended {
+.sb-cat-configs .menu__link.sb-config-recommended,
+.sb-cat-configs .sb-config-font-recommended > .menu__link,
+.sb-cat-configs .menu__link.sb-config-font-recommended {
     border-inline-start-color: var(--sb-config-recommended);
 }
 
 .sb-cat-configs .sb-config-all > .menu__link,
-.sb-cat-configs .menu__link.sb-config-all {
+.sb-cat-configs .menu__link.sb-config-all,
+.sb-cat-configs .sb-config-font-all > .menu__link,
+.sb-cat-configs .menu__link.sb-config-font-all {
     border-inline-start-color: var(--sb-config-all);
+}
+
+.sb-cat-configs .theme-doc-sidebar-item-link-level-2 > .menu__link {
+    border-inline-start: 3px solid transparent;
+    border-radius: 0.42rem;
+    padding-inline-start: calc(var(--ifm-menu-link-padding-horizontal) - 3px);
 }
 
 .markdown h1,

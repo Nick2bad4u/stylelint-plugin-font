@@ -219,6 +219,13 @@ const getRuleFixIndicator = (ruleModule) =>
     ruleModule.meta?.fixable === true ? "🔧" : "—";
 
 /**
+ * @param {string} ruleName
+ *
+ * @returns {string}
+ */
+const getRuleDocsRelativeLink = (ruleName) => `../${ruleName}.md`;
+
+/**
  * @param {string} configName
  * @param {string} [repositoryRoot]
  *
@@ -345,7 +352,7 @@ export const generateRulesSectionFromConfig = ({
                 );
             }
 
-            return `| [\`${ruleName}\`](${docs.url}) | ${getRuleFixIndicator(ruleModule)} | ${escapeMarkdownTableCell(docs.description)} |`;
+            return `| [\`${ruleName}\`](${getRuleDocsRelativeLink(ruleName)}) | ${getRuleFixIndicator(ruleModule)} | ${escapeMarkdownTableCell(docs.description)} |`;
         }),
         "",
     ].join("\n");

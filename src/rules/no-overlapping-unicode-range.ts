@@ -90,63 +90,18 @@ const ruleFunction: RuleBase<boolean, undefined> =
         }
 
         for (const sameVariantFaces of byVariant.values()) {
-            if (sameVariantFaces.length < 2) {
-                continue;
-            }
-
-            const reportedKeys = new Set<string>();
-
-            for (
-                let currentIndex = 0;
-                currentIndex < sameVariantFaces.length;
-                currentIndex += 1
-            ) {
-                const current = sameVariantFaces[currentIndex];
-
-                if (!isDefined(current)) {
-                    continue;
-                }
-
-                for (
-                    let previousIndex = 0;
-                    previousIndex < currentIndex;
-                    previousIndex += 1
-                ) {
-                    const previous = sameVariantFaces[previousIndex];
-
-                    if (!isDefined(previous)) {
-                        continue;
-                    }
-
-                    if (
-                        !hasOverlappingInterval(
-                            previous.rangeSet.intervals,
-                            current.rangeSet.intervals
-                        )
-                    ) {
-                        continue;
-                    }
-
-                    const pairKey = `${previousIndex}:${currentIndex}`;
-
-                    if (setHas(reportedKeys, pairKey)) {
-                        continue;
-                    }
-
-                    reportedKeys.add(pairKey);
-
-                    report({
-                        message: messages.rejected(
-                            current.familyName,
-                            previous.rangeSet.displayValue,
-                            current.rangeSet.displayValue
-                        ),
-                        node: current.node,
-                        result,
-                        ruleName,
-                    });
-                }
-            }
+            reportOverlapsForVariant(sameVariantFaces, (current, previous) => {
+                report({
+                    message: messages.rejected(
+                        current.familyName,
+                        previous.rangeSet.displayValue,
+                        current.rangeSet.displayValue
+                    ),
+                    node: current.node,
+                    result,
+                    ruleName,
+                });
+            });
         }
     };
 
@@ -163,6 +118,12 @@ const rule: StylelintPluginRule<boolean, undefined, typeof messages> =
     });
 
 export default rule;
+
+type FaceEntry = Readonly<{
+    familyName: string;
+    node: AtRule;
+    rangeSet: UnicodeRangeSet;
+}>;
 
 function hasOverlappingInterval(
     leftIntervals: readonly UnicodeInterval[],
@@ -276,6 +237,60 @@ function parseUnicodeRangeToken(token: string): undefined | UnicodeInterval {
         end: Math.max(start, end),
         start: Math.min(start, end),
     };
+}
+
+function reportOverlapsForVariant(
+    sameVariantFaces: readonly FaceEntry[],
+    reportOverlap: (current: FaceEntry, previous: FaceEntry) => void
+): void {
+    if (sameVariantFaces.length < 2) {
+        return;
+    }
+
+    const reportedKeys = new Set<string>();
+
+    for (
+        let currentIndex = 0;
+        currentIndex < sameVariantFaces.length;
+        currentIndex += 1
+    ) {
+        const current = sameVariantFaces[currentIndex];
+
+        if (!isDefined(current)) {
+            continue;
+        }
+
+        for (
+            let previousIndex = 0;
+            previousIndex < currentIndex;
+            previousIndex += 1
+        ) {
+            const previous = sameVariantFaces[previousIndex];
+
+            if (!isDefined(previous)) {
+                continue;
+            }
+
+            if (
+                !hasOverlappingInterval(
+                    previous.rangeSet.intervals,
+                    current.rangeSet.intervals
+                )
+            ) {
+                continue;
+            }
+
+            const pairKey = `${previousIndex}:${currentIndex}`;
+
+            if (setHas(reportedKeys, pairKey)) {
+                continue;
+            }
+
+            reportedKeys.add(pairKey);
+
+            reportOverlap(current, previous);
+        }
+    }
 }
 
 function wildcardToInterval(token: string): UnicodeInterval {

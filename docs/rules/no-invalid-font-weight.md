@@ -20,16 +20,16 @@ in `@font-face` blocks:
 
 - **Integer range:** 1 to 1000 (inclusive). Common values are 400 (normal) and
   700 (bold), but any integer in this range is valid.
-- **Keyword:** The single keyword `normal`, which is equivalent to 400.
-- **Range (for variable fonts):** Two space-separated integers "MIN MAX" where
+- **Keywords:** `normal` (equivalent to 400) and `bold` (equivalent to 700).
+- **Range (for variable fonts):** Two space-separated values "MIN MAX" where
   both are in the 1–1000 range and MIN ≤ MAX. This declares a variable font
   that interpolates between those weights.
 
-Invalid values like `"900 1100"` (exceeds 1000), `"bold"` (not a valid descriptor
-keyword), or `"400px"` (has units) cause browsers to reject the entire `@font-face`
-block or apply unpredictable fallback behaviour. These errors are usually the
-result of copy-paste from `font-weight` property values (used in selectors) or
-misunderstanding the descriptor syntax.
+Invalid values like `"900 1100"` (exceeds 1000), `"bolder"` or `"lighter"` (relative
+weight keywords, only valid as property values), or `"400px"` (has units) cause
+browsers to reject the entire `@font-face` block or apply unpredictable fallback
+behaviour. These errors are usually the result of copy-paste from `font-weight`
+property values (used in selectors) or misunderstanding the descriptor syntax.
 
 ## ❌ Incorrect
 
@@ -43,10 +43,10 @@ misunderstanding the descriptor syntax.
 ```
 
 ```css
-/* Invalid keyword: "bold" is a property value, not a descriptor value */
+/* Invalid keyword: "bolder" is a relative property value, not a valid descriptor value */
 @font-face {
   font-family: "Inter";
-  font-weight: bold;
+  font-weight: bolder;
   src: url("./inter.woff2") format("woff2");
 }
 ```
@@ -77,6 +77,15 @@ misunderstanding the descriptor syntax.
   font-family: "Inter";
   font-weight: normal;
   src: url("./inter.woff2") format("woff2");
+}
+```
+
+```css
+/* Keyword "bold" (equivalent to 700) */
+@font-face {
+  font-family: "Inter Bold";
+  font-weight: bold;
+  src: url("./inter-bold.woff2") format("woff2");
 }
 ```
 

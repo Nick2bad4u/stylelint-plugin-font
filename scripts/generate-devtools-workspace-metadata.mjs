@@ -342,12 +342,14 @@ export function runCli({
 
         return result;
     } catch (error) {
-        const message =
-            error instanceof Error
-                ? error.message
-                : typeof error === "string"
-                  ? error
-                  : "Unknown error";
+        let message;
+        if (error instanceof Error) {
+            message = error.message;
+        } else if (typeof error === "string") {
+            message = error;
+        } else {
+            message = "Unknown error";
+        }
 
         logger.error(message);
         process.exitCode = 1;

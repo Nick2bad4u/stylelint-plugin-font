@@ -1,5 +1,5 @@
 import stylelint, { type RuleBase } from "stylelint";
-import { isDefined } from "ts-extras";
+import { arrayFirst, isDefined, stringSplit } from "ts-extras";
 
 import {
     createStylelintRule,
@@ -18,7 +18,7 @@ const messages: { rejected: (value: string) => string } = ruleMessages(
     ruleName,
     {
         rejected: (value: string): string =>
-            `Invalid \`font-style\` descriptor value "${value}". Valid values are: "normal", "italic", "oblique", or "oblique" with an angle like "oblique 10deg".`,
+            `Invalid \`font-style\` descriptor value "${value}". Valid values are: "normal", "italic", "oblique", "oblique <angle>" (e.g. "oblique 10deg"), or "oblique <min> <max>" for variable fonts (e.g. "oblique -90deg 90deg").`,
     }
 );
 
@@ -36,7 +36,18 @@ const docs = {
  * - "italic"
  * - "oblique"
  * - "oblique <angle>" (e.g., "oblique 10deg")
+ * - "oblique <angle> <angle>" (variable-font range, e.g., "oblique -90deg 90deg")
+ *
+ * Per CSS Fonts Level 4, `oblique` in `@font-face` accepts an optional angle or
+ * an angle range (min max) to describe the available slant range for variable
+ * fonts.
  */
+function isValidAngle(token: string): boolean {
+    // Angle: optional minus, digits with optional decimal, optional "deg" unit
+    // eslint-disable-next-line security/detect-unsafe-regex -- Pattern is safe; no ReDoS risk
+    return /^-?\d+(?:\.\d+)?(?:deg)?$/u.test(token);
+}
+
 function isValidFontStyle(value: string): boolean {
     const trimmed = value.trim().toLowerCase();
 
@@ -50,14 +61,24 @@ function isValidFontStyle(value: string): boolean {
         return true;
     }
 
-    // Oblique with angle: "oblique 10deg" or "oblique 10" (unitless degrees also valid in some contexts)
+    // Oblique with one or two angles (e.g. "oblique 10deg" or "oblique -90deg 90deg")
     if (trimmed.startsWith("oblique")) {
         const anglepart = trimmed.slice("oblique".length).trim();
+        // Split on whitespace — one or two angle tokens
+        const normalizedAnglePart = anglepart.replaceAll(/\s+/gu, " ").trim();
+        const tokens = stringSplit(normalizedAnglePart, " ");
 
-        // Angle can be like "10deg", "10", "-10deg", "-10", etc.
-        // Pattern: optional minus, one or more digits, optional decimal point with digits, optional "deg" unit
-        // eslint-disable-next-line security/detect-unsafe-regex -- Pattern is safe; no ReDoS risk
-        return /^-?\d+(?:\.\d+)?(?:deg)?$/u.test(anglepart);
+        if (tokens.length === 1) {
+            return isValidAngle(arrayFirst(tokens) ?? "");
+        }
+
+        if (tokens.length === 2) {
+            const [minAngle, maxAngle] = tokens;
+
+            return isValidAngle(minAngle ?? "") && isValidAngle(maxAngle ?? "");
+        }
+
+        return false;
     }
 
     return false;

@@ -18,7 +18,7 @@ const messages: { rejected: (value: string) => string } = ruleMessages(
     ruleName,
     {
         rejected: (value: string): string =>
-            `Invalid \`font-weight\` descriptor value "${value}". Valid values are: integers 1–1000, the keyword "normal" (equivalent to 400), or a range "MIN MAX" for variable fonts.`,
+            `Invalid \`font-weight\` descriptor value "${value}". Valid values are: integers 1–1000, the keywords "normal" (= 400) or "bold" (= 700), or a range "MIN MAX" for variable fonts.`,
     }
 );
 
@@ -32,14 +32,18 @@ const docs = {
 /**
  * Validate a `font-weight` descriptor value. Valid forms:
  *
- * - "normal" (keyword)
+ * - "normal" (keyword, equivalent to 400)
+ * - "bold" (keyword, equivalent to 700)
  * - "100" to "1000" (integer)
  * - "100 900" (range for variable fonts)
  */
 function isValidFontWeight(value: string): boolean {
     const trimmed = value.trim();
 
-    if (trimmed.toLowerCase() === "normal") {
+    if (
+        trimmed.toLowerCase() === "normal" ||
+        trimmed.toLowerCase() === "bold"
+    ) {
         return true;
     }
 

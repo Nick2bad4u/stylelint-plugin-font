@@ -19,8 +19,9 @@ The CSS Fonts specification defines a precise set of valid `font-style` values i
 `@font-face` blocks:
 
 - **Keywords:** `normal` or `italic`
-- **Oblique:** The keyword `oblique` alone, or `oblique` followed by an angle
-  (e.g., `oblique 10deg` for variable fonts that support an italic/oblique axis).
+- **Oblique:** The keyword `oblique` alone, `oblique` followed by a single angle
+  (e.g., `oblique 10deg`), or `oblique` followed by a min/max angle range
+  (e.g., `oblique -90deg 90deg`) for variable fonts that support the slant axis.
 
 Invalid values like `"bold"` (not a valid style keyword), `"italic 10deg"`
 (angle not allowed with italic), or `"slant 5"` (non-standard keywords) cause

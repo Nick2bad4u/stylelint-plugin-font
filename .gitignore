@@ -13,6 +13,10 @@
 # Docusaurus Build Directory
 /build/
 
+# TypeDoc coverage artifacts generated during docs:api
+docs/docusaurus/static/img/coverage.json
+docs/docusaurus/static/img/coverage.svg
+
 ### Docusaurus.Node Stack ###
 # Logs
 logs

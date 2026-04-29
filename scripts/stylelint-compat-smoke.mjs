@@ -588,7 +588,7 @@ export function createScenarios({ fontPluginConfigs, plugin }) {
     font-display: swap;
     font-style: normal;
     font-weight: 400;
-    src: local("Inter"), url("./fonts/inter.woff2") format("woff2");
+    src: url("https://cdn.example.com/inter.woff2") format("woff2");
 }
 
 .body-text {

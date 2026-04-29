@@ -41,6 +41,37 @@ function decodeUrlPath(pathLikeUrl: string): string {
     }
 }
 
+function getFirstDelimiterIndex(queryIndex: number, hashIndex: number): number {
+    if (queryIndex === -1 && hashIndex === -1) {
+        return -1;
+    }
+
+    if (queryIndex === -1) {
+        return hashIndex;
+    }
+
+    if (hashIndex === -1) {
+        return queryIndex;
+    }
+
+    return Math.min(queryIndex, hashIndex);
+}
+
+function getLocalResolvedPath(
+    sourceFilePath: string,
+    entry: Readonly<ReturnType<typeof parseFontSrcEntries>[number]>
+): string | undefined {
+    if (!entry.isUrl || entry.isLocal || !isDefined(entry.url)) {
+        return undefined;
+    }
+
+    if (!isLocalPathUrl(entry.url)) {
+        return undefined;
+    }
+
+    return toResolvedPath(sourceFilePath, entry.url);
+}
+
 function getSourceFilePath(root: Readonly<Root>): string | undefined {
     const sourcePath = root.source?.input.file;
 
@@ -57,6 +88,22 @@ function getSourceFilePath(root: Readonly<Root>): string | undefined {
     } catch {
         return undefined;
     }
+}
+
+function hasExistingFile(
+    cache: Map<string, boolean>,
+    resolvedPath: string
+): boolean {
+    const cached = cache.get(resolvedPath);
+
+    if (isDefined(cached)) {
+        return cached;
+    }
+
+    const hasFile = existsSync(resolvedPath);
+    cache.set(resolvedPath, hasFile);
+
+    return hasFile;
 }
 
 function isLocalPathUrl(url: string): boolean {
@@ -88,12 +135,7 @@ function isLocalPathUrl(url: string): boolean {
 function stripQueryAndFragment(url: string): string {
     const queryIndex = url.indexOf("?");
     const hashIndex = url.indexOf("#");
-    const cutIndex =
-        queryIndex === -1
-            ? hashIndex
-            : hashIndex === -1
-              ? queryIndex
-              : Math.min(queryIndex, hashIndex);
+    const cutIndex = getFirstDelimiterIndex(queryIndex, hashIndex);
 
     if (cutIndex === -1) {
         return url;
@@ -148,31 +190,24 @@ const ruleFunction: RuleBase<boolean, undefined> =
             }
 
             for (const entry of parseFontSrcEntries(srcDecl.value)) {
-                if (!entry.isUrl || entry.isLocal || !isDefined(entry.url)) {
-                    continue;
-                }
-
-                if (!isLocalPathUrl(entry.url)) {
-                    continue;
-                }
-
-                const resolvedPath = toResolvedPath(sourceFilePath, entry.url);
+                const resolvedPath = getLocalResolvedPath(
+                    sourceFilePath,
+                    entry
+                );
 
                 if (!isDefined(resolvedPath)) {
                     continue;
                 }
 
-                const hasFile =
-                    existenceCache.get(resolvedPath) ??
-                    existsSync(resolvedPath);
-                existenceCache.set(resolvedPath, hasFile);
-
-                if (hasFile) {
+                if (hasExistingFile(existenceCache, resolvedPath)) {
                     continue;
                 }
 
+                const originalUrl =
+                    entry.url ?? entry.normalizedUrl ?? entry.raw;
+
                 report({
-                    message: messages.rejected(entry.url, resolvedPath),
+                    message: messages.rejected(originalUrl, resolvedPath),
                     node: srcDecl,
                     result,
                     ruleName,

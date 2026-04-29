@@ -31,6 +31,60 @@ const docs = {
     url: createRuleDocsUrl("no-duplicate-font-family-src"),
 } as const;
 
+function getOrCreateSeenUrls(
+    urlsByFamily: Map<string, Set<string>>,
+    family: string
+): Set<string> {
+    const existing = urlsByFamily.get(family);
+
+    if (isDefined(existing)) {
+        return existing;
+    }
+
+    const created = new Set<string>();
+    urlsByFamily.set(family, created);
+
+    return created;
+}
+
+function reportDuplicateUrlsForBlock(
+    input: Readonly<{
+        family: string;
+        familyDisplayName: string;
+        result: Parameters<ReturnType<RuleBase<boolean, undefined>>>[1];
+        seenUrls: Set<string>;
+        srcDecl: NonNullable<
+            ReturnType<typeof collectFontFaceBlocks>[number]["srcDecl"]
+        >;
+    }>
+): void {
+    const { family, familyDisplayName, result, seenUrls, srcDecl } = input;
+
+    for (const entry of parseFontSrcEntries(srcDecl.value)) {
+        if (!entry.isUrl || !isDefined(entry.normalizedUrl)) {
+            continue;
+        }
+
+        const normalizedUrl = entry.normalizedUrl;
+
+        if (!setHas(seenUrls, normalizedUrl)) {
+            seenUrls.add(normalizedUrl);
+            continue;
+        }
+
+        report({
+            message: messages.rejected(
+                entry.url ?? normalizedUrl,
+                familyDisplayName
+            ),
+            node: srcDecl,
+            result,
+            ruleName,
+            word: family.length > 0 ? normalizedUrl : entry.raw,
+        });
+    }
+}
+
 const ruleFunction: RuleBase<boolean, undefined> =
     (primary) => (root, result) => {
         const isValid = validateOptions(result, ruleName, {
@@ -59,39 +113,13 @@ const ruleFunction: RuleBase<boolean, undefined> =
 
             const family = block.familyNameLower;
 
-            if (!urlsByFamily.has(family)) {
-                urlsByFamily.set(family, new Set<string>());
-            }
-
-            const seenUrls = urlsByFamily.get(family);
-
-            if (!isDefined(seenUrls)) {
-                // Should never happen — we ensured the key exists above.
-                continue;
-            }
-
-            for (const entry of parseFontSrcEntries(block.srcDecl.value)) {
-                if (!entry.isUrl || !isDefined(entry.normalizedUrl)) {
-                    continue;
-                }
-
-                const normalizedUrl = entry.normalizedUrl;
-
-                if (setHas(seenUrls, normalizedUrl)) {
-                    report({
-                        message: messages.rejected(
-                            entry.url ?? normalizedUrl,
-                            block.familyName ?? family
-                        ),
-                        node: block.srcDecl,
-                        result,
-                        ruleName,
-                        word: normalizedUrl,
-                    });
-                } else {
-                    seenUrls.add(normalizedUrl);
-                }
-            }
+            reportDuplicateUrlsForBlock({
+                family,
+                familyDisplayName: block.familyName ?? family,
+                result,
+                seenUrls: getOrCreateSeenUrls(urlsByFamily, family),
+                srcDecl: block.srcDecl,
+            });
         }
     };
 

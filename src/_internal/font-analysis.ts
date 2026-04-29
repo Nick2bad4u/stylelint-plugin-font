@@ -31,6 +31,7 @@ export type FontSrcEntry = Readonly<{
     normalizedFormat: string | undefined;
     normalizedUrl: string | undefined;
     raw: string;
+    url: string | undefined;
 }>;
 
 /** Mutable parser state for comma-list splitting. */
@@ -202,8 +203,9 @@ export function parseFontSrcEntries(value: string): readonly FontSrcEntry[] {
     return splitCommaList(value).map((segment) => {
         const rawSegment = segment.text;
         const normalized = rawSegment.toLowerCase();
+        const url = getUrlValue(rawSegment);
         const normalizedFormat = getFormatHint(rawSegment);
-        const normalizedUrl = getUrlValue(rawSegment);
+        const normalizedUrl = url?.toLowerCase();
 
         return {
             hasFormatHint: isDefined(normalizedFormat),
@@ -213,6 +215,7 @@ export function parseFontSrcEntries(value: string): readonly FontSrcEntry[] {
             normalizedFormat,
             normalizedUrl: normalizedUrl?.toLowerCase(),
             raw: rawSegment,
+            url,
         };
     });
 }

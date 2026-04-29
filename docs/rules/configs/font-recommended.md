@@ -22,13 +22,16 @@ It includes declaration correctness, `src` ordering/format guidance, duplicate d
 | [`no-data-uri-src`](../no-data-uri-src.md) | — | Disallow `data:` URL font sources in `@font-face src`. |
 | [`no-duplicate-descriptors-in-font-face`](../no-duplicate-descriptors-in-font-face.md) | — | Disallow duplicate descriptor declarations within a single `@font-face` block. |
 | [`no-duplicate-font-face`](../no-duplicate-font-face.md) | — | Disallow duplicate `@font-face` blocks that share the same `font-family` + `font-style` + `font-weight` variant. |
+| [`no-duplicate-font-family-src`](../no-duplicate-font-family-src.md) | — | Disallow duplicate `src` URLs across `@font-face` blocks that share the same `font-family` name. |
 | [`no-duplicate-src-format`](../no-duplicate-src-format.md) | — | Disallow duplicate explicit `format()` hints within a single `@font-face src` declaration. |
 | [`no-empty-font-face`](../no-empty-font-face.md) | — | Disallow empty `@font-face` declaration blocks that contain no descriptors. |
 | [`no-font-face-in-selectors`](../no-font-face-in-selectors.md) | — | Disallow `@font-face` rules nested inside regular CSS selectors. |
 | [`no-generic-family-in-font-face`](../no-generic-family-in-font-face.md) | — | Disallow CSS generic family keywords as `font-family` descriptor values inside `@font-face` blocks. |
 | [`no-http-font-url`](../no-http-font-url.md) | — | Disallow plain `http://` URLs in `@font-face src` declarations. |
+| [`no-invalid-font-display`](../no-invalid-font-display.md) | — | Disallow invalid `font-display` descriptor values in `@font-face` blocks. |
 | [`no-invalid-font-style`](../no-invalid-font-style.md) | — | Disallow invalid `font-style` descriptor values in `@font-face` blocks. |
 | [`no-invalid-font-weight`](../no-invalid-font-weight.md) | — | Disallow invalid `font-weight` descriptor values in `@font-face` blocks. |
+| [`no-invalid-unicode-range`](../no-invalid-unicode-range.md) | — | Disallow invalid `unicode-range` descriptor values in `@font-face` blocks. |
 | [`no-legacy-formats`](../no-legacy-formats.md) | 🔧 | Disallow legacy `@font-face` formats (`eot`, `svg`, `truetype`) in modern projects. |
 | [`no-missing-fallback-before-web-font`](../no-missing-fallback-before-web-font.md) | — | Disallow web-font-first `font-family` stacks that omit a fallback family. |
 | [`no-overlapping-unicode-range`](../no-overlapping-unicode-range.md) | — | Disallow overlapping `unicode-range` subsets across `@font-face` blocks that share the same family/style/weight tuple. |

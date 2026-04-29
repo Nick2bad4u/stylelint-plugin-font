@@ -16,6 +16,7 @@ import {
 
 const { report, ruleMessages, validateOptions } = stylelint.utils;
 const ruleName = createRuleName("no-http-font-url");
+const httpScheme = "http:";
 
 const messages: { rejected: (url: string) => string } = ruleMessages(ruleName, {
     rejected: (url: string): string =>
@@ -53,7 +54,7 @@ const ruleFunction: RuleBase<boolean, undefined> =
 
                     return (
                         isDefined(url) &&
-                        url.toLowerCase().startsWith("https://")
+                        url.toLowerCase().startsWith(`${httpScheme}//`)
                     );
                 }
             );
@@ -62,7 +63,8 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 continue;
             }
 
-            const offendingUrl = violatingEntry.normalizedUrl ?? "https://";
+            const offendingUrl =
+                violatingEntry.normalizedUrl ?? `${httpScheme}//`;
 
             report({
                 message: messages.rejected(offendingUrl),

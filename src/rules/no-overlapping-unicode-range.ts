@@ -1,7 +1,7 @@
 import type { AtRule } from "postcss";
 
 import stylelint, { type RuleBase } from "stylelint";
-import { isDefined, isEmpty, isFinite, setHas, stringSplit } from "ts-extras";
+import { isDefined, setHas } from "ts-extras";
 
 import {
     createStylelintRule,
@@ -15,6 +15,11 @@ import {
     createRuleDocsUrl,
     createRuleName,
 } from "../_internal/plugin-constants.js";
+import {
+    hasOverlappingIntervals,
+    parseUnicodeRangeSet,
+    type UnicodeRangeSet,
+} from "../_internal/unicode-range.js";
 
 const { report, ruleMessages, validateOptions } = stylelint.utils;
 const ruleName = createRuleName("no-overlapping-unicode-range");
@@ -30,16 +35,6 @@ const docs = {
     recommended: true,
     url: createRuleDocsUrl("no-overlapping-unicode-range"),
 } as const;
-
-type UnicodeInterval = Readonly<{
-    end: number;
-    start: number;
-}>;
-
-type UnicodeRangeSet = Readonly<{
-    displayValue: string;
-    intervals: readonly UnicodeInterval[];
-}>;
 
 const ruleFunction: RuleBase<boolean, undefined> =
     (primary) => (root, result) => {
@@ -126,117 +121,10 @@ type FaceEntry = Readonly<{
 }>;
 
 function hasOverlappingInterval(
-    leftIntervals: readonly UnicodeInterval[],
-    rightIntervals: readonly UnicodeInterval[]
+    leftIntervals: Readonly<UnicodeRangeSet>["intervals"],
+    rightIntervals: Readonly<UnicodeRangeSet>["intervals"]
 ): boolean {
-    for (const left of leftIntervals) {
-        for (const right of rightIntervals) {
-            if (left.start <= right.end && right.start <= left.end) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-function isValidUnicodePart(token: string): boolean {
-    if (token.length === 0 || token.length > 6) {
-        return false;
-    }
-
-    for (const character of token) {
-        const isHex =
-            (character >= "0" && character <= "9") ||
-            (character >= "A" && character <= "F");
-
-        if (!isHex && character !== "?") {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-function parseUnicodeRangeSet(value: string): undefined | UnicodeRangeSet {
-    const intervals: UnicodeInterval[] = [];
-
-    for (const token of stringSplit(value, ",")) {
-        const parsedInterval = parseUnicodeRangeToken(token.trim());
-
-        if (!isDefined(parsedInterval)) {
-            return undefined;
-        }
-
-        intervals.push(parsedInterval);
-    }
-
-    if (isEmpty(intervals)) {
-        return undefined;
-    }
-
-    return {
-        displayValue: value.trim(),
-        intervals,
-    };
-}
-
-function parseUnicodeRangeToken(token: string): undefined | UnicodeInterval {
-    const normalized = token.trim().toUpperCase();
-
-    if (!normalized.startsWith("U+")) {
-        return undefined;
-    }
-
-    const body = normalized.slice(2);
-    const separatorIndex = body.indexOf("-");
-    const hasRange = separatorIndex !== -1;
-    const startToken = hasRange ? body.slice(0, separatorIndex) : body;
-    const endToken = hasRange ? body.slice(separatorIndex + 1) : undefined;
-
-    if (!isValidUnicodePart(startToken)) {
-        return undefined;
-    }
-
-    if (startToken.includes("?")) {
-        if (isDefined(endToken)) {
-            return undefined;
-        }
-
-        return wildcardToInterval(startToken);
-    }
-
-    const start = Number.parseInt(startToken, 16);
-
-    if (!isFinite(start)) {
-        return undefined;
-    }
-
-    if (!isDefined(endToken)) {
-        return {
-            end: start,
-            start,
-        };
-    }
-
-    if (endToken.includes("?")) {
-        return undefined;
-    }
-
-    if (!isValidUnicodePart(endToken)) {
-        return undefined;
-    }
-
-    const end = Number.parseInt(endToken, 16);
-
-    if (!isFinite(end)) {
-        return undefined;
-    }
-
-    return {
-        end: Math.max(start, end),
-        start: Math.min(start, end),
-    };
+    return hasOverlappingIntervals(leftIntervals, rightIntervals);
 }
 
 function reportOverlapsForVariant(
@@ -291,14 +179,4 @@ function reportOverlapsForVariant(
             reportOverlap(current, previous);
         }
     }
-}
-
-function wildcardToInterval(token: string): UnicodeInterval {
-    const start = Number.parseInt(token.replaceAll("?", "0"), 16);
-    const end = Number.parseInt(token.replaceAll("?", "F"), 16);
-
-    return {
-        end,
-        start,
-    };
 }

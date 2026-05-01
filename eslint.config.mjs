@@ -5,19 +5,6 @@ const config = [
     ...nick2bad4u.configs.all,
 
     {
-        files: ["docs/docusaurus/typedoc.local.config.mjs"],
-        languageOptions: {
-            parserOptions: {
-                projectService: {
-                    allowDefaultProject: [
-                        "docs/docusaurus/typedoc.local.config.mjs",
-                    ],
-                },
-            },
-        },
-        name: "Repository override: local TypeDoc config",
-    },
-    {
         files: ["src/**/*.ts", "test/**/*.ts"],
         name: "Repository override: allow hoisted functions",
         rules: {

@@ -68,7 +68,17 @@
                 "default": "./dist/configs/font-recommended.cjs"
             }
         },
-        "./package.json": "./package.json"
+        "./package.json": "./package.json",
+        "./recommended": {
+            "import": {
+                "types": "./dist/configs/font-all.d.ts",
+                "default": "./dist/configs/font-all.js"
+            },
+            "require": {
+                "types": "./dist/configs/font-all.d.cts",
+                "default": "./dist/configs/font-all.cjs"
+            }
+        }
     },
     "main": "./dist/plugin.cjs",
     "types": "./dist/plugin.d.ts",
@@ -79,6 +89,9 @@
             ],
             "configs/font-recommended": [
                 "./dist/configs/font-recommended.d.ts"
+            ],
+            "recommended": [
+                "./dist/configs/font-all.d.ts"
             ]
         }
     },

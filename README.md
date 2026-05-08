@@ -30,6 +30,7 @@ export default {
 - `fontPluginConfigs`
 - `configNames`, `ruleNames`, `ruleIds`, `rules`, `meta`
 - config subpaths:
+  - `stylelint-plugin-font/recommended` (shorthand alias for `font-all`)
   - `stylelint-plugin-font/configs/font-recommended`
   - `stylelint-plugin-font/configs/font-all`
 
@@ -37,6 +38,7 @@ export default {
 
 - `font-recommended`
 - `font-all`
+- `recommended` — shorthand alias for `font-all` (use as `extends: ["stylelint-plugin-font/recommended"]`)
 
 ## Rules
 

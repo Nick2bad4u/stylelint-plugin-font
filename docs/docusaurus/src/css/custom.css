@@ -23,27 +23,24 @@
 /* You can override the default Infima variables here. */
 
 @font-face {
-    font-family: "NerdFontSymbols Nerd Font Symbols";
+    font-family: "Symbols Nerd Font Mono";
+    font-display: swap;
     font-style: normal;
     font-weight: 400;
-    font-display: swap;
-    src:
-        local("NerdFontSymbols Nerd Font Symbols"),
-        local("Symbols Nerd Font"),
-        url("https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@3.4.0/patched-fonts/NerdFontsSymbolsOnly/SymbolsNerdFont-Regular.ttf")
-            format("truetype");
+    src: url("https://cdn.jsdelivr.net/gh/Nick2bad4u/nerd-fonts-woff2@main/fonts/woff2/NerdFontsSymbolsOnly/SymbolsNerdFontMono-Regular.woff2")
+        format("woff2");
 }
 
-@font-face {
-    font-family: "Symbols Nerd Font Mono";
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src:
-        local("Symbols Nerd Font Mono"),
-        local("Symbols Nerd Font"),
-        url("https://cdn.jsdelivr.net/gh/ryanoasis/nerd-fonts@3.4.0/patched-fonts/NerdFontsSymbolsOnly/SymbolsNerdFont-Regular.ttf")
-            format("truetype");
+/**
+ * Utility class for icon-rich labels that rely on Nerd Font symbol glyphs.
+ *
+ * This intentionally references the custom `@font-face` family to keep
+ * symbol rendering predictable without local() fallbacks.
+ */
+.nf-symbols {
+    font-family:
+        "Symbols Nerd Font Mono", SFMono-Regular, Menlo, Consolas,
+        "Liberation Mono", "Courier New", monospace, system-ui;
 }
 
 :root {
@@ -56,8 +53,7 @@
     --ifm-color-primary-lightest: #5eead4;
     --ifm-code-font-size: 95%;
     --ifm-font-family-base:
-        "Inter var", "Inter", "Segoe UI", "NerdFontSymbols Nerd Font Symbols",
-        system-ui, -apple-system, sans-serif;
+        "Inter var", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
     --sb-accent-overview: #0891b2;
     --sb-accent-started: #0284c7;
     --sb-accent-developer: #7c3aed;

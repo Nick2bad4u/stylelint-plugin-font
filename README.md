@@ -40,6 +40,22 @@ export default {
 - `font-all`
 - `recommended` — shorthand alias for `font-all` (use as `extends: ["stylelint-plugin-font/recommended"]`)
 
+## Rule namespace
+
+All rules in this plugin use the `font/` namespace.
+
+Use rule keys like:
+
+```js
+export default {
+ rules: {
+  "font/prefer-woff2": true,
+  "font/no-legacy-formats": true,
+  "font/no-unused-font-face": null,
+ },
+};
+```
+
 ## Rules
 
 **Fix legend:**

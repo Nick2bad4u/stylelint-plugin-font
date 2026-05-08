@@ -135,7 +135,7 @@ export default function Home() {
                 <div className={`container ${styles.heroContent}`}>
                     <div className={styles.heroGrid}>
                         <div>
-                            <p className={styles.heroKicker}>
+                            <p className={`${styles.heroKicker} nf-symbols`}>
                                 {`${heroKickerIcon} Stylelint template for Docusaurus teams ${heroKickerIcon2}`}
                             </p>
                             <Heading as="h1" className={styles.heroTitle}>
@@ -169,7 +169,7 @@ export default function Home() {
                                         <p className={styles.heroBadgeLabel}>
                                             <span
                                                 aria-hidden="true"
-                                                className={styles.heroBadgeIcon}
+                                                className={`${styles.heroBadgeIcon} nf-symbols`}
                                             >
                                                 {badge.icon}
                                             </span>
@@ -223,7 +223,9 @@ export default function Home() {
                                 key={stat.headline}
                                 className={styles.heroStatCard}
                             >
-                                <p className={styles.heroStatHeading}>
+                                <p
+                                    className={`${styles.heroStatHeading} nf-symbols`}
+                                >
                                     {stat.headline}
                                 </p>
                                 <p className={styles.heroStatDescription}>
@@ -241,7 +243,9 @@ export default function Home() {
                         {homeCards.map((card) => (
                             <article key={card.title} className={styles.card}>
                                 <div className={styles.cardHeader}>
-                                    <p className={styles.cardIcon}>
+                                    <p
+                                        className={`${styles.cardIcon} nf-symbols`}
+                                    >
                                         {card.icon}
                                     </p>
                                     <Heading

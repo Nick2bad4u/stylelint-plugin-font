@@ -21,7 +21,7 @@ const ruleName = createRuleName("no-font-face-in-media-query");
  * unreliable download behavior across browsers — some browsers ignore the media
  * condition and download the font unconditionally.
  */
-const CONDITIONAL_AT_RULE_PATTERN = /^(?:container|media|supports)$/iu;
+const CONDITIONAL_AT_RULE_PATTERN = /^(?:container|media|supports)$/iv;
 
 const messages: { rejected: (wrapperName: string) => string } = ruleMessages(
     ruleName,

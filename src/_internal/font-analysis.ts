@@ -35,11 +35,11 @@ export type FontSrcEntry = Readonly<{
 }>;
 
 /** Mutable parser state for comma-list splitting. */
-type CommaSplitState = {
+interface CommaSplitState {
     depth: number;
     inDoubleQuote: boolean;
     inSingleQuote: boolean;
-};
+}
 
 /** Known generic or system fallback family names. */
 const fallbackFamilyNames = new Set([
@@ -105,14 +105,13 @@ export function getDecl(
     atRule: Readonly<AtRule>,
     prop: string
 ): Declaration | undefined {
-    let found: Declaration | undefined = undefined;
+    for (const node of atRule.nodes ?? []) {
+        if (node.type === "decl" && node.prop === prop) {
+            return node;
+        }
+    }
 
-    atRule.walkDecls(prop, (decl) => {
-        found = decl;
-        return false;
-    });
-
-    return found;
+    return undefined;
 }
 
 /** Return normalized format hint or infer it from a URL extension. */
@@ -209,9 +208,9 @@ export function parseFontSrcEntries(value: string): readonly FontSrcEntry[] {
 
         return {
             hasFormatHint: isDefined(normalizedFormat),
-            isDataUri: /^data:/iu.test(normalizedUrl ?? ""),
-            isLocal: /\blocal\s*\(/iu.test(normalized),
-            isUrl: /\burl\s*\(/iu.test(normalized),
+            isDataUri: /^data:/iv.test(normalizedUrl ?? ""),
+            isLocal: /\blocal\s*\(/iv.test(normalized),
+            isUrl: /\burl\s*\(/iv.test(normalized),
             normalizedFormat,
             normalizedUrl: normalizedUrl?.toLowerCase(),
             raw: rawSegment,

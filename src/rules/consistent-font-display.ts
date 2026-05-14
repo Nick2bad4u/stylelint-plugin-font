@@ -37,8 +37,8 @@ const ruleFunction: RuleBase<boolean, undefined> =
             return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/init-declarations -- lazily assigned via ??= in loop; unicorn/no-useless-undefined prevents = undefined
-        let baselineDisplay: string | undefined;
+        let baselineDisplay = "";
+        let hasBaselineDisplay = false;
 
         for (const block of collectFontFaceBlocks(root)) {
             const display = block.displayDecl?.value.trim().toLowerCase();
@@ -47,7 +47,11 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 continue;
             }
 
-            baselineDisplay ??= display;
+            if (!hasBaselineDisplay) {
+                baselineDisplay = display;
+                hasBaselineDisplay = true;
+                continue;
+            }
 
             if (display === baselineDisplay) {
                 continue;

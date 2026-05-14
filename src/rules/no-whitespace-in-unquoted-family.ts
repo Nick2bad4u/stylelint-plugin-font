@@ -36,7 +36,7 @@ function quoteUnquotedWhitespaceTokens(value: string): string {
         splitCommaList(value).map((segment) => {
             const raw = segment.text.trim();
 
-            if (isQuoted(raw) || !/\s/u.test(raw)) {
+            if (isQuoted(raw) || !/\s/v.test(raw)) {
                 return raw;
             }
 
@@ -61,7 +61,7 @@ const ruleFunction: RuleBase<boolean, undefined> =
             const hasViolation = splitCommaList(decl.value).some((segment) => {
                 const token = segment.text.trim();
 
-                return !isQuoted(token) && /\s/u.test(token);
+                return !isQuoted(token) && /\s/v.test(token);
             });
 
             if (!hasViolation) {

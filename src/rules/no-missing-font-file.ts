@@ -1,6 +1,6 @@
 import type { Root } from "postcss";
 
-import { existsSync } from "node:fs";
+import { access } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import stylelint, { type RuleBase } from "stylelint";
@@ -90,17 +90,24 @@ function getSourceFilePath(root: Readonly<Root>): string | undefined {
     }
 }
 
-function hasExistingFile(
+async function hasExistingFile(
     cache: Map<string, boolean>,
     resolvedPath: string
-): boolean {
+): Promise<boolean> {
     const cached = cache.get(resolvedPath);
 
     if (isDefined(cached)) {
         return cached;
     }
 
-    const hasFile = existsSync(resolvedPath);
+    let hasFile = true;
+
+    try {
+        await access(resolvedPath);
+    } catch {
+        hasFile = false;
+    }
+
     cache.set(resolvedPath, hasFile);
 
     return hasFile;
@@ -117,7 +124,7 @@ function isLocalPathUrl(url: string): boolean {
         return false;
     }
 
-    if (/^[a-z][\d+\-.a-z]*:/iu.test(normalized)) {
+    if (/^[a-z][\d+\-.a-z]*:/iv.test(normalized)) {
         return false;
     }
 
@@ -164,7 +171,7 @@ function toResolvedPath(
 }
 
 const ruleFunction: RuleBase<boolean, undefined> =
-    (primary) => (root, result) => {
+    (primary) => async (root, result) => {
         const isValid = validateOptions(result, ruleName, {
             actual: primary,
             possible: [true],
@@ -182,38 +189,58 @@ const ruleFunction: RuleBase<boolean, undefined> =
 
         const existenceCache = new Map<string, boolean>();
 
-        for (const block of collectFontFaceBlocks(root)) {
-            const srcDecl = block.srcDecl;
+        const missingEntryGroups = await Promise.all(
+            collectFontFaceBlocks(root).map(async (block) => {
+                const srcDecl = block.srcDecl;
 
-            if (!isDefined(srcDecl)) {
-                continue;
-            }
+                if (!isDefined(srcDecl)) {
+                    return [];
+                }
 
-            for (const entry of parseFontSrcEntries(srcDecl.value)) {
-                const resolvedPath = getLocalResolvedPath(
-                    sourceFilePath,
-                    entry
+                const maybeEntries = await Promise.all(
+                    parseFontSrcEntries(srcDecl.value).map(async (entry) => {
+                        const resolvedPath = getLocalResolvedPath(
+                            sourceFilePath,
+                            entry
+                        );
+
+                        if (!isDefined(resolvedPath)) {
+                            return undefined;
+                        }
+
+                        if (
+                            await hasExistingFile(existenceCache, resolvedPath)
+                        ) {
+                            return undefined;
+                        }
+
+                        return {
+                            originalUrl:
+                                entry.url ?? entry.normalizedUrl ?? entry.raw,
+                            resolvedPath,
+                            srcDecl,
+                            word: entry.raw,
+                        };
+                    })
                 );
 
-                if (!isDefined(resolvedPath)) {
-                    continue;
-                }
+                return maybeEntries.filter(isDefined);
+            })
+        );
 
-                if (hasExistingFile(existenceCache, resolvedPath)) {
-                    continue;
-                }
+        const missingEntries = missingEntryGroups.flat();
 
-                const originalUrl =
-                    entry.url ?? entry.normalizedUrl ?? entry.raw;
-
-                report({
-                    message: messages.rejected(originalUrl, resolvedPath),
-                    node: srcDecl,
-                    result,
-                    ruleName,
-                    word: entry.raw,
-                });
-            }
+        for (const entry of missingEntries) {
+            report({
+                message: messages.rejected(
+                    entry.originalUrl,
+                    entry.resolvedPath
+                ),
+                node: entry.srcDecl,
+                result,
+                ruleName,
+                word: entry.word,
+            });
         }
     };
 

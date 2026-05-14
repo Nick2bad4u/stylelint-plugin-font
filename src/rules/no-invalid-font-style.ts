@@ -45,7 +45,7 @@ const docs = {
 function isValidAngle(token: string): boolean {
     // Angle: optional minus, digits with optional decimal, optional "deg" unit
     // eslint-disable-next-line security/detect-unsafe-regex -- Pattern is safe; no ReDoS risk
-    return /^-?\d+(?:\.\d+)?(?:deg)?$/u.test(token);
+    return /^-?\d+(?:\.\d+)?(?:deg)?$/v.test(token);
 }
 
 function isValidFontStyle(value: string): boolean {
@@ -65,7 +65,7 @@ function isValidFontStyle(value: string): boolean {
     if (trimmed.startsWith("oblique")) {
         const anglepart = trimmed.slice("oblique".length).trim();
         // Split on whitespace — one or two angle tokens
-        const normalizedAnglePart = anglepart.replaceAll(/\s+/gu, " ").trim();
+        const normalizedAnglePart = anglepart.replaceAll(/\s+/gv, " ").trim();
         const tokens = stringSplit(normalizedAnglePart, " ");
 
         if (tokens.length === 1) {

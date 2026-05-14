@@ -19,6 +19,15 @@ const config = [
                     variables: true,
                 },
             ],
+            "no-use-before-define": [
+                "error",
+                {
+                    allowNamedExports: false,
+                    classes: true,
+                    functions: false,
+                    variables: true,
+                },
+            ],
         },
     },
 ];

@@ -66,7 +66,7 @@ const subsetTokens = new Set([
 
 function getSubsetTokenFromUrl(url: string): string | undefined {
     const urlWithoutQuery = stripQueryAndFragment(url).toLowerCase();
-    const normalized = urlWithoutQuery.replaceAll(/[^a-z]+/gu, " ").trim();
+    const normalized = urlWithoutQuery.replaceAll(/[^a-z]+/gv, " ").trim();
     const tokens = stringSplit(normalized, " ");
 
     for (const token of tokens) {

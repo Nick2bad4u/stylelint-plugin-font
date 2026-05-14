@@ -17,7 +17,7 @@ export const DOCS_SITE_URL =
 /** Base URL for authored rule documentation. */
 export const DOCS_RULES_BASE_URL: `${string}/docs/rules` = `${DOCS_SITE_URL}/docs/rules`;
 /** Supported shareable config names exported by this package. */
-export const CONFIG_NAMES = ["font-recommended", "font-all"] as const;
+export const CONFIG_NAMES = ["font-all", "font-recommended"] as const;
 
 /** Shareable config names exported by the plugin runtime. */
 export type FontConfigName = (typeof CONFIG_NAMES)[number];

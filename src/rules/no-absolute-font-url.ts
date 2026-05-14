@@ -49,7 +49,7 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 (entry) => {
                     const url = entry.normalizedUrl;
 
-                    return isDefined(url) && /^\/(?!\/)/u.test(url);
+                    return isDefined(url) && /^\/(?!\/)/v.test(url);
                 }
             );
 

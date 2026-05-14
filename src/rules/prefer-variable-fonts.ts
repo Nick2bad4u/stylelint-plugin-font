@@ -17,7 +17,7 @@ import {
 } from "../_internal/plugin-constants.js";
 
 const { report, ruleMessages, validateOptions } = stylelint.utils;
-const variableWeightPattern = /^\s*\d+\s+\d+\s*$/u;
+const variableWeightPattern = /^\s*\d+\s+\d+\s*$/v;
 const ruleName = createRuleName("prefer-variable-fonts");
 const messages: { rejected: (family: string) => string } = ruleMessages(
     ruleName,

@@ -330,6 +330,20 @@ export async function runStylelint16Compat({
 
     await runCleanupStep(
         cleanupErrors,
+        "Failed to restore dependencies after the Stylelint 16 compatibility check.",
+        () => {
+            runCommandFn({
+                ...createRestoreDependenciesCommand({
+                    npmCommand,
+                    platform,
+                }),
+                repositoryRootPath: targetRepositoryRootPath,
+                windowsCommandShell,
+            });
+        }
+    );
+    await runCleanupStep(
+        cleanupErrors,
         "Failed to restore package.json after the Stylelint 16 compatibility check.",
         async () => {
             await cpFn(packageJsonBackupPath, targetPackageJsonPath, {
@@ -343,20 +357,6 @@ export async function runStylelint16Compat({
         async () => {
             await cpFn(packageLockBackupPath, targetPackageLockJsonPath, {
                 force: true,
-            });
-        }
-    );
-    await runCleanupStep(
-        cleanupErrors,
-        "Failed to restore dependencies after the Stylelint 16 compatibility check.",
-        () => {
-            runCommandFn({
-                ...createRestoreDependenciesCommand({
-                    npmCommand,
-                    platform,
-                }),
-                repositoryRootPath: targetRepositoryRootPath,
-                windowsCommandShell,
             });
         }
     );

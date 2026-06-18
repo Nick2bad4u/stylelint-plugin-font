@@ -615,7 +615,12 @@ const config = {
             title: "stylelint-plugin-font",
         },
         prism: {
-            additionalLanguages: ["bash", "json", "yaml", "typescript"],
+            additionalLanguages: [
+                "bash",
+                "json",
+                "yaml",
+                "typescript",
+            ],
             darkTheme: prismThemes.dracula,
             defaultLanguage: "typescript",
             theme: prismThemes.github,

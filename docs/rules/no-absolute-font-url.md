@@ -20,7 +20,7 @@ Relative URLs are safer across GitHub Pages paths, reverse proxies, and nested a
 
 ```css
 @font-face {
-  src: url("/fonts/inter.woff2") format("woff2");
+ src: url("/fonts/inter.woff2") format("woff2");
 }
 ```
 
@@ -28,7 +28,7 @@ Relative URLs are safer across GitHub Pages paths, reverse proxies, and nested a
 
 ```css
 @font-face {
-  src: url("./fonts/inter.woff2") format("woff2");
+ src: url("./fonts/inter.woff2") format("woff2");
 }
 ```
 

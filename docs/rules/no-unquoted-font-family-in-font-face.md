@@ -42,8 +42,8 @@ practice.
 ```css
 /* Unquoted — fragile and potentially ambiguous */
 @font-face {
-  font-family: Inter;
-  src: url("./inter.woff2") format("woff2");
+ font-family: Inter;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -52,8 +52,8 @@ practice.
 ```css
 /* Quoted — unambiguous, safe against keyword conflicts */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -63,10 +63,14 @@ When `--fix` is supplied, this rule wraps the unquoted value in double quotes:
 
 ```css
 /* Before */
-@font-face { font-family: MyFont; }
+@font-face {
+ font-family: MyFont;
+}
 
 /* After */
-@font-face { font-family: "MyFont"; }
+@font-face {
+ font-family: "MyFont";
+}
 ```
 
 ## Stylelint config example

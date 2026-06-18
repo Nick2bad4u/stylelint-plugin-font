@@ -50,8 +50,10 @@ pixel-perfect, reproducible rendering is required.
 ```css
 /* local() lookup is unpredictable across OS/version */
 @font-face {
-  font-family: "Inter";
-  src: local("Inter"), url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src:
+  local("Inter"),
+  url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -60,9 +62,10 @@ pixel-perfect, reproducible rendering is required.
 ```css
 /* URL-only source list — predictable across all user environments */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2"),
-       url("./inter.woff") format("woff");
+ font-family: "Inter";
+ src:
+  url("./inter.woff2") format("woff2"),
+  url("./inter.woff") format("woff");
 }
 ```
 

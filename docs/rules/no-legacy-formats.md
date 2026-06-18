@@ -20,7 +20,9 @@ Legacy formats add payload and maintenance complexity without useful modern cove
 
 ```css
 @font-face {
-  src: url("./inter.ttf") format("truetype"), url("./inter.woff2") format("woff2");
+ src:
+  url("./inter.ttf") format("truetype"),
+  url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -28,7 +30,9 @@ Legacy formats add payload and maintenance complexity without useful modern cove
 
 ```css
 @font-face {
-  src: url("./inter.woff2") format("woff2"), url("./inter.woff") format("woff");
+ src:
+  url("./inter.woff2") format("woff2"),
+  url("./inter.woff") format("woff");
 }
 ```
 

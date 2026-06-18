@@ -20,7 +20,9 @@ Ordering `woff2` first helps capable browsers select the smallest supported file
 
 ```css
 @font-face {
-  src: url("./inter.woff") format("woff"), url("./inter.woff2") format("woff2");
+ src:
+  url("./inter.woff") format("woff"),
+  url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -28,7 +30,9 @@ Ordering `woff2` first helps capable browsers select the smallest supported file
 
 ```css
 @font-face {
-  src: url("./inter.woff2") format("woff2"), url("./inter.woff") format("woff");
+ src:
+  url("./inter.woff2") format("woff2"),
+  url("./inter.woff") format("woff");
 }
 ```
 

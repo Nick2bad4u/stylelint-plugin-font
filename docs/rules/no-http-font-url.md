@@ -35,8 +35,8 @@ self-hosted assets.
 ```css
 /* Plain HTTP — blocked as mixed content on HTTPS pages */
 @font-face {
-  font-family: "Inter";
-  src: url("http://fonts.example.com/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("http://fonts.example.com/inter.woff2") format("woff2");
 }
 ```
 
@@ -45,16 +45,16 @@ self-hosted assets.
 ```css
 /* HTTPS — secure and safe */
 @font-face {
-  font-family: "Inter";
-  src: url("https://fonts.example.com/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("https://fonts.example.com/inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Relative path — even better for self-hosted fonts */
 @font-face {
-  font-family: "Inter";
-  src: url("./fonts/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./fonts/inter.woff2") format("woff2");
 }
 ```
 

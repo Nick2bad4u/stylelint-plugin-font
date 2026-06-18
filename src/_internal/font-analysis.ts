@@ -105,7 +105,9 @@ export function getDecl(
     atRule: Readonly<AtRule>,
     prop: string
 ): Declaration | undefined {
-    for (const node of atRule.nodes ?? []) {
+    const nodes = atRule.nodes ?? [];
+
+    for (const node of nodes) {
         if (node.type === "decl" && node.prop === prop) {
             return node;
         }
@@ -241,7 +243,7 @@ export function splitCommaList(value: string): readonly CommaSegment[] {
             continue;
         }
 
-        if (handleStructuralCharacter(state, character)) {
+        if (shouldConsumeStructuralCharacter(state, character)) {
             continue;
         }
 
@@ -346,7 +348,7 @@ function getUrlValue(segment: string): string | undefined {
 }
 
 /** Apply parser depth updates for structural characters. */
-function handleStructuralCharacter(
+function shouldConsumeStructuralCharacter(
     // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types -- CommaSplitState is intentionally mutable
     state: CommaSplitState,
     character: string

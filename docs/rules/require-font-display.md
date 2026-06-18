@@ -20,8 +20,8 @@ Missing `font-display` can cause FOIT and inconsistent text paint behavior.
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -29,9 +29,9 @@ Missing `font-display` can cause FOIT and inconsistent text paint behavior.
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-display: swap;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-display: swap;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 

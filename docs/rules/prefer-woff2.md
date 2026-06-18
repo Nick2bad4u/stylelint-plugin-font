@@ -20,7 +20,7 @@ Require at least one `woff2` source in each `@font-face` `src` list.
 
 ```css
 @font-face {
-  src: url("./inter.woff") format("woff");
+ src: url("./inter.woff") format("woff");
 }
 ```
 
@@ -28,7 +28,9 @@ Require at least one `woff2` source in each `@font-face` `src` list.
 
 ```css
 @font-face {
-  src: url("./inter.woff2") format("woff2"), url("./inter.woff") format("woff");
+ src:
+  url("./inter.woff2") format("woff2"),
+  url("./inter.woff") format("woff");
 }
 ```
 

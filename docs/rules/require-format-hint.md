@@ -20,7 +20,7 @@ Format hints let browsers skip unsupported probes and improve source selection e
 
 ```css
 @font-face {
-  src: url("./inter.woff2");
+ src: url("./inter.woff2");
 }
 ```
 
@@ -28,7 +28,7 @@ Format hints let browsers skip unsupported probes and improve source selection e
 
 ```css
 @font-face {
-  src: url("./inter.woff2") format("woff2");
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 

@@ -20,9 +20,9 @@ Range partitioning prevents unnecessary glyph downloads for large families.
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  src: url("./inter-400.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400;
+ src: url("./inter-400.woff2") format("woff2");
 }
 ```
 
@@ -30,10 +30,10 @@ Range partitioning prevents unnecessary glyph downloads for large families.
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  unicode-range: U+0000-00FF;
-  src: url("./inter-400.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400;
+ unicode-range: U+0000-00FF;
+ src: url("./inter-400.woff2") format("woff2");
 }
 ```
 

@@ -20,7 +20,7 @@ Inlining fonts grows stylesheet size and delays parsing.
 
 ```css
 @font-face {
-  src: url("data:font/woff2;base64,AAAA") format("woff2");
+ src: url("data:font/woff2;base64,AAAA") format("woff2");
 }
 ```
 
@@ -28,7 +28,7 @@ Inlining fonts grows stylesheet size and delays parsing.
 
 ```css
 @font-face {
-  src: url("./inter.woff2") format("woff2");
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 

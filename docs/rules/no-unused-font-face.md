@@ -25,20 +25,20 @@ Unused `@font-face` blocks accumulate over time as designs change but old declar
 ```css
 /* @font-face is declared but no rule ever sets font-family: "Inter" */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 
 .title {
-  font-family: "Roboto", system-ui;
+ font-family: "Roboto", system-ui;
 }
 ```
 
 ```css
 /* Standalone @font-face file with no matching usage */
 @font-face {
-  font-family: "Old Font";
-  src: url("./old-font.woff2") format("woff2");
+ font-family: "Old Font";
+ src: url("./old-font.woff2") format("woff2");
 }
 ```
 
@@ -46,12 +46,12 @@ Unused `@font-face` blocks accumulate over time as designs change but old declar
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 
 .title {
-  font-family: "Inter", system-ui;
+ font-family: "Inter", system-ui;
 }
 ```
 
@@ -59,16 +59,16 @@ Unused `@font-face` blocks accumulate over time as designs change but old declar
 /* CSS custom property — the variable may resolve to "Inter" at runtime,
    so the @font-face block is not flagged */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 
 :root {
-  --brand-font: "Inter";
+ --brand-font: "Inter";
 }
 
 .title {
-  font-family: var(--brand-font), system-ui;
+ font-family: var(--brand-font), system-ui;
 }
 ```
 
@@ -78,10 +78,10 @@ Unused `@font-face` blocks accumulate over time as designs change but old declar
 import fontPlugin from "stylelint-plugin-font";
 
 export default {
-  plugins: [...fontPlugin],
-  rules: {
-    "font/no-unused-font-face": true,
-  },
+ plugins: [...fontPlugin],
+ rules: {
+  "font/no-unused-font-face": true,
+ },
 };
 ```
 

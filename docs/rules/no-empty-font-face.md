@@ -26,13 +26,14 @@ This pattern almost always indicates one of:
 
 ```css
 /* Completely empty — no descriptors, zero effect */
-@font-face {}
+@font-face {
+}
 ```
 
 ```css
 /* Only a comment — still no declarations */
 @font-face {
-  /* TODO: add font source */
+ /* TODO: add font source */
 }
 ```
 
@@ -40,8 +41,8 @@ This pattern almost always indicates one of:
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 

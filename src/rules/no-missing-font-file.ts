@@ -1,7 +1,8 @@
 import type { Root } from "postcss";
+import type { ArrayElement } from "type-fest";
 
 import { access } from "node:fs/promises";
-import path from "node:path";
+import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import stylelint, { type RuleBase } from "stylelint";
 import { isDefined } from "ts-extras";
@@ -59,7 +60,7 @@ function getFirstDelimiterIndex(queryIndex: number, hashIndex: number): number {
 
 function getLocalResolvedPath(
     sourceFilePath: string,
-    entry: Readonly<ReturnType<typeof parseFontSrcEntries>[number]>
+    entry: Readonly<ArrayElement<ReturnType<typeof parseFontSrcEntries>>>
 ): string | undefined {
     if (!entry.isUrl || entry.isLocal || !isDefined(entry.url)) {
         return undefined;

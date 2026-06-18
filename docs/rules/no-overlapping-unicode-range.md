@@ -21,19 +21,19 @@ Subset ranges are usually intended to partition glyph coverage (for example Lati
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF;
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter-latin.woff2") format("woff2");
+ unicode-range: U+0000-00FF;
 }
 
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter-latin-ext.woff2") format("woff2");
-  unicode-range: U+00A0-024F;
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter-latin-ext.woff2") format("woff2");
+ unicode-range: U+00A0-024F;
 }
 ```
 
@@ -41,19 +41,19 @@ Subset ranges are usually intended to partition glyph coverage (for example Lati
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF;
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter-latin.woff2") format("woff2");
+ unicode-range: U+0000-00FF;
 }
 
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-024F;
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter-latin-ext.woff2") format("woff2");
+ unicode-range: U+0100-024F;
 }
 ```
 

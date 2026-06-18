@@ -36,27 +36,27 @@ These errors usually arise from confusion between `font-style` property values
 ```css
 /* "bold" is not a valid style keyword — it is a weight keyword */
 @font-face {
-  font-family: "Inter";
-  font-style: bold;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: bold;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Angle is not allowed with "italic" */
 @font-face {
-  font-family: "Inter";
-  font-style: italic 10deg;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: italic 10deg;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Unrecognized keyword "slant" */
 @font-face {
-  font-family: "Inter";
-  font-style: slant 5;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: slant 5;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -65,27 +65,27 @@ These errors usually arise from confusion between `font-style` property values
 ```css
 /* Simple keyword: "normal" or "italic" */
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  src: url("./inter-normal.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: normal;
+ src: url("./inter-normal.woff2") format("woff2");
 }
 ```
 
 ```css
 /* "italic" for italic font */
 @font-face {
-  font-family: "Inter";
-  font-style: italic;
-  src: url("./inter-italic.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: italic;
+ src: url("./inter-italic.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Oblique with an angle (variable fonts) */
 @font-face {
-  font-family: "Inter Variable";
-  font-style: oblique 0deg 15deg;
-  src: url("./inter-variable.woff2") format("woff2-variations");
+ font-family: "Inter Variable";
+ font-style: oblique 0deg 15deg;
+ src: url("./inter-variable.woff2") format("woff2-variations");
 }
 ```
 

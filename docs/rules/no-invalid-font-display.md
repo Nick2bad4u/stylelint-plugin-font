@@ -30,17 +30,17 @@ Because this failure mode is silent at runtime, a dedicated lint rule catches mi
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-display: fast;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-display: fast;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-display: swapy;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-display: swapy;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -48,17 +48,17 @@ Because this failure mode is silent at runtime, a dedicated lint rule catches mi
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-display: swap;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-display: swap;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-display: optional;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-display: optional;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -68,12 +68,12 @@ Because this failure mode is silent at runtime, a dedicated lint rule catches mi
 import fontPlugin, { fontPluginConfigs } from "stylelint-plugin-font";
 
 export default {
-  ...fontPluginConfigs["font-recommended"],
-  plugins: [...fontPlugin],
-  rules: {
-    ...fontPluginConfigs["font-recommended"].rules,
-    "font/no-invalid-font-display": true,
-  },
+ ...fontPluginConfigs["font-recommended"],
+ plugins: [...fontPlugin],
+ rules: {
+  ...fontPluginConfigs["font-recommended"].rules,
+  "font/no-invalid-font-display": true,
+ },
 };
 ```
 

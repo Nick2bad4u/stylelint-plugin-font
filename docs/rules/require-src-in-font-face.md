@@ -23,10 +23,10 @@ Unlike most missing-descriptor rules this failure is absolute: there is no fallb
 ```css
 /* src omitted entirely — @font-face block has no effect */
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+ font-family: "Inter";
+ font-weight: 400;
+ font-style: normal;
+ font-display: swap;
 }
 ```
 
@@ -34,11 +34,11 @@ Unlike most missing-descriptor rules this failure is absolute: there is no fallb
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  src: url("./inter-regular.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400;
+ font-style: normal;
+ font-display: swap;
+ src: url("./inter-regular.woff2") format("woff2");
 }
 ```
 

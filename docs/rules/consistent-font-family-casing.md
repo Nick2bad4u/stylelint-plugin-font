@@ -20,11 +20,11 @@ Casing drift hides duplicates and makes font-face inventory harder to audit.
 
 ```css
 @font-face {
-  font-family: "Inter";
+ font-family: "Inter";
 }
 
 @font-face {
-  font-family: "inter";
+ font-family: "inter";
 }
 ```
 
@@ -32,11 +32,11 @@ Casing drift hides duplicates and makes font-face inventory harder to audit.
 
 ```css
 @font-face {
-  font-family: "Inter";
+ font-family: "Inter";
 }
 
 @font-face {
-  font-family: "Inter";
+ font-family: "Inter";
 }
 ```
 

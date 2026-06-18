@@ -381,6 +381,7 @@ const cases: readonly RuleCase[] = [
     },
     {
         accept: '@font-face{font-family:"Inter";src:url("https://fonts.example.com/inter.woff2") format("woff2");}',
+        // eslint-disable-next-line unicorn/prefer-https -- this rule fixture intentionally exercises plain HTTP.
         reject: '@font-face{font-family:"Inter";src:url("http://fonts.example.com/inter.woff2") format("woff2");}',
         ruleId: "font/no-http-font-url",
     },
@@ -403,7 +404,10 @@ describe("font plugin rules", () => {
         expect(ruleIds).toHaveLength(40);
         expect(ruleIds).toContain("font/require-font-display");
         expect(ruleIds).toContain("font/no-duplicate-font-face");
-        expect(fontPluginConfigs["font-recommended"].rules).toBeDefined();
+        expect(ruleIds).not.toContain("font/not-a-real-rule");
+        expect(fontPluginConfigs["font-recommended"].rules).toBeTypeOf(
+            "object"
+        );
     });
 
     it.each(cases)("$ruleId accepts compliant code", async (testCase) => {

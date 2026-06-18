@@ -20,9 +20,9 @@ Explicit style declarations make face selection deterministic across normal and 
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -30,10 +30,10 @@ Explicit style declarations make face selection deterministic across normal and 
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 

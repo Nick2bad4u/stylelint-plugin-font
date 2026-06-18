@@ -36,27 +36,27 @@ property values (used in selectors) or misunderstanding the descriptor syntax.
 ```css
 /* Out of range: 1100 exceeds the max of 1000 */
 @font-face {
-  font-family: "Inter";
-  font-weight: 900 1100;
-  src: url("./inter-variable.woff2") format("woff2-variations");
+ font-family: "Inter";
+ font-weight: 900 1100;
+ src: url("./inter-variable.woff2") format("woff2-variations");
 }
 ```
 
 ```css
 /* Invalid keyword: "bolder" is a relative property value, not a valid descriptor value */
 @font-face {
-  font-family: "Inter";
-  font-weight: bolder;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: bolder;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Has units: descriptors take unitless numbers */
 @font-face {
-  font-family: "Inter";
-  font-weight: 400px;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400px;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -65,36 +65,36 @@ property values (used in selectors) or misunderstanding the descriptor syntax.
 ```css
 /* Single weight value */
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Keyword "normal" (equivalent to 400) */
 @font-face {
-  font-family: "Inter";
-  font-weight: normal;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: normal;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Keyword "bold" (equivalent to 700) */
 @font-face {
-  font-family: "Inter Bold";
-  font-weight: bold;
-  src: url("./inter-bold.woff2") format("woff2");
+ font-family: "Inter Bold";
+ font-weight: bold;
+ src: url("./inter-bold.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Valid range for variable fonts */
 @font-face {
-  font-family: "Inter Variable";
-  font-weight: 100 900;
-  src: url("./inter-variable.woff2") format("woff2-variations");
+ font-family: "Inter Variable";
+ font-weight: 100 900;
+ src: url("./inter-variable.woff2") format("woff2-variations");
 }
 ```
 

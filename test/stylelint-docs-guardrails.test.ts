@@ -11,6 +11,7 @@ function getRuleSlug(ruleId: string): string {
 describe("stylelint docs guardrails", () => {
     it("has a docs page for every exported rule id", async () => {
         expect.hasAssertions();
+        expect(ruleIds).not.toContain("font/not-a-real-rule");
 
         for (const ruleId of ruleIds) {
             const slug = getRuleSlug(ruleId);

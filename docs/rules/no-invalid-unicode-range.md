@@ -29,17 +29,17 @@ When this happens, you can end up with unnecessary downloads or missing glyph be
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter-latin.woff2") format("woff2");
-  unicode-range: U+00??-FF;
+ font-family: "Inter";
+ src: url("./inter-latin.woff2") format("woff2");
+ unicode-range: U+00??-FF;
 }
 ```
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter-cjk.woff2") format("woff2");
-  unicode-range: 0000-00FF;
+ font-family: "Inter";
+ src: url("./inter-cjk.woff2") format("woff2");
+ unicode-range: 0000-00FF;
 }
 ```
 
@@ -47,17 +47,17 @@ When this happens, you can end up with unnecessary downloads or missing glyph be
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF;
+ font-family: "Inter";
+ src: url("./inter-latin.woff2") format("woff2");
+ unicode-range: U+0000-00FF;
 }
 ```
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter-icons.woff2") format("woff2");
-  unicode-range: U+E000-F8FF, U+00A0;
+ font-family: "Inter";
+ src: url("./inter-icons.woff2") format("woff2");
+ unicode-range: U+E000-F8FF, U+00A0;
 }
 ```
 
@@ -67,12 +67,12 @@ When this happens, you can end up with unnecessary downloads or missing glyph be
 import fontPlugin, { fontPluginConfigs } from "stylelint-plugin-font";
 
 export default {
-  ...fontPluginConfigs["font-recommended"],
-  plugins: [...fontPlugin],
-  rules: {
-    ...fontPluginConfigs["font-recommended"].rules,
-    "font/no-invalid-unicode-range": true,
-  },
+ ...fontPluginConfigs["font-recommended"],
+ plugins: [...fontPlugin],
+ rules: {
+  ...fontPluginConfigs["font-recommended"].rules,
+  "font/no-invalid-unicode-range": true,
+ },
 };
 ```
 

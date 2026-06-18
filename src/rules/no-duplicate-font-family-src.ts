@@ -1,3 +1,5 @@
+import type { ArrayElement } from "type-fest";
+
 import stylelint, { type RuleBase } from "stylelint";
 import { isDefined, setHas } from "ts-extras";
 
@@ -54,7 +56,7 @@ function reportDuplicateUrlsForBlock(
         result: Parameters<ReturnType<RuleBase<boolean, undefined>>>[1];
         seenUrls: Set<string>;
         srcDecl: NonNullable<
-            ReturnType<typeof collectFontFaceBlocks>[number]["srcDecl"]
+            ArrayElement<ReturnType<typeof collectFontFaceBlocks>>["srcDecl"]
         >;
     }>
 ): void {

@@ -29,7 +29,7 @@ export default {
   "stylelint-config-idiomatic-order",
   "stylelint-config-standard-scss",
   "stylelint-config-tailwindcss",
-    "stylelint-plugin-font/configs/font-recommended",
+  "stylelint-plugin-font/configs/font-recommended",
  ],
 };
 ```
@@ -46,7 +46,7 @@ export default {
  // Alternative explicit pack form:
  // plugins: [...fontPlugin],
  rules: {
-    "font/require-font-display": true,
+  "font/require-font-display": true,
  },
 };
 ```

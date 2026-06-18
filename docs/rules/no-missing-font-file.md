@@ -37,8 +37,8 @@ This rule catches those path issues at lint time.
 ```css
 /* ../fonts/inter.woff2 does not exist relative to this stylesheet */
 @font-face {
-  font-family: "Inter";
-  src: url("../fonts/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("../fonts/inter.woff2") format("woff2");
 }
 ```
 
@@ -47,16 +47,16 @@ This rule catches those path issues at lint time.
 ```css
 /* file exists on disk relative to the stylesheet */
 @font-face {
-  font-family: "Inter";
-  src: url("../fonts/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("../fonts/inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* remote URLs are intentionally ignored by this rule */
 @font-face {
-  font-family: "Inter";
-  src: url("https://cdn.example.com/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("https://cdn.example.com/inter.woff2") format("woff2");
 }
 ```
 
@@ -66,12 +66,12 @@ This rule catches those path issues at lint time.
 import fontPlugin, { fontPluginConfigs } from "stylelint-plugin-font";
 
 export default {
-  ...fontPluginConfigs["font-all"],
-  plugins: [...fontPlugin],
-  rules: {
-    ...fontPluginConfigs["font-all"].rules,
-    "font/no-missing-font-file": true,
-  },
+ ...fontPluginConfigs["font-all"],
+ plugins: [...fontPlugin],
+ rules: {
+  ...fontPluginConfigs["font-all"].rules,
+  "font/no-missing-font-file": true,
+ },
 };
 ```
 

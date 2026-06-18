@@ -20,7 +20,7 @@ Web fonts can fail to load; fallback families preserve readability and layout st
 
 ```css
 .title {
-  font-family: "Inter";
+ font-family: "Inter";
 }
 ```
 
@@ -28,7 +28,7 @@ Web fonts can fail to load; fallback families preserve readability and layout st
 
 ```css
 .title {
-  font-family: "Inter", system-ui;
+ font-family: "Inter", system-ui;
 }
 ```
 

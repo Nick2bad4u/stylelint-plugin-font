@@ -28,8 +28,8 @@ This is a common regression during asset-pipeline migrations where file names pr
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter-latin.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter-latin.woff2") format("woff2");
 }
 ```
 
@@ -37,9 +37,9 @@ This is a common regression during asset-pipeline migrations where file names pr
 
 ```css
 @font-face {
-  font-family: "Inter";
-  unicode-range: U+0000-00FF;
-  src: url("./inter-latin.woff2") format("woff2");
+ font-family: "Inter";
+ unicode-range: U+0000-00FF;
+ src: url("./inter-latin.woff2") format("woff2");
 }
 ```
 
@@ -48,17 +48,17 @@ This is a common regression during asset-pipeline migrations where file names pr
 ```css
 /* Also valid when using another subset token */
 @font-face {
-  font-family: "Inter";
-  unicode-range: U+0400-04FF;
-  src: url("./inter-cyrillic.woff2") format("woff2");
+ font-family: "Inter";
+ unicode-range: U+0400-04FF;
+ src: url("./inter-cyrillic.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Non-subset-looking file name is not targeted by this rule */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter-regular.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter-regular.woff2") format("woff2");
 }
 ```
 
@@ -68,12 +68,12 @@ This is a common regression during asset-pipeline migrations where file names pr
 import fontPlugin, { fontPluginConfigs } from "stylelint-plugin-font";
 
 export default {
-  ...fontPluginConfigs["font-all"],
-  plugins: [...fontPlugin],
-  rules: {
-    ...fontPluginConfigs["font-all"].rules,
-    "font/require-unicode-range-for-subset-fonts": true,
-  },
+ ...fontPluginConfigs["font-all"],
+ plugins: [...fontPlugin],
+ rules: {
+  ...fontPluginConfigs["font-all"].rules,
+  "font/require-unicode-range-for-subset-fonts": true,
+ },
 };
 ```
 

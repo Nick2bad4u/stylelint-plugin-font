@@ -20,21 +20,21 @@ Variable fonts often reduce request count and simplify long-term font maintenanc
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-weight: 300;
-  src: url("./inter-300.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 300;
+ src: url("./inter-300.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  src: url("./inter-400.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400;
+ src: url("./inter-400.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: "Inter";
-  font-weight: 700;
-  src: url("./inter-700.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 700;
+ src: url("./inter-700.woff2") format("woff2");
 }
 ```
 
@@ -42,9 +42,9 @@ Variable fonts often reduce request count and simplify long-term font maintenanc
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-weight: 100 900;
-  src: url("./inter-variable.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 100 900;
+ src: url("./inter-variable.woff2") format("woff2");
 }
 ```
 

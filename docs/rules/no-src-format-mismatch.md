@@ -13,7 +13,7 @@ Disallow `@font-face src` entries where the URL file extension contradicts the e
 
 - `@font-face src` entries where the file extension of the URL and the
   `format()` keyword do not agree (for example `url("font.woff2")
-  format("woff")` — the extension says WOFF2 but the hint says WOFF).
+format("woff")` — the extension says WOFF2 but the hint says WOFF).
 
 Only entries that include **both** a recognisable file extension **and** an
 explicit `format()` hint are checked. Entries without a format hint, without a
@@ -45,24 +45,24 @@ updated the file path but not the adjacent `format()` keyword.
 ```css
 /* Extension is .woff2 but format hint says woff — browser may skip the file */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff");
 }
 ```
 
 ```css
 /* Extension is .woff but format hint says woff2 */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff") format("woff2");
 }
 ```
 
 ```css
 /* Extension is .ttf but format hint says opentype (wrong alias) */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.ttf") format("opentype");
+ font-family: "Inter";
+ src: url("./inter.ttf") format("opentype");
 }
 ```
 
@@ -71,17 +71,18 @@ updated the file path but not the adjacent `format()` keyword.
 ```css
 /* Extension and format hint agree */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2"),
-       url("./inter.woff") format("woff");
+ font-family: "Inter";
+ src:
+  url("./inter.woff2") format("woff2"),
+  url("./inter.woff") format("woff");
 }
 ```
 
 ```css
 /* TTF uses the correct format keyword */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.ttf") format("truetype");
+ font-family: "Inter";
+ src: url("./inter.ttf") format("truetype");
 }
 ```
 

@@ -20,9 +20,9 @@ Missing weights create ambiguous mapping and make variable/static face upgrades 
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: normal;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -30,10 +30,10 @@ Missing weights create ambiguous mapping and make variable/static face upgrades 
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 

@@ -23,21 +23,21 @@ Duplicate format hints are therefore always a bug: either a copy-paste error tha
 ```css
 /* Two woff2 entries — browser stops at the first one and never fetches the second */
 @font-face {
-  font-family: "Inter";
-  src:
-    url("./inter-subset-latin.woff2") format("woff2"),
-    url("./inter-subset-ext.woff2") format("woff2");
+ font-family: "Inter";
+ src:
+  url("./inter-subset-latin.woff2") format("woff2"),
+  url("./inter-subset-ext.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Accidentally duplicated during a woff2-only migration */
 @font-face {
-  font-family: "Roboto";
-  src:
-    url("./roboto.woff2") format("woff2"),
-    url("./roboto-fallback.woff2") format("woff2"),
-    url("./roboto.woff") format("woff");
+ font-family: "Roboto";
+ src:
+  url("./roboto.woff2") format("woff2"),
+  url("./roboto-fallback.woff2") format("woff2"),
+  url("./roboto.woff") format("woff");
 }
 ```
 
@@ -46,10 +46,10 @@ Duplicate format hints are therefore always a bug: either a copy-paste error tha
 ```css
 /* Each format appears at most once */
 @font-face {
-  font-family: "Inter";
-  src:
-    url("./inter.woff2") format("woff2"),
-    url("./inter.woff") format("woff");
+ font-family: "Inter";
+ src:
+  url("./inter.woff2") format("woff2"),
+  url("./inter.woff") format("woff");
 }
 ```
 

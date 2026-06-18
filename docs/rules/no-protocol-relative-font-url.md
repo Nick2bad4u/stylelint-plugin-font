@@ -25,8 +25,8 @@ The fix is always unambiguous: use an explicit `https://` prefix or a relative p
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("//cdn.example.com/fonts/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("//cdn.example.com/fonts/inter.woff2") format("woff2");
 }
 ```
 
@@ -35,16 +35,16 @@ The fix is always unambiguous: use an explicit `https://` prefix or a relative p
 ```css
 /* Explicit HTTPS */
 @font-face {
-  font-family: "Inter";
-  src: url("https://cdn.example.com/fonts/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("https://cdn.example.com/fonts/inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Relative path */
 @font-face {
-  font-family: "Inter";
-  src: url("./fonts/inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./fonts/inter.woff2") format("woff2");
 }
 ```
 

@@ -35,18 +35,18 @@ observable effect, there is no benign use-case for duplicate descriptors.
 ```css
 /* Two font-family descriptors — first one is silently discarded */
 @font-face {
-  font-family: "Old Name";
-  font-family: "New Name";
-  src: url("./font.woff2") format("woff2");
+ font-family: "Old Name";
+ font-family: "New Name";
+ src: url("./font.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Two src descriptors — first source list is never fetched */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter-v1.woff2") format("woff2");
-  src: url("./inter-v2.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter-v1.woff2") format("woff2");
+ src: url("./inter-v2.woff2") format("woff2");
 }
 ```
 
@@ -54,11 +54,12 @@ observable effect, there is no benign use-case for duplicate descriptors.
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2"),
-       url("./inter.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
+ font-family: "Inter";
+ src:
+  url("./inter.woff2") format("woff2"),
+  url("./inter.woff") format("woff");
+ font-weight: 400;
+ font-style: normal;
 }
 ```
 

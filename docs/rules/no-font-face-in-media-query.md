@@ -29,19 +29,19 @@ The rule is set to `recommended: false` because there are legitimate historical 
 ```css
 /* @font-face inside @media — download behavior is inconsistent across browsers */
 @media screen {
-  @font-face {
-    font-family: "Inter";
-    src: url("./inter.woff2") format("woff2");
-  }
+ @font-face {
+  font-family: "Inter";
+  src: url("./inter.woff2") format("woff2");
+ }
 }
 ```
 
 ```css
 @supports (font-variation-settings: normal) {
-  @font-face {
-    font-family: "InterVar";
-    src: url("./inter-variable.woff2") format("woff2");
-  }
+ @font-face {
+  font-family: "InterVar";
+  src: url("./inter-variable.woff2") format("woff2");
+ }
 }
 ```
 
@@ -50,16 +50,16 @@ The rule is set to `recommended: false` because there are legitimate historical 
 ```css
 /* Top-level @font-face — reliable and spec-aligned */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Conditional font behavior via unicode-range and separate family names */
 @font-face {
-  font-family: "InterPrint";
-  src: url("./inter-print.woff2") format("woff2");
+ font-family: "InterPrint";
+ src: url("./inter-print.woff2") format("woff2");
 }
 ```
 
@@ -73,10 +73,10 @@ Disable the rule with an inline comment in those files:
 ```css
 /* stylelint-disable font/no-font-face-in-media-query */
 @media print {
-  @font-face {
-    font-family: "PrintFont";
-    src: url("./print-font.woff2") format("woff2");
-  }
+ @font-face {
+  font-family: "PrintFont";
+  src: url("./print-font.woff2") format("woff2");
+ }
 }
 /* stylelint-enable font/no-font-face-in-media-query */
 ```

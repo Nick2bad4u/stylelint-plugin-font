@@ -20,7 +20,9 @@ Prioritizing `local(...)` avoids unnecessary requests when fonts are already ins
 
 ```css
 @font-face {
-  src: url("./inter.woff2") format("woff2"), local("Inter");
+ src:
+  url("./inter.woff2") format("woff2"),
+  local("Inter");
 }
 ```
 
@@ -28,7 +30,9 @@ Prioritizing `local(...)` avoids unnecessary requests when fonts are already ins
 
 ```css
 @font-face {
-  src: local("Inter"), url("./inter.woff2") format("woff2");
+ src:
+  local("Inter"),
+  url("./inter.woff2") format("woff2");
 }
 ```
 

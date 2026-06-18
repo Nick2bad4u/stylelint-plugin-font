@@ -2,6 +2,8 @@
  * @packageDocumentation
  * Static package and docs constants used throughout the Stylelint plugin runtime.
  */
+import type { ArrayValues } from "type-fest";
+
 import packageJson from "../../package.json" with { type: "json" };
 
 /** Public npm package name. */
@@ -20,7 +22,7 @@ export const DOCS_RULES_BASE_URL: `${string}/docs/rules` = `${DOCS_SITE_URL}/doc
 export const CONFIG_NAMES = ["font-all", "font-recommended"] as const;
 
 /** Shareable config names exported by the plugin runtime. */
-export type FontConfigName = (typeof CONFIG_NAMES)[number];
+export type FontConfigName = ArrayValues<typeof CONFIG_NAMES>;
 
 /**
  * Resolve package version from package.json data.
@@ -34,7 +36,7 @@ function getPackageVersion(pkg: unknown): string {
         return "0.0.0";
     }
 
-    const version = Reflect.get(pkg, "version");
+    const version: unknown = Reflect.get(pkg, "version");
 
     return typeof version === "string" ? version : "0.0.0";
 }

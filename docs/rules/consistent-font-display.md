@@ -20,13 +20,13 @@ Mixed strategies make perceived loading behavior inconsistent across fonts in th
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-display: swap;
+ font-family: "Inter";
+ font-display: swap;
 }
 
 @font-face {
-  font-family: "Inter";
-  font-display: fallback;
+ font-family: "Inter";
+ font-display: fallback;
 }
 ```
 
@@ -34,13 +34,13 @@ Mixed strategies make perceived loading behavior inconsistent across fonts in th
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-display: swap;
+ font-family: "Inter";
+ font-display: swap;
 }
 
 @font-face {
-  font-family: "Inter";
-  font-display: swap;
+ font-family: "Inter";
+ font-display: swap;
 }
 ```
 

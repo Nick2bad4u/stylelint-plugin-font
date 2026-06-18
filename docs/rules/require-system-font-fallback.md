@@ -20,7 +20,7 @@ Explicit system fallback improves resiliency when custom fonts fail.
 
 ```css
 .title {
-  font-family: "Inter", Arial;
+ font-family: "Inter", Arial;
 }
 ```
 
@@ -28,7 +28,7 @@ Explicit system fallback improves resiliency when custom fonts fail.
 
 ```css
 .title {
-  font-family: "Inter", system-ui;
+ font-family: "Inter", system-ui;
 }
 ```
 

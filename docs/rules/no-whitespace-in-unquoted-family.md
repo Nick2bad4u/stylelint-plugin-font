@@ -20,7 +20,9 @@ Quoted multi-word names are clearer and avoid parser/tooling ambiguity.
 
 ```css
 .title {
-  font-family: Open Sans, system-ui;
+ font-family:
+  Open Sans,
+  system-ui;
 }
 ```
 
@@ -28,7 +30,7 @@ Quoted multi-word names are clearer and avoid parser/tooling ambiguity.
 
 ```css
 .title {
-  font-family: "Open Sans", system-ui;
+ font-family: "Open Sans", system-ui;
 }
 ```
 

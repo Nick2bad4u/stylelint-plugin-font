@@ -20,17 +20,17 @@ Duplicate tuples create ambiguous source resolution and fragile maintenance.
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter-a.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter-a.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter-b.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter-b.woff2") format("woff2");
 }
 ```
 
@@ -38,10 +38,10 @@ Duplicate tuples create ambiguous source resolution and fragile maintenance.
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./inter-regular.woff2") format("woff2");
+ font-family: "Inter";
+ font-style: normal;
+ font-weight: 400;
+ src: url("./inter-regular.woff2") format("woff2");
 }
 ```
 

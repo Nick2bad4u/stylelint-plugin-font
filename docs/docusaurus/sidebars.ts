@@ -1,11 +1,11 @@
-import { existsSync, readdirSync } from "node:fs";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-
 import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
-const apiDocsDirectoryPath = resolve(
-    fileURLToPath(new URL("./site-docs/developer/api", import.meta.url))
+import { existsSync, readdirSync } from "node:fs";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const apiDocsDirectoryPath = path.resolve(
+    fileURLToPath(new URL("site-docs/developer/api", import.meta.url))
 );
 
 const hasGeneratedApiDocs = (() => {

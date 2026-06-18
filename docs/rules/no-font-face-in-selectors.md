@@ -46,20 +46,20 @@ for conditional font loading.
 ```css
 /* @font-face nested inside a selector — unpredictable behavior */
 body {
-  @font-face {
-    font-family: "Inter";
-    src: url("./inter.woff2") format("woff2");
-  }
+ @font-face {
+  font-family: "Inter";
+  src: url("./inter.woff2") format("woff2");
+ }
 }
 ```
 
 ```css
 /* Nested inside a class selector */
 .container {
-  @font-face {
-    font-family: "Roboto";
-    src: url("./roboto.woff2") format("woff2");
-  }
+ @font-face {
+  font-family: "Roboto";
+  src: url("./roboto.woff2") format("woff2");
+ }
 }
 ```
 
@@ -68,33 +68,33 @@ body {
 ```css
 /* At the root level */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 
 body {
-  font-family: "Inter", sans-serif;
+ font-family: "Inter", sans-serif;
 }
 ```
 
 ```css
 /* Inside an at-rule like @media */
 @media (prefers-color-scheme: dark) {
-  @font-face {
-    font-family: "Inter Dark";
-    src: url("./inter-dark.woff2") format("woff2");
-  }
+ @font-face {
+  font-family: "Inter Dark";
+  src: url("./inter-dark.woff2") format("woff2");
+ }
 }
 ```
 
 ```css
 /* Inside @supports for conditional loading */
 @supports (font-variation-settings: normal) {
-  @font-face {
-    font-family: "Inter Variable";
-    font-weight: 100 900;
-    src: url("./inter-variable.woff2") format("woff2-variations");
-  }
+ @font-face {
+  font-family: "Inter Variable";
+  font-weight: 100 900;
+  src: url("./inter-variable.woff2") format("woff2-variations");
+ }
 }
 ```
 

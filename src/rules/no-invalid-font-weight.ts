@@ -49,7 +49,7 @@ function isValidFontWeight(value: string): boolean {
 
     // Single number: 1-1000
     if (/^\d+$/v.test(trimmed)) {
-        const num = Number.parseInt(trimmed, 10);
+        const num = Number(trimmed);
 
         return num >= 1 && num <= 1000;
     }
@@ -58,8 +58,8 @@ function isValidFontWeight(value: string): boolean {
     if (/^\d+\s+\d+$/v.test(trimmed)) {
         const normalizedRange = trimmed.replaceAll(/\s+/gv, " ");
         const parts = stringSplit(normalizedRange, " ");
-        const min = Number.parseInt(arrayAt(parts, 0) ?? "0", 10);
-        const max = Number.parseInt(arrayAt(parts, 1) ?? "0", 10);
+        const min = Number(arrayAt(parts, 0) ?? "0");
+        const max = Number(arrayAt(parts, 1) ?? "0");
 
         return min >= 1 && max <= 1000 && min <= max;
     }

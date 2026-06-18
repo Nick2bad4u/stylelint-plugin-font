@@ -23,15 +23,15 @@ This failure is invisible at runtime: the browser will use the duplicate file wi
 ```css
 /* Both weight variants load the same file — almost certainly a copy-paste bug */
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400;
+ src: url("./inter.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: "Inter";
-  font-weight: 700;
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 700;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -39,28 +39,28 @@ This failure is invisible at runtime: the browser will use the duplicate file wi
 
 ```css
 @font-face {
-  font-family: "Inter";
-  font-weight: 400;
-  src: url("./inter-400.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 400;
+ src: url("./inter-400.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: "Inter";
-  font-weight: 700;
-  src: url("./inter-700.woff2") format("woff2");
+ font-family: "Inter";
+ font-weight: 700;
+ src: url("./inter-700.woff2") format("woff2");
 }
 ```
 
 ```css
 /* Different families may share a URL — only checked within the same family */
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: "Roboto";
-  src: url("./roboto.woff2") format("woff2");
+ font-family: "Roboto";
+ src: url("./roboto.woff2") format("woff2");
 }
 ```
 
@@ -70,12 +70,12 @@ This failure is invisible at runtime: the browser will use the duplicate file wi
 import fontPlugin, { fontPluginConfigs } from "stylelint-plugin-font";
 
 export default {
-  ...fontPluginConfigs["font-recommended"],
-  plugins: [...fontPlugin],
-  rules: {
-    ...fontPluginConfigs["font-recommended"].rules,
-    "font/no-duplicate-font-family-src": true,
-  },
+ ...fontPluginConfigs["font-recommended"],
+ plugins: [...fontPlugin],
+ rules: {
+  ...fontPluginConfigs["font-recommended"].rules,
+  "font/no-duplicate-font-family-src": true,
+ },
 };
 ```
 

@@ -1,48 +1,48 @@
 import Head from "@docusaurus/Head";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
-import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
+import Layout from "@theme/Layout";
 
 import GitHubStats from "../components/GitHubStats";
 import { docsCatalogStats } from "../data/docsCatalog";
 import styles from "./index.module.css";
 
-type HeroBadge = {
+interface HeroBadge {
     readonly description: string;
     readonly icon: string;
     readonly label: string;
-};
+}
 
-type HeroStat = {
+interface HeroStat {
     readonly description: string;
     readonly headline: string;
-};
+}
 
-type HomeCard = {
+interface HomeCard {
     readonly description: string;
     readonly icon: string;
     readonly title: string;
     readonly to: string;
-};
+}
 
 const heroBadges = [
     {
         description:
             "Built around Stylelint's native plugin-pack model and ESM config authoring.",
-        icon: "\uf013",
+        icon: "\u{F013}",
         label: "Stylelint-native",
     },
     {
         description:
             "Focused on font management, like validation of `@font-face` rules and `font-weight` descriptors.",
-        icon: "\uf5fd",
+        icon: "\u{F5FD}",
         label: "Font-focused",
     },
     {
         description:
             "Prioritizes developer experience with clear error messages, helpful documentation, and intuitive configuration.",
-        icon: "\uf0ad",
+        icon: "\u{F0AD}",
         label: "DX-first",
     },
 ] as const satisfies readonly HeroBadge[];
@@ -51,24 +51,24 @@ const heroStats = [
     {
         description:
             "Rules based around common font management pitfalls and best practices.",
-        headline: `\uf0ca ${String(docsCatalogStats.publicRuleCount)} Public Rule${docsCatalogStats.publicRuleCount === 1 ? "" : "s"}`,
+        headline: `\u{F0CA} ${String(docsCatalogStats.publicRuleCount)} Public Rule${docsCatalogStats.publicRuleCount === 1 ? "" : "s"}`,
     },
     {
         description:
             "Start with a conservative default or opt into the full stable catalog later.",
-        headline: `\ue690 ${String(docsCatalogStats.shareableConfigCount)} Shareable Config${docsCatalogStats.shareableConfigCount === 1 ? "" : "s"}`,
+        headline: `\u{E690} ${String(docsCatalogStats.shareableConfigCount)} Shareable Config${docsCatalogStats.shareableConfigCount === 1 ? "" : "s"}`,
     },
     {
         description:
             "Designed for a smooth onboarding experience and iterative improvement based on user feedback.",
-        headline: "\udb80\udc68 DX-first Design",
+        headline: "\u{F0068} DX-first Design",
     },
 ] as const satisfies readonly HeroStat[];
 
-const overviewButtonIcon = "\udb81\udf1d";
-const compareConfigsButtonIcon = "\udb85\udc92";
-const heroKickerIcon = "\uf0ad";
-const heroKickerIcon2 = "\uf135";
+const overviewButtonIcon = "\u{F071D}";
+const compareConfigsButtonIcon = "\u{F1492}";
+const heroKickerIcon = "\u{F0AD}";
+const heroKickerIcon2 = "\u{F135}";
 const homepageDescription =
     "Explore stylelint-plugin-font documentation, configs, and template guidance for Docusaurus-focused CSS linting.";
 const homepageKeywords =
@@ -93,21 +93,21 @@ const homeCards = [
     {
         description:
             "Install the package, enable a shareable config, and understand the plugin-pack export shape.",
-        icon: "\uf135",
+        icon: "\u{F135}",
         title: "Get Started",
         to: "/docs/rules/getting-started",
     },
     {
         description:
             "Compare the exported configs and understand why `recommended` stays conservative while `all` adds stricter opt-in rules.",
-        icon: "\ue690",
+        icon: "\u{E690}",
         title: "Configs",
         to: "/docs/rules/configs",
     },
     {
         description:
             "Track the current development status, ongoing improvements, and upcoming features.",
-        icon: "\uf02d",
+        icon: "\u{F02D}",
         title: "Current Status",
         to: "/docs/rules/guides/current-status",
     },
@@ -163,8 +163,8 @@ export default function Home() {
                             <div className={styles.heroBadgeRow}>
                                 {heroBadges.map((badge) => (
                                     <article
-                                        key={badge.label}
                                         className={styles.heroBadge}
+                                        key={badge.label}
                                     >
                                         <p className={styles.heroBadgeLabel}>
                                             <span
@@ -220,8 +220,8 @@ export default function Home() {
                     <div className={styles.heroStats}>
                         {heroStats.map((stat) => (
                             <article
-                                key={stat.headline}
                                 className={styles.heroStatCard}
+                                key={stat.headline}
                             >
                                 <p
                                     className={`${styles.heroStatHeading} nf-symbols`}
@@ -241,7 +241,7 @@ export default function Home() {
                 <section className="container">
                     <div className={styles.cardGrid}>
                         {homeCards.map((card) => (
-                            <article key={card.title} className={styles.card}>
+                            <article className={styles.card} key={card.title}>
                                 <div className={styles.cardHeader}>
                                     <p
                                         className={`${styles.cardIcon} nf-symbols`}

@@ -23,15 +23,15 @@ This is a common copy-paste mistake and nearly always indicates a forgotten cust
 ```css
 /* Generic keyword used as custom font name — shadows the built-in generic */
 @font-face {
-  font-family: sans-serif;
-  src: url("./inter.woff2") format("woff2");
+ font-family: sans-serif;
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 @font-face {
-  font-family: serif;
-  src: url("./my-font.woff2") format("woff2");
+ font-family: serif;
+ src: url("./my-font.woff2") format("woff2");
 }
 ```
 
@@ -39,15 +39,15 @@ This is a common copy-paste mistake and nearly always indicates a forgotten cust
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
 ```css
 @font-face {
-  font-family: "My Custom Font";
-  src: url("./my-font.woff2") format("woff2");
+ font-family: "My Custom Font";
+ src: url("./my-font.woff2") format("woff2");
 }
 ```
 

@@ -33,7 +33,7 @@ always a bug rather than a deliberate choice.
 ```css
 /* Missing font-family — block cannot be referenced */
 @font-face {
-  src: url("./inter.woff2") format("woff2");
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 
@@ -41,8 +41,8 @@ always a bug rather than a deliberate choice.
 
 ```css
 @font-face {
-  font-family: "Inter";
-  src: url("./inter.woff2") format("woff2");
+ font-family: "Inter";
+ src: url("./inter.woff2") format("woff2");
 }
 ```
 

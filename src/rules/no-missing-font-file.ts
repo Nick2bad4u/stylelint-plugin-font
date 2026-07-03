@@ -42,6 +42,29 @@ function decodeUrlPath(pathLikeUrl: string): string {
     }
 }
 
+async function fileExists(
+    cache: Map<string, boolean>,
+    resolvedPath: string
+): Promise<boolean> {
+    const cached = cache.get(resolvedPath);
+
+    if (isDefined(cached)) {
+        return cached;
+    }
+
+    let hasFile = true;
+
+    try {
+        await access(resolvedPath);
+    } catch {
+        hasFile = false;
+    }
+
+    cache.set(resolvedPath, hasFile);
+
+    return hasFile;
+}
+
 function getFirstDelimiterIndex(queryIndex: number, hashIndex: number): number {
     if (queryIndex === -1 && hashIndex === -1) {
         return -1;
@@ -91,29 +114,6 @@ function getSourceFilePath(root: Readonly<Root>): string | undefined {
     }
 }
 
-async function hasExistingFile(
-    cache: Map<string, boolean>,
-    resolvedPath: string
-): Promise<boolean> {
-    const cached = cache.get(resolvedPath);
-
-    if (isDefined(cached)) {
-        return cached;
-    }
-
-    let hasFile = true;
-
-    try {
-        await access(resolvedPath);
-    } catch {
-        hasFile = false;
-    }
-
-    cache.set(resolvedPath, hasFile);
-
-    return hasFile;
-}
-
 function isLocalPathUrl(url: string): boolean {
     const normalized = url.trim();
 
@@ -129,15 +129,11 @@ function isLocalPathUrl(url: string): boolean {
         return false;
     }
 
-    if (
-        normalized.startsWith("//") ||
-        normalized.startsWith("/") ||
-        normalized.startsWith("\\")
-    ) {
-        return false;
-    }
-
-    return true;
+    return (
+        !normalized.startsWith("//") &&
+        !normalized.startsWith("/") &&
+        !normalized.startsWith("\\")
+    );
 }
 
 function stripQueryAndFragment(url: string): string {
@@ -209,9 +205,7 @@ const ruleFunction: RuleBase<boolean, undefined> =
                             return undefined;
                         }
 
-                        if (
-                            await hasExistingFile(existenceCache, resolvedPath)
-                        ) {
+                        if (await fileExists(existenceCache, resolvedPath)) {
                             return undefined;
                         }
 

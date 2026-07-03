@@ -51,15 +51,15 @@ const EXTENSION_TO_FORMAT: ReadonlyMap<string, string> = new Map([
  * or fragment before the lookup.
  */
 function extractExtension(url: string): string | undefined {
-    const withoutQuery = arrayFirst(stringSplit(url, "?")) ?? "";
-    const withoutFragment = arrayFirst(stringSplit(withoutQuery, "#")) ?? "";
-    const lastDot = withoutFragment.lastIndexOf(".");
+    const querylessUrl = arrayFirst(stringSplit(url, "?")) ?? "";
+    const fragmentlessUrl = arrayFirst(stringSplit(querylessUrl, "#")) ?? "";
+    const lastDot = fragmentlessUrl.lastIndexOf(".");
 
-    if (lastDot === -1 || lastDot === withoutFragment.length - 1) {
+    if (lastDot === -1 || lastDot === fragmentlessUrl.length - 1) {
         return undefined;
     }
 
-    return withoutFragment.slice(lastDot).toLowerCase();
+    return fragmentlessUrl.slice(lastDot).toLowerCase();
 }
 
 const ruleFunction: RuleBase<boolean, undefined> =

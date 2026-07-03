@@ -1,5 +1,9 @@
 # stylelint-plugin-font
 
+[![CI](https://github.com/Nick2bad4u/stylelint-plugin-font/actions/workflows/ci.yml/badge.svg)](https://github.com/Nick2bad4u/stylelint-plugin-font/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/stylelint-plugin-font.svg)](https://www.npmjs.com/package/stylelint-plugin-font)
+[![license](https://img.shields.io/npm/l/stylelint-plugin-font.svg)](https://github.com/Nick2bad4u/stylelint-plugin-font/blob/main/LICENSE)
+
 Stylelint plugin pack focused on font loading quality, `@font-face` correctness, and fallback performance best practices.
 
 ## Installation

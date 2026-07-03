@@ -461,7 +461,7 @@ describe("font plugin rules", () => {
 
             expect(firstResult?.parseErrors).toHaveLength(0);
             expect(result.code?.replaceAll("\n", "").replaceAll(" ", "")).toBe(
-                testCase.fixed.output.replaceAll("\n", "").replaceAll(" ", "")
+                testCase.fixed.output.replaceAll(/[\n ]/gv, "")
             );
         }
     );

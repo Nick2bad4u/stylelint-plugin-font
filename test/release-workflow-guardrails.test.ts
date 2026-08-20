@@ -5,8 +5,14 @@ import { describe, expect, it } from "vitest";
 const releaseWorkflowPath = fileURLToPath(
     new URL("../.github/workflows/release.yml", import.meta.url)
 );
+const ciWorkflowPath = fileURLToPath(
+    new URL("../.github/workflows/ci.yml", import.meta.url)
+);
+const packageJsonPath = fileURLToPath(
+    new URL("../package.json", import.meta.url)
+);
 const installWorkflowPaths = [
-    fileURLToPath(new URL("../.github/workflows/ci.yml", import.meta.url)),
+    ciWorkflowPath,
     fileURLToPath(
         new URL("../.github/workflows/deploy-docusaurus.yml", import.meta.url)
     ),
@@ -49,5 +55,22 @@ describe("release workflow guardrails", () => {
             expect(workflow).toContain("npm ci --ignore-scripts");
             expect(workflow).toContain("npm rebuild --foreground-scripts");
         }
+    });
+
+    it("uses locked local binaries for hosted verification and docs", async () => {
+        expect.assertions(5);
+
+        const [ciWorkflow, packageJson] = await Promise.all([
+            readFile(ciWorkflowPath, "utf8"),
+            readFile(packageJsonPath, "utf8"),
+        ]);
+
+        expect(ciWorkflow).toContain('run: "npm run test:coverage:ci"');
+        expect(ciWorkflow).not.toContain("npx vitest");
+        expect(packageJson).toContain('"stylelint-config-inspector": "^2.3.5"');
+        expect(packageJson).not.toContain("config-inspector@latest");
+        expect(packageJson).toContain(
+            '"test:coverage:ci": "vitest run --coverage'
+        );
     });
 });

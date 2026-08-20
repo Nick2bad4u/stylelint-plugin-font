@@ -188,24 +188,17 @@ async function downloadArchive(asset, archivePath) {
 
 /**
  * @param {ActionlintAsset} asset
- * @param {string} cacheDirectoryPath
+ * @param {string} archivePath
  */
-async function getVerifiedArchive(asset, cacheDirectoryPath) {
-    await mkdir(cacheDirectoryPath, { recursive: true });
-
-    const archivePath = join(cacheDirectoryPath, asset.filename);
-
+async function ensureVerifiedArchive(asset, archivePath) {
     try {
         const cachedPayload = await readFile(archivePath);
 
         verifyAssetPayload(asset, cachedPayload);
-        return archivePath;
     } catch {
         await rm(archivePath, { force: true });
+        await downloadArchive(asset, archivePath);
     }
-
-    await downloadArchive(asset, archivePath);
-    return archivePath;
 }
 
 /**
@@ -265,7 +258,7 @@ export function getTarCommand({
 export function verifyActionlintVersion(binaryPath) {
     const output = runCheckedCommand(binaryPath, ["-version"]);
     const versionPattern = new RegExp(
-        `(?:^|\\s)${ACTIONLINT_VERSION.replaceAll(".", "\\.")}(?:\\s|$)`,
+        String.raw`(?:^|\s)${ACTIONLINT_VERSION.replaceAll(".", String.raw`\.`)}(?:\s|$)`,
         "u"
     );
 
@@ -303,7 +296,12 @@ export async function prepareActionlint({
     }
 
     const asset = getActionlintAsset({ arch, platform });
-    const archivePath = await getVerifiedArchive(asset, cacheDirectoryPath);
+    await mkdir(cacheDirectoryPath, { recursive: true });
+
+    const archivePath = join(cacheDirectoryPath, asset.filename);
+
+    await ensureVerifiedArchive(asset, archivePath);
+
     const extractionDirectoryPath = await mkdtemp(
         join(cacheDirectoryPath, `extracted-${platform}-${arch}-`)
     );
@@ -377,11 +375,9 @@ export async function runActionlint(arguments_ = process.argv.slice(2)) {
  * }>} [input]
  */
 export const isDirectExecution = ({
-    argvEntry = process.argv[1],
+    argvEntry = process.argv[1] ?? "",
     currentImportUrl = import.meta.url,
-} = {}) =>
-    argvEntry !== undefined &&
-    pathToFileURL(resolve(argvEntry)).href === currentImportUrl;
+} = {}) => pathToFileURL(resolve(argvEntry)).href === currentImportUrl;
 
 if (isDirectExecution()) {
     try {

@@ -8,7 +8,7 @@ const releaseWorkflowPath = fileURLToPath(
 
 describe("release workflow guardrails", () => {
     it("keeps verification and release identities fail-closed", async () => {
-        expect.assertions(13);
+        expect.assertions(14);
 
         const workflow = await readFile(releaseWorkflowPath, "utf8");
 
@@ -17,6 +17,7 @@ describe("release workflow guardrails", () => {
         expect(workflow).toContain("git push --atomic origin");
         expect(workflow).toContain('name: "Install declared npm version"');
         expect(workflow).toContain('name: "Configure npm cache and registry"');
+        expect(workflow).toContain("package-manager-cache: false");
         expect(workflow).toContain("elif grep -q 'E404'");
         expect(workflow).toContain("node scripts/read-npm-pack-filename.mjs");
         expect(workflow).toContain("overwrite_files: false");

@@ -14,8 +14,9 @@ import {
     createRuleDocsUrl,
     createRuleName,
 } from "../_internal/plugin-constants.js";
+import { reportWithFixCompatibility } from "../_internal/report-with-fix-compatibility.js";
 
-const { report, ruleMessages, validateOptions } = stylelint.utils;
+const { ruleMessages, validateOptions } = stylelint.utils;
 const ruleName = createRuleName("require-system-font-fallback");
 const messages: { rejected: () => string } = ruleMessages(ruleName, {
     rejected: (): string =>
@@ -29,7 +30,7 @@ const docs = {
 } as const;
 
 const ruleFunction: RuleBase<boolean, undefined> =
-    (primary) => (root, result) => {
+    (primary, _secondaryOptions, context) => (root, result) => {
         const isValid = validateOptions(result, ruleName, {
             actual: primary,
             possible: [true],
@@ -51,15 +52,18 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 return;
             }
 
-            report({
-                fix() {
-                    decl.value = `${decl.value.trim()}, system-ui`;
+            reportWithFixCompatibility(
+                {
+                    fix() {
+                        decl.value = `${decl.value.trim()}, system-ui`;
+                    },
+                    message: messages.rejected(),
+                    node: decl,
+                    result,
+                    ruleName,
                 },
-                message: messages.rejected(),
-                node: decl,
-                result,
-                ruleName,
-            });
+                context
+            );
         });
     };
 

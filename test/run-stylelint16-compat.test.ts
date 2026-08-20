@@ -15,7 +15,7 @@ describe("stylelint 16 isolated consumer", () => {
 
         expect(createConsumerManifest(tarballPath)).toMatchObject({
             dependencies: {
-                stylelint: "^16.0.0",
+                stylelint: "16.0.0",
                 "stylelint-plugin-font": pathToFileURL(tarballPath).href,
             },
             private: true,

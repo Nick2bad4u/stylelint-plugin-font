@@ -14,8 +14,9 @@ import {
     createRuleDocsUrl,
     createRuleName,
 } from "../_internal/plugin-constants.js";
+import { reportWithFixCompatibility } from "../_internal/report-with-fix-compatibility.js";
 
-const { report, ruleMessages, validateOptions } = stylelint.utils;
+const { ruleMessages, validateOptions } = stylelint.utils;
 const legacyFormats = new Set([
     "embedded-opentype",
     "eot",
@@ -51,7 +52,7 @@ function removeLegacyEntries(value: string): string {
 }
 
 const ruleFunction: RuleBase<boolean, undefined> =
-    (primary) => (root, result) => {
+    (primary, _secondaryOptions, context) => (root, result) => {
         const isValid = validateOptions(result, ruleName, {
             actual: primary,
             possible: [true],
@@ -80,15 +81,18 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 continue;
             }
 
-            report({
-                fix() {
-                    srcDecl.value = removeLegacyEntries(srcDecl.value);
+            reportWithFixCompatibility(
+                {
+                    fix() {
+                        srcDecl.value = removeLegacyEntries(srcDecl.value);
+                    },
+                    message: messages.rejected(firstLegacy),
+                    node: srcDecl,
+                    result,
+                    ruleName,
                 },
-                message: messages.rejected(firstLegacy),
-                node: srcDecl,
-                result,
-                ruleName,
-            });
+                context
+            );
         }
     };
 

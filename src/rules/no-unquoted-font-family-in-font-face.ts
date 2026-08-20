@@ -10,8 +10,9 @@ import {
     createRuleDocsUrl,
     createRuleName,
 } from "../_internal/plugin-constants.js";
+import { reportWithFixCompatibility } from "../_internal/report-with-fix-compatibility.js";
 
-const { report, ruleMessages, validateOptions } = stylelint.utils;
+const { ruleMessages, validateOptions } = stylelint.utils;
 const ruleName = createRuleName("no-unquoted-font-family-in-font-face");
 
 const messages: { rejected: (value: string) => string } = ruleMessages(
@@ -30,7 +31,7 @@ const docs = {
 } as const;
 
 const ruleFunction: RuleBase<boolean, undefined> =
-    (primary) => (root, result) => {
+    (primary, _secondaryOptions, context) => (root, result) => {
         const isValid = validateOptions(result, ruleName, {
             actual: primary,
             possible: [true],
@@ -53,16 +54,19 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 continue;
             }
 
-            report({
-                fix() {
-                    familyDecl.value = `"${rawValue}"`;
+            reportWithFixCompatibility(
+                {
+                    fix() {
+                        familyDecl.value = `"${rawValue}"`;
+                    },
+                    message: messages.rejected(rawValue),
+                    node: familyDecl,
+                    result,
+                    ruleName,
+                    word: rawValue,
                 },
-                message: messages.rejected(rawValue),
-                node: familyDecl,
-                result,
-                ruleName,
-                word: rawValue,
-            });
+                context
+            );
         }
     };
 

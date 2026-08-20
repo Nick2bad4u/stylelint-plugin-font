@@ -14,8 +14,9 @@ import {
     createRuleDocsUrl,
     createRuleName,
 } from "../_internal/plugin-constants.js";
+import { reportWithFixCompatibility } from "../_internal/report-with-fix-compatibility.js";
 
-const { report, ruleMessages, validateOptions } = stylelint.utils;
+const { ruleMessages, validateOptions } = stylelint.utils;
 const ruleName = createRuleName("woff2-before-woff");
 const messages: { rejected: () => string } = ruleMessages(ruleName, {
     rejected: (): string =>
@@ -44,7 +45,7 @@ function reorderWoff2BeforeWoff(value: string): string {
 }
 
 const ruleFunction: RuleBase<boolean, undefined> =
-    (primary) => (root, result) => {
+    (primary, _secondaryOptions, context) => (root, result) => {
         const isValid = validateOptions(result, ruleName, {
             actual: primary,
             possible: [true],
@@ -75,15 +76,18 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 continue;
             }
 
-            report({
-                fix() {
-                    srcDecl.value = reorderWoff2BeforeWoff(srcDecl.value);
+            reportWithFixCompatibility(
+                {
+                    fix() {
+                        srcDecl.value = reorderWoff2BeforeWoff(srcDecl.value);
+                    },
+                    message: messages.rejected(),
+                    node: srcDecl,
+                    result,
+                    ruleName,
                 },
-                message: messages.rejected(),
-                node: srcDecl,
-                result,
-                ruleName,
-            });
+                context
+            );
         }
     };
 

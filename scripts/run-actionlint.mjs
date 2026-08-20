@@ -10,17 +10,18 @@ import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
     chmod,
+    lstat,
     mkdir,
     mkdtemp,
     readFile,
-    rename,
     rm,
     writeFile,
 } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { basename, join, resolve, win32 } from "node:path";
+import { realpathSync } from "node:fs";
+import { homedir } from "node:os";
+import { basename, join, posix, resolve, win32 } from "node:path";
 import process from "node:process";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 export const ACTIONLINT_VERSION = "1.7.12";
 
@@ -126,9 +127,10 @@ const delay = (milliseconds) =>
 
 /**
  * @param {ActionlintAsset} asset
- * @param {string} archivePath
+ *
+ * @returns {Promise<Uint8Array>}
  */
-async function downloadArchive(asset, archivePath) {
+async function downloadAsset(asset) {
     const url = `${ACTIONLINT_RELEASE_BASE_URL}/${asset.filename}`;
     /** @type {unknown} */
     let lastError;
@@ -160,17 +162,7 @@ async function downloadArchive(asset, archivePath) {
 
             verifyAssetPayload(asset, payload);
 
-            const temporaryArchivePath = `${archivePath}.${String(process.pid)}.${String(Date.now())}.tmp`;
-
-            try {
-                await writeFile(temporaryArchivePath, payload, { flag: "wx" });
-                await rm(archivePath, { force: true });
-                await rename(temporaryArchivePath, archivePath);
-            } finally {
-                await rm(temporaryArchivePath, { force: true });
-            }
-
-            return;
+            return payload;
         } catch (error) {
             lastError = error;
 
@@ -187,17 +179,112 @@ async function downloadArchive(asset, archivePath) {
 }
 
 /**
+ * Return verified bytes, copying any shared cached bytes into memory before
+ * use. Cache publication is create-only: no invocation removes or replaces a
+ * path that another invocation may already be reading.
+ *
  * @param {ActionlintAsset} asset
- * @param {string} archivePath
+ * @param {string} cachedArchivePath
+ *
+ * @returns {Promise<Uint8Array>}
  */
-async function ensureVerifiedArchive(asset, archivePath) {
+async function getVerifiedAssetPayload(asset, cachedArchivePath) {
     try {
-        const cachedPayload = await readFile(archivePath);
+        const cachedPayload = await readFile(cachedArchivePath);
 
         verifyAssetPayload(asset, cachedPayload);
+        return cachedPayload;
     } catch {
-        await rm(archivePath, { force: true });
-        await downloadArchive(asset, archivePath);
+        const downloadedPayload = await downloadAsset(asset);
+
+        try {
+            await writeFile(cachedArchivePath, downloadedPayload, {
+                flag: "wx",
+                mode: 0o600,
+            });
+        } catch (error) {
+            if (!(
+                error instanceof Error &&
+                "code" in error &&
+                error.code === "EEXIST"
+            )) {
+                throw error;
+            }
+        }
+
+        return downloadedPayload;
+    }
+}
+
+/**
+ * Keep executable tooling under a per-user cache instead of a predictable
+ * shared temporary directory.
+ *
+ * @param {Readonly<{
+ *     environment?: NodeJS.ProcessEnv | undefined;
+ *     homeDirectory?: string | undefined;
+ *     platform?: string | undefined;
+ * }>} [input]
+ */
+export function getDefaultCacheDirectory({
+    environment = process.env,
+    homeDirectory = homedir(),
+    platform = process.platform,
+} = {}) {
+    if (platform === "win32") {
+        const localApplicationData = environment["LOCALAPPDATA"];
+
+        return win32.join(
+            localApplicationData === undefined || localApplicationData === ""
+                ? win32.join(homeDirectory, "AppData", "Local")
+                : localApplicationData,
+            "stylelint-plugin-font",
+            "actionlint"
+        );
+    }
+
+    return posix.join(
+        homeDirectory,
+        platform === "darwin" ? posix.join("Library", "Caches") : ".cache",
+        "stylelint-plugin-font",
+        "actionlint"
+    );
+}
+
+/**
+ * Create the cache with private permissions and reject symlinks, unexpected
+ * owners, and group/world-accessible modes before placing executable content.
+ *
+ * @param {string} cacheDirectoryPath
+ * @param {string} platform
+ */
+async function ensurePrivateCacheDirectory(cacheDirectoryPath, platform) {
+    await mkdir(cacheDirectoryPath, { mode: 0o700, recursive: true });
+
+    const cacheStatus = await lstat(cacheDirectoryPath);
+
+    if (cacheStatus.isSymbolicLink() || !cacheStatus.isDirectory()) {
+        throw new Error(
+            `Refusing unsafe actionlint cache path: ${cacheDirectoryPath}.`
+        );
+    }
+
+    if (platform === "win32") {
+        return;
+    }
+
+    const currentUserId = process.getuid?.();
+
+    if (currentUserId !== undefined && cacheStatus.uid !== currentUserId) {
+        throw new Error(
+            `Refusing actionlint cache owned by uid ${String(cacheStatus.uid)}; expected ${String(currentUserId)}.`
+        );
+    }
+
+    if ((cacheStatus.mode & 0o077) !== 0) {
+        throw new Error(
+            `Refusing group- or world-accessible actionlint cache: ${cacheDirectoryPath}.`
+        );
     }
 }
 
@@ -283,10 +370,7 @@ export function verifyActionlintVersion(binaryPath) {
  */
 export async function prepareActionlint({
     arch = process.arch,
-    cacheDirectoryPath = join(
-        tmpdir(),
-        "stylelint-plugin-font-actionlint-cache"
-    ),
+    cacheDirectoryPath = getDefaultCacheDirectory(),
     environment = process.env,
     platform = process.platform,
 } = {}) {
@@ -300,15 +384,26 @@ export async function prepareActionlint({
     }
 
     const asset = getActionlintAsset({ arch, platform });
-    await mkdir(cacheDirectoryPath, { recursive: true });
+    await ensurePrivateCacheDirectory(cacheDirectoryPath, platform);
 
-    const archivePath = join(cacheDirectoryPath, asset.filename);
-
-    await ensureVerifiedArchive(asset, archivePath);
-
-    const extractionDirectoryPath = await mkdtemp(
-        join(cacheDirectoryPath, `extracted-${platform}-${arch}-`)
+    const cachedArchivePath = join(
+        cacheDirectoryPath,
+        `${asset.sha256}-${asset.filename}`
     );
+    const verifiedPayload = await getVerifiedAssetPayload(
+        asset,
+        cachedArchivePath
+    );
+    const invocationDirectoryPath = await mkdtemp(
+        join(cacheDirectoryPath, `invocation-${platform}-${arch}-`)
+    );
+    const archivePath = join(invocationDirectoryPath, asset.filename);
+    const extractionDirectoryPath = join(invocationDirectoryPath, "extracted");
+    await mkdir(extractionDirectoryPath, { mode: 0o700 });
+    await writeFile(archivePath, verifiedPayload, {
+        flag: "wx",
+        mode: 0o600,
+    });
     const binaryName = platform === "win32" ? "actionlint.exe" : "actionlint";
     const binaryPath = join(extractionDirectoryPath, binaryName);
 
@@ -327,7 +422,7 @@ export async function prepareActionlint({
 
         verifyActionlintVersion(binaryPath);
     } catch (error) {
-        await rm(extractionDirectoryPath, { force: true, recursive: true });
+        await rm(invocationDirectoryPath, { force: true, recursive: true });
         throw new Error(
             `Could not prepare ${basename(asset.filename)}. Ensure a compatible tar executable is available.`,
             { cause: error }
@@ -337,7 +432,7 @@ export async function prepareActionlint({
     return Object.freeze({
         binaryPath,
         cleanup: () =>
-            rm(extractionDirectoryPath, { force: true, recursive: true }),
+            rm(invocationDirectoryPath, { force: true, recursive: true }),
     });
 }
 
@@ -375,13 +470,29 @@ export async function runActionlint(arguments_ = process.argv.slice(2)) {
 /**
  * @param {Readonly<{
  *     argvEntry?: string | undefined;
+ *     canonicalizePath?: ((path: string) => string) | undefined;
  *     currentImportUrl?: string | undefined;
  * }>} [input]
  */
 export const isDirectExecution = ({
     argvEntry = process.argv[1] ?? "",
+    canonicalizePath = realpathSync,
     currentImportUrl = import.meta.url,
-} = {}) => pathToFileURL(resolve(argvEntry)).href === currentImportUrl;
+} = {}) => {
+    if (argvEntry === "") {
+        return false;
+    }
+
+    const canonicalEntryPath = canonicalizePath(resolve(argvEntry));
+    const canonicalImportPath = canonicalizePath(
+        fileURLToPath(currentImportUrl)
+    );
+
+    return (
+        pathToFileURL(canonicalEntryPath).href ===
+        pathToFileURL(canonicalImportPath).href
+    );
+};
 
 if (isDirectExecution()) {
     try {

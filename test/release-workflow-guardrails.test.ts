@@ -61,7 +61,7 @@ describe("release workflow guardrails", () => {
     });
 
     it("uses locked local binaries for hosted verification and docs", async () => {
-        expect.assertions(11);
+        expect.assertions(15);
 
         const [
             actionlintScript,
@@ -100,6 +100,12 @@ describe("release workflow guardrails", () => {
         );
         expect(actionlintScript).toContain(
             "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+        );
+        expect(actionlintScript).toContain("getDefaultCacheDirectory()");
+        expect(actionlintScript).toContain("await lstat(cacheDirectoryPath)");
+        expect(actionlintScript).toContain('flag: "wx"');
+        expect(actionlintScript).toMatch(
+            /invocation-\$\{platform\}-\$\{arch\}-/v
         );
     });
 });

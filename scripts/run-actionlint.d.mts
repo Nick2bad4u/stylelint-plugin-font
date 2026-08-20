@@ -22,6 +22,14 @@ export function verifyAssetPayload(
 
 export function verifyActionlintVersion(binaryPath: string): void;
 
+export function getDefaultCacheDirectory(
+    input?: Readonly<{
+        environment?: NodeJS.ProcessEnv | undefined;
+        homeDirectory?: string | undefined;
+        platform?: string | undefined;
+    }>
+): string;
+
 export function getTarCommand(
     input?: Readonly<{
         environment?: NodeJS.ProcessEnv | undefined;
@@ -48,6 +56,7 @@ export function runActionlint(arguments_?: readonly string[]): Promise<number>;
 export function isDirectExecution(
     input?: Readonly<{
         argvEntry?: string | undefined;
+        canonicalizePath?: ((path: string) => string) | undefined;
         currentImportUrl?: string | undefined;
     }>
 ): boolean;

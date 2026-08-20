@@ -1,3 +1,6 @@
+import { mkdtemp, rm, symlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
@@ -5,6 +8,7 @@ import {
     ACTIONLINT_VERSION,
     calculateSha256,
     getActionlintAsset,
+    getDefaultCacheDirectory,
     getTarCommand,
     isDirectExecution,
     verifyAssetPayload,
@@ -71,7 +75,7 @@ describe("run-actionlint script", () => {
     });
 
     it("distinguishes imports from direct CLI execution", () => {
-        expect.assertions(2);
+        expect.assertions(3);
 
         const scriptUrlObject = new URL(
             "../scripts/run-actionlint.mjs",
@@ -92,6 +96,76 @@ describe("run-actionlint script", () => {
                 currentImportUrl: scriptUrl,
             })
         ).toBe(false);
+        expect(
+            isDirectExecution({
+                argvEntry: "/usr/local/bin/actionlint-wrapper",
+                canonicalizePath: () => scriptPath,
+                currentImportUrl: scriptUrl,
+            })
+        ).toBe(true);
+    });
+
+    it.skipIf(process.platform === "win32")(
+        "recognizes direct execution through a filesystem symlink",
+        async () => {
+            expect.assertions(1);
+
+            const temporaryDirectoryPath = await mkdtemp(
+                path.join(tmpdir(), "stylelint-plugin-font-actionlint-test-")
+            );
+            const linkedScriptPath = path.join(
+                temporaryDirectoryPath,
+                "run-actionlint.mjs"
+            );
+            const scriptUrl = new URL(
+                "../scripts/run-actionlint.mjs",
+                import.meta.url
+            );
+
+            try {
+                await symlink(fileURLToPath(scriptUrl), linkedScriptPath);
+
+                expect(
+                    isDirectExecution({
+                        argvEntry: linkedScriptPath,
+                        currentImportUrl: scriptUrl.href,
+                    })
+                ).toBe(true);
+            } finally {
+                await rm(temporaryDirectoryPath, {
+                    force: true,
+                    recursive: true,
+                });
+            }
+        }
+    );
+
+    it("uses a private per-user cache location instead of shared temporary storage", () => {
+        expect.assertions(3);
+
+        expect(
+            getDefaultCacheDirectory({
+                homeDirectory: "/home/tester",
+                platform: "linux",
+            })
+        ).toBe("/home/tester/.cache/stylelint-plugin-font/actionlint");
+        expect(
+            getDefaultCacheDirectory({
+                homeDirectory: "/Users/tester",
+                platform: "darwin",
+            })
+        ).toBe("/Users/tester/Library/Caches/stylelint-plugin-font/actionlint");
+        expect(
+            getDefaultCacheDirectory({
+                environment: {
+                    LOCALAPPDATA: String.raw`C:\Users\tester\AppData\Local`,
+                },
+                homeDirectory: String.raw`C:\Users\tester`,
+                platform: "win32",
+            })
+        ).toBe(
+            String.raw`C:\Users\tester\AppData\Local\stylelint-plugin-font\actionlint`
+        );
     });
 
     it("bypasses Git for Windows tar when extracting absolute paths", () => {

@@ -68,7 +68,9 @@ jobs:
                   cache-dependency-path: "package-lock.json"
 
             - name: "Install dependencies"
-              run: "npm ci"
+              run: |
+                  npm ci --ignore-scripts
+                  npm rebuild --foreground-scripts
 
             - name: "Build before TypeDoc"
               run: "npm run build"

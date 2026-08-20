@@ -5,6 +5,13 @@ import { describe, expect, it } from "vitest";
 const releaseWorkflowPath = fileURLToPath(
     new URL("../.github/workflows/release.yml", import.meta.url)
 );
+const installWorkflowPaths = [
+    fileURLToPath(new URL("../.github/workflows/ci.yml", import.meta.url)),
+    fileURLToPath(
+        new URL("../.github/workflows/deploy-docusaurus.yml", import.meta.url)
+    ),
+    releaseWorkflowPath,
+];
 
 describe("release workflow guardrails", () => {
     it("keeps verification and release identities fail-closed", async () => {
@@ -31,5 +38,16 @@ describe("release workflow guardrails", () => {
         expect(workflow).not.toContain("git add -A");
         expect(workflow).not.toContain("npm ci --force");
         expect(workflow).not.toContain("git fetch --tags --force");
+    });
+
+    it("runs only reviewed dependency lifecycle scripts", async () => {
+        expect.assertions(6);
+
+        for (const workflowPath of installWorkflowPaths) {
+            const workflow = await readFile(workflowPath, "utf8");
+
+            expect(workflow).toContain("npm ci --ignore-scripts");
+            expect(workflow).toContain("npm rebuild --foreground-scripts");
+        }
     });
 });

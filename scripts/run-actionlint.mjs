@@ -257,8 +257,12 @@ export function getTarCommand({
 /** @param {string} binaryPath */
 export function verifyActionlintVersion(binaryPath) {
     const output = runCheckedCommand(binaryPath, ["-version"]);
+    const escapedActionlintVersion = ACTIONLINT_VERSION.replaceAll(
+        ".",
+        String.raw`\.`
+    );
     const versionPattern = new RegExp(
-        String.raw`(?:^|\s)${ACTIONLINT_VERSION.replaceAll(".", String.raw`\.`)}(?:\s|$)`,
+        String.raw`(?:^|\s)${escapedActionlintVersion}(?:\s|$)`,
         "u"
     );
 

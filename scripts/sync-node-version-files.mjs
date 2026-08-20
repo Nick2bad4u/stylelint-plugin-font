@@ -209,20 +209,38 @@ export const resolveMinimumEngineVersion = (enginesValue) => {
         return null;
     }
 
-    const match = /^>=\s*(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\s+.*)?$/u.exec(
-        nodeEngineRange
-    );
+    if (!nodeEngineRange.startsWith(">=")) {
+        return null;
+    }
 
-    if (match === null) {
+    const minimumVersionAndRemainder = nodeEngineRange.slice(2).trimStart();
+    const firstWhitespaceOffset = [...minimumVersionAndRemainder].findIndex(
+        (character) => character.trim().length === 0
+    );
+    const minimumVersion =
+        firstWhitespaceOffset === -1
+            ? minimumVersionAndRemainder
+            : minimumVersionAndRemainder.slice(0, firstWhitespaceOffset);
+    const versionParts = minimumVersion.split(".");
+    if (
+        versionParts.length === 0 ||
+        versionParts.length > 3 ||
+        versionParts.some(
+            (part) =>
+                part.length === 0 ||
+                [...part].some(
+                    (character) => character < "0" || character > "9"
+                )
+        )
+    ) {
         return null;
     }
 
     const [
-        ,
         majorVersion,
         minorVersion = "0",
         patchVersion = "0",
-    ] = match;
+    ] = versionParts;
 
     return `${majorVersion}.${minorVersion}.${patchVersion}`;
 };

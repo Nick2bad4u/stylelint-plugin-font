@@ -40,6 +40,8 @@ export interface RemarkLintRuleDocHeadingsOptions {
     readonly ruleNamespaceAliases?: readonly string[];
 }
 
+export function hasDefaultPackageDocumentationLabel(content: string): boolean;
+
 declare function remarkLintRuleDocHeadings(
     options?: RemarkLintRuleDocHeadingsOptions
 ): RuleDocHeadingTransformer;

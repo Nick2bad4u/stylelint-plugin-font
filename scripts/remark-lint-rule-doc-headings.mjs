@@ -6,7 +6,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-import { stripMarkdownCode } from "./_internal/strip-markdown-code.mjs";
+import {
+    extractMarkdownInlineLinks,
+    splitMarkdownLines,
+    stripMarkdownCode,
+} from "./_internal/strip-markdown-code.mjs";
 
 /** @typedef {import("mdast").Heading} Heading */
 /** @typedef {import("mdast").Root} Root */
@@ -124,11 +128,27 @@ const optionalDetailAllowedParentHeadings = new Set([
 const defaultHelperDocPathPattern =
     /(^|\/)docs\/rules\/(?!overview\.md$|getting-started\.md$|presets\/)[^/]+\.md$/u;
 const defaultRuleCatalogIdLinePattern = /^> \*\*Rule catalog ID:\*\* R\d{3}$/u;
-const defaultPackageDocumentationLabelPattern =
-    /^[^\r\n]+ package documentation:$/mu;
 const supportedPluginPackagePrefixes = ["eslint-plugin-", "stylelint-plugin-"];
 
 const packageMetadataCache = new Map();
+
+/**
+ * @param {string} content
+ *
+ * @returns {boolean}
+ */
+export function hasDefaultPackageDocumentationLabel(content) {
+    const labelSuffix = " package documentation:";
+
+    return splitMarkdownLines(content).some((line) => {
+        const normalizedLine = line.trimEnd();
+
+        return (
+            normalizedLine.length > labelSuffix.length &&
+            normalizedLine.endsWith(labelSuffix)
+        );
+    });
+}
 
 /**
  * @param {string} documentPath
@@ -411,8 +431,7 @@ export default function remarkLintRuleDocHeadings(options = {}) {
         options.requireRuleCatalogId ??
         options.ruleCatalogIdLinePattern !== undefined;
     const packageDocumentationLabelPattern =
-        options.packageDocumentationLabelPattern ??
-        defaultPackageDocumentationLabelPattern;
+        options.packageDocumentationLabelPattern;
     const ruleCatalogIdLinePattern =
         options.ruleCatalogIdLinePattern ?? defaultRuleCatalogIdLinePattern;
     /** @param {keyof typeof defaultHeadingToggles} headingKey */
@@ -721,9 +740,14 @@ export default function remarkLintRuleDocHeadings(options = {}) {
                 nextH2Heading
             );
 
+            const replacementLinks = extractMarkdownInlineLinks(
+                deprecatedSectionContent
+            );
+
             if (
-                !/\[[^\]]+\]\([^)]+\)/u.test(
-                    stripMarkdownCode(deprecatedSectionContent)
+                !replacementLinks.some(
+                    ({ destination, label }) =>
+                        destination.trim().length > 0 && label.length > 0
                 )
             ) {
                 file.message(
@@ -766,13 +790,20 @@ export default function remarkLintRuleDocHeadings(options = {}) {
                     packageDocumentationHeading,
                     nextPackageSectionHeading
                 );
+                const strippedPackageDocumentationContent = stripMarkdownCode(
+                    packageDocumentationContent
+                );
+                const hasPackageDocumentationLabel =
+                    packageDocumentationLabelPattern === undefined
+                        ? hasDefaultPackageDocumentationLabel(
+                              strippedPackageDocumentationContent
+                          )
+                        : testPattern(
+                              packageDocumentationLabelPattern,
+                              strippedPackageDocumentationContent
+                          );
 
-                if (
-                    !testPattern(
-                        packageDocumentationLabelPattern,
-                        stripMarkdownCode(packageDocumentationContent)
-                    )
-                ) {
+                if (!hasPackageDocumentationLabel) {
                     file.message(
                         "`## Package documentation` must include at least one `<package> package documentation:` label line.",
                         packageDocumentationHeading,
@@ -784,8 +815,7 @@ export default function remarkLintRuleDocHeadings(options = {}) {
 
         if (requireRuleCatalogId) {
             const markdownContent = stripMarkdownCode(String(file));
-            const ruleCatalogIdLines = markdownContent
-                .split(/\r?\n/u)
+            const ruleCatalogIdLines = splitMarkdownLines(markdownContent)
                 .map((line) => line.trimEnd())
                 .filter((line) => testPattern(ruleCatalogIdLinePattern, line));
 

@@ -18,7 +18,7 @@ import {
     writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { basename, join, resolve } from "node:path";
+import { basename, join, resolve, win32 } from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 
@@ -258,7 +258,7 @@ export function getTarCommand({
         );
     }
 
-    return join(windowsRoot, "System32", "tar.exe");
+    return win32.join(windowsRoot, "System32", "tar.exe");
 }
 
 /** @param {string} binaryPath */

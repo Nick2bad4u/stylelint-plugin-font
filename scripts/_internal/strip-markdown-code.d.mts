@@ -7,6 +7,8 @@ export type MarkdownInlineLink = Readonly<{
 
 export function stripMarkdownCode(content: string): string;
 
+export function splitMarkdownLines(content: string): readonly string[];
+
 export function extractMarkdownInlineLinks(
     content: string
 ): readonly MarkdownInlineLink[];

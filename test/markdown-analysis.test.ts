@@ -29,6 +29,17 @@ describe("markdown analysis helpers", () => {
         expect(stripped).not.toContain("./inline.md");
     });
 
+    it("preserves prose after CR-only fenced code", () => {
+        expect.assertions(2);
+
+        const stripped = stripMarkdownCode(
+            "~~~md\r[hidden](./hidden.md)\r~~~\r[kept](./kept.md)"
+        );
+
+        expect(stripped).not.toContain("./hidden.md");
+        expect(stripped).toContain("[kept](./kept.md)");
+    });
+
     it("extracts links and images with escaped labels and nested parentheses", () => {
         expect.assertions(1);
 
@@ -129,7 +140,7 @@ describe("markdown analysis helpers", () => {
     });
 
     it("recognizes only nonempty package documentation label lines", () => {
-        expect.assertions(3);
+        expect.assertions(4);
 
         expect(
             hasDefaultPackageDocumentationLabel(
@@ -144,5 +155,10 @@ describe("markdown analysis helpers", () => {
                 "stylelint-plugin-font package documentation: trailing"
             )
         ).toBe(false);
+        expect(
+            hasDefaultPackageDocumentationLabel(
+                "stylelint-plugin-font package documentation:\rNext line"
+            )
+        ).toBe(true);
     });
 });

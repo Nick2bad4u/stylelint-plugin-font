@@ -8,6 +8,7 @@ import { dirname, join } from "node:path";
 
 import {
     extractMarkdownInlineLinks,
+    splitMarkdownLines,
     stripMarkdownCode,
 } from "./_internal/strip-markdown-code.mjs";
 
@@ -139,7 +140,7 @@ const packageMetadataCache = new Map();
 export function hasDefaultPackageDocumentationLabel(content) {
     const labelSuffix = " package documentation:";
 
-    return content.split(/\r?\n/u).some((line) => {
+    return splitMarkdownLines(content).some((line) => {
         const normalizedLine = line.trimEnd();
 
         return (
@@ -814,8 +815,7 @@ export default function remarkLintRuleDocHeadings(options = {}) {
 
         if (requireRuleCatalogId) {
             const markdownContent = stripMarkdownCode(String(file));
-            const ruleCatalogIdLines = markdownContent
-                .split(/\r?\n/u)
+            const ruleCatalogIdLines = splitMarkdownLines(markdownContent)
                 .map((line) => line.trimEnd())
                 .filter((line) => testPattern(ruleCatalogIdLinePattern, line));
 

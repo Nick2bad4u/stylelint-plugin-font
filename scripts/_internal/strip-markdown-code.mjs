@@ -96,19 +96,59 @@ function isClosingFence(line, fencedCodeBlockState) {
 }
 
 /**
+ * Split Markdown at LF, CRLF, or CR boundaries while retaining each line
+ * ending. Preserving the endings keeps non-code source content unchanged.
+ *
+ * @param {string} content
+ *
+ * @returns {readonly string[]}
+ */
+export function splitMarkdownLines(content) {
+    /** @type {string[]} */
+    const lines = [];
+    let lineStart = 0;
+    let offset = 0;
+
+    while (offset < content.length) {
+        const character = content[offset];
+        if (character !== "\r" && character !== "\n") {
+            offset += 1;
+            continue;
+        }
+
+        const lineEnd =
+            character === "\r" && content[offset + 1] === "\n"
+                ? offset + 2
+                : offset + 1;
+        lines.push(content.slice(lineStart, lineEnd));
+        lineStart = lineEnd;
+        offset = lineEnd;
+    }
+
+    if (lineStart < content.length) {
+        lines.push(content.slice(lineStart));
+    }
+
+    return lines;
+}
+
+/**
  * @param {string} content
  *
  * @returns {string}
  */
 function stripFencedCodeBlocks(content) {
-    const lines = content.split(/(?<=\n)/u);
+    const lines = splitMarkdownLines(content);
 
     /** @type {FencedCodeBlockState | undefined} */
     let fencedCodeBlockState;
     let sanitizedContent = "";
 
     for (const line of lines) {
-        const lineWithoutTrailingLineBreak = line.replace(/\r?\n$/u, "");
+        const lineWithoutTrailingLineBreak = line.replace(
+            /(?:\r\n|\r|\n)$/u,
+            ""
+        );
 
         if (fencedCodeBlockState !== undefined) {
             if (

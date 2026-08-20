@@ -31,7 +31,7 @@ const docs = {
 function hasRegularSelectorParent(node: Readonly<AtRule>): boolean {
     let parent: unknown = node.parent;
 
-    while (isDefined(parent) && typeof parent === "object") {
+    while (typeof parent === "object" && isDefined(parent)) {
         // Cast to access properties safely
         const typedParent = parent as { parent?: unknown; type: string };
         const parentType = typedParent.type;

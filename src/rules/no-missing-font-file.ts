@@ -42,29 +42,6 @@ function decodeUrlPath(pathLikeUrl: string): string {
     }
 }
 
-async function fileExists(
-    cache: Map<string, boolean>,
-    resolvedPath: string
-): Promise<boolean> {
-    const cached = cache.get(resolvedPath);
-
-    if (isDefined(cached)) {
-        return cached;
-    }
-
-    let hasFile = true;
-
-    try {
-        await access(resolvedPath);
-    } catch {
-        hasFile = false;
-    }
-
-    cache.set(resolvedPath, hasFile);
-
-    return hasFile;
-}
-
 function getFirstDelimiterIndex(queryIndex: number, hashIndex: number): number {
     if (queryIndex === -1 && hashIndex === -1) {
         return -1;
@@ -112,6 +89,29 @@ function getSourceFilePath(root: Readonly<Root>): string | undefined {
     } catch {
         return undefined;
     }
+}
+
+async function hasFileAtPath(
+    cache: Map<string, boolean>,
+    resolvedPath: string
+): Promise<boolean> {
+    const cached = cache.get(resolvedPath);
+
+    if (isDefined(cached)) {
+        return cached;
+    }
+
+    let hasFile = true;
+
+    try {
+        await access(resolvedPath);
+    } catch {
+        hasFile = false;
+    }
+
+    cache.set(resolvedPath, hasFile);
+
+    return hasFile;
 }
 
 function isLocalPathUrl(url: string): boolean {
@@ -205,7 +205,7 @@ const ruleFunction: RuleBase<boolean, undefined> =
                             return undefined;
                         }
 
-                        if (await fileExists(existenceCache, resolvedPath)) {
+                        if (await hasFileAtPath(existenceCache, resolvedPath)) {
                             return undefined;
                         }
 

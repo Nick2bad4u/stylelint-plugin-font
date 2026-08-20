@@ -17,15 +17,10 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 import process from "node:process";
-import { fileURLToPath, pathToFileURL } from "node:url";
-
-import pc from "picocolors";
+import { pathToFileURL } from "node:url";
 
 const expectedStylelintMajorArgumentPrefix = "--expect-stylelint-major=";
-const builtPluginModuleUrl = new URL("../dist/plugin.js", import.meta.url);
-const builtPluginCjsPath = fileURLToPath(
-    new URL("../dist/plugin.cjs", import.meta.url)
-);
+const pluginPackageName = "stylelint-plugin-font";
 
 /** @param {string} value */
 const isWindowsAbsolutePath = (value) => /^[A-Za-z]:[\\/]/u.test(value);
@@ -210,7 +205,7 @@ function hasLintFunction(value) {
  */
 function createMissingBuildArtifactsError(error) {
     return new Error(
-        "Unable to load built plugin artifacts from dist/. Run `npm run build` before running the Stylelint compatibility smoke check.",
+        "Unable to load the public stylelint-plugin-font package. Build or install the package before running the compatibility smoke check.",
         {
             cause: error instanceof Error ? error : undefined,
         }
@@ -229,18 +224,13 @@ function isMissingBuildArtifactsIssue(error) {
 
     if (
         error.message.includes(
-            "Run `npm run build` before running the Stylelint compatibility smoke check."
+            "Build or install the package before running the compatibility smoke check."
         )
     ) {
         return false;
     }
 
-    return [
-        "dist/plugin.js",
-        "dist/plugin.cjs",
-        String.raw`dist\plugin.js`,
-        String.raw`dist\plugin.cjs`,
-    ].some((artifactPath) => error.message.includes(artifactPath));
+    return error.message.includes(pluginPackageName);
 }
 
 /**
@@ -344,7 +334,7 @@ export function assertStylelintMajor(
     }
 
     logger.log(
-        `${pc.green("✓")} Stylelint runtime ${pc.bold(runtimeVersion)} detected for compatibility smoke checks.`
+        `✓ Stylelint runtime ${runtimeVersion} detected for compatibility smoke checks.`
     );
 
     return runtimeMajor;
@@ -399,8 +389,7 @@ function createSurfaceSnapshot(candidate) {
  * @returns {Promise<BuiltPluginSurface>}
  */
 async function loadBuiltPluginSurface({
-    // eslint-disable-next-line no-unsanitized/method -- builtPluginModuleUrl is an internal fixed file URL under this repository
-    importModuleFn = () => import(builtPluginModuleUrl.href),
+    importModuleFn = () => import(pluginPackageName),
     requireFn = createRequire(import.meta.url),
 } = {}) {
     try {
@@ -408,7 +397,7 @@ async function loadBuiltPluginSurface({
             /** @type {Readonly<Record<string, unknown>>} */ (
                 await importModuleFn()
             );
-        const builtPluginCjs = requireFn(builtPluginCjsPath);
+        const builtPluginCjs = requireFn(pluginPackageName);
 
         return {
             builtPluginCjs,
@@ -520,9 +509,7 @@ export function assertPluginSurface(surface, { logger = console } = {}) {
         );
     }
 
-    logger.log(
-        `${pc.green("✓")} Plugin surface exports are structurally valid.`
-    );
+    logger.log("✓ Plugin surface exports are structurally valid.");
 }
 
 /**
@@ -571,7 +558,7 @@ export async function runConfigScenario(
         );
     }
 
-    logger.log(`${pc.green("✓")} ${pc.bold(name)} completed without warnings.`);
+    logger.log(`✓ ${name} completed without warnings.`);
 }
 
 /**
@@ -658,9 +645,7 @@ export async function runStylelintCompatSmoke({
     const runtimeVersion =
         stylelintRuntimeVersion ?? getStylelintRuntimeVersion();
 
-    logger.log(
-        pc.bold(pc.cyan("Running Stylelint compatibility smoke checks..."))
-    );
+    logger.log("Running Stylelint compatibility smoke checks...");
 
     assertStylelintMajor(expectedStylelintMajor, {
         logger,
@@ -690,9 +675,7 @@ export async function runStylelintCompatSmoke({
         });
     }
 
-    logger.log(
-        pc.bold(pc.green("Stylelint compatibility smoke checks passed."))
-    );
+    logger.log("Stylelint compatibility smoke checks passed.");
 }
 
 /**

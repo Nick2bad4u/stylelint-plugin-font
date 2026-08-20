@@ -2,232 +2,185 @@
 
 /**
  * @packageDocumentation
- * Run the Stylelint 16 compatibility smoke check by temporarily swapping the
- * installed Stylelint runtime, then restoring the working install.
+ * Pack the plugin and verify it in an isolated Stylelint 16 consumer project.
  */
 // @ts-check
 
-import { copyFile, cp, mkdtemp, rm } from "node:fs/promises";
+import { copyFile, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
 
+import { parseNpmPackFilename } from "./read-npm-pack-filename.mjs";
+
 const scriptsDirectoryPath = dirname(fileURLToPath(import.meta.url));
 const repositoryRootPath = resolve(scriptsDirectoryPath, "..");
-const packageJsonPath = join(repositoryRootPath, "package.json");
-const packageLockJsonPath = join(repositoryRootPath, "package-lock.json");
 const stylelintCompatSmokeScriptPath = join(
     scriptsDirectoryPath,
     "stylelint-compat-smoke.mjs"
 );
 
+/**
+ * @typedef {Readonly<{
+ *     args: readonly string[];
+ *     command: string;
+ *     cwd: string;
+ *     shell: boolean;
+ * }>} CommandSpec
+ */
+
 /** @param {string} value */
 const isWindowsAbsolutePath = (value) => /^[A-Za-z]:[\\/]/u.test(value);
 
-/**
- * @param {string} filePath
- *
- * @returns {string}
- */
+/** @param {string} filePath */
 const toFileHref = (filePath) => {
     if (isWindowsAbsolutePath(filePath)) {
-        const normalized = filePath.replaceAll("\\", "/");
-
-        return new URL(`file:///${normalized}`).href;
+        return new URL(`file:///${filePath.replaceAll("\\", "/")}`).href;
     }
 
     return pathToFileURL(resolve(filePath)).href;
 };
 
 /**
- * Normalize unknown thrown values to Error instances.
- *
- * @param {unknown} error
- * @param {string} fallbackMessage
- *
- * @returns {Error}
- */
-const toError = (error, fallbackMessage) =>
-    error instanceof Error ? error : new Error(fallbackMessage);
-
-/**
- * Execute an async cleanup step and collect any failure as a contextualized
- * Error instance without aborting subsequent cleanup work.
- *
- * @param {Error[]} cleanupErrors
- * @param {string} message
- * @param {() => Promise<void> | void} step
- *
- * @returns {Promise<void>}
- */
-const runCleanupStep = async (cleanupErrors, message, step) => {
-    try {
-        await step();
-    } catch (error) {
-        cleanupErrors.push(
-            new Error(message, {
-                cause: toError(error, message),
-            })
-        );
-    }
-};
-
-/**
- * @typedef {Readonly<{
- *     args: readonly string[];
- *     command: string;
- *     shell: boolean;
- * }>} CommandSpec
- */
-
-/**
- * @param {string} [platform]
- *
- * @returns {string}
- */
-export const getNpmCommand = (platform = process.platform) =>
-    platform === "win32" ? "npm.cmd" : "npm";
-
-/**
- * @param {NodeJS.ProcessEnv} [environment]
- *
- * @returns {string}
- */
-export const getWindowsCommandShell = (environment = process.env) =>
-    environment["ComSpec"] ?? environment["COMSPEC"] ?? "cmd.exe";
-
-/**
  * @param {Readonly<{
  *     argvEntry?: string | undefined;
  *     currentImportUrl: string;
  * }>} input
- *
- * @returns {boolean}
  */
 export const isDirectExecution = ({ argvEntry, currentImportUrl }) =>
     typeof argvEntry === "string" && toFileHref(argvEntry) === currentImportUrl;
 
+/** @param {string} [platform] */
+export const getNpmCommand = (platform = process.platform) =>
+    platform === "win32" ? "npm.cmd" : "npm";
+
+/** @param {NodeJS.ProcessEnv} [environment] */
+export const getWindowsCommandShell = (environment = process.env) =>
+    environment["ComSpec"] ?? environment["COMSPEC"] ?? "cmd.exe";
+
+/**
+ * @param {string} tarballPath
+ *
+ * @returns {Readonly<Record<string, unknown>>}
+ */
+export const createConsumerManifest = (tarballPath) => ({
+    dependencies: {
+        "stylelint-plugin-font": pathToFileURL(resolve(tarballPath)).href,
+        stylelint: "^16.0.0",
+    },
+    name: "stylelint-plugin-font-stylelint16-consumer",
+    private: true,
+    type: "module",
+});
+
 /**
  * @param {Readonly<{
- *     nodeCommand?: string;
- *     npmCommand?: string;
- *     platform?: string;
- *     stylelintCompatSmokeScriptPath?: string;
- * }>} [input]
+ *     consumerDirectoryPath: string;
+ *     consumerSmokeScriptPath: string;
+ *     nodeCommand?: string | undefined;
+ *     npmCommand?: string | undefined;
+ *     platform?: string | undefined;
+ *     repositoryRootPath?: string | undefined;
+ * }>} input
  *
  * @returns {readonly CommandSpec[]}
  */
 export const createCompatibilityCheckCommands = ({
+    consumerDirectoryPath,
+    consumerSmokeScriptPath,
     nodeCommand = process.execPath,
     npmCommand = getNpmCommand(),
     platform = process.platform,
-    stylelintCompatSmokeScriptPath:
-        smokeScriptPath = stylelintCompatSmokeScriptPath,
-} = {}) => {
-    const shouldUseWindowsShell = platform === "win32";
+    repositoryRootPath: targetRepositoryRootPath = repositoryRootPath,
+}) => {
+    const shell = platform === "win32";
 
     return [
         {
             args: ["run", "build"],
             command: npmCommand,
-            shell: shouldUseWindowsShell,
+            cwd: targetRepositoryRootPath,
+            shell,
         },
         {
             args: [
                 "install",
-                "--no-save",
-                "--legacy-peer-deps",
-                "stylelint@^16",
+                "--no-audit",
+                "--no-fund",
             ],
             command: npmCommand,
-            shell: shouldUseWindowsShell,
+            cwd: consumerDirectoryPath,
+            shell,
         },
         {
-            args: [smokeScriptPath, "--expect-stylelint-major=16"],
+            args: [consumerSmokeScriptPath, "--expect-stylelint-major=16"],
             command: nodeCommand,
+            cwd: consumerDirectoryPath,
             shell: false,
         },
     ];
 };
 
 /**
- * @param {Readonly<{
- *     npmCommand?: string;
- *     platform?: string;
- * }>} [input]
+ * Execute one child process synchronously and fail on a non-zero exit.
  *
- * @returns {CommandSpec}
- */
-export const createRestoreDependenciesCommand = ({
-    npmCommand = getNpmCommand(),
-    platform = process.platform,
-} = {}) => ({
-    args: [
-        "install",
-        "--ignore-scripts",
-        "--no-audit",
-        "--no-fund",
-        "--legacy-peer-deps",
-    ],
-    command: npmCommand,
-    shell: platform === "win32",
-});
-
-/**
- * Execute one child process synchronously and fail fast on non-zero exits.
- *
+ * @param {CommandSpec} input
  * @param {Readonly<{
- *     command: string;
- *     args: readonly string[];
- *     repositoryRootPath?: string;
- *     shell?: boolean;
- *     windowsCommandShell?: string;
- * }>} input
+ *     captureStdout?: boolean | undefined;
+ *     windowsCommandShell?: string | undefined;
+ * }>} [options]
+ *
+ * @returns {string}
  */
-export function runCommand({
-    args,
-    command,
-    repositoryRootPath: targetRepositoryRootPath = repositoryRootPath,
-    shell = false,
-    windowsCommandShell = getWindowsCommandShell(),
-}) {
-    const shouldUseWindowsCommandShell =
-        process.platform === "win32" && shell === true;
-    // `npm run` exports user configuration as `npm_config_*` variables. npm 12
-    // rejects `allow-scripts` when that setting is relayed to a nested project
-    // install, so let the nested npm process reload it from the user config.
+export function runCommand(
+    { args, command, cwd, shell },
+    {
+        captureStdout = false,
+        windowsCommandShell = getWindowsCommandShell(),
+    } = {}
+) {
     const childProcessEnvironment = Object.fromEntries(
         Object.entries(process.env).filter(
             ([name]) => name.toLowerCase() !== "npm_config_allow_scripts"
         )
     );
-    const result = shouldUseWindowsCommandShell
-        ? spawnSync(
-              windowsCommandShell,
-              [
-                  "/d",
-                  "/s",
-                  "/c",
-                  command,
-                  ...args,
-              ],
-              {
-                  cwd: targetRepositoryRootPath,
+    const standardIo = captureStdout
+        ? [
+              "inherit",
+              "pipe",
+              "inherit",
+          ]
+        : "inherit";
+    const result =
+        process.platform === "win32" && shell
+            ? spawnSync(
+                  windowsCommandShell,
+                  [
+                      "/d",
+                      "/s",
+                      "/c",
+                      command,
+                      ...args,
+                  ],
+                  {
+                      cwd,
+                      encoding: "utf8",
+                      env: childProcessEnvironment,
+                      shell: false,
+                      stdio: standardIo,
+                      windowsHide: true,
+                  }
+              )
+            : spawnSync(command, args, {
+                  cwd,
+                  encoding: "utf8",
                   env: childProcessEnvironment,
                   shell: false,
-                  stdio: "inherit",
+                  stdio: standardIo,
                   windowsHide: true,
-              }
-          )
-        : spawnSync(command, args, {
-              cwd: targetRepositoryRootPath,
-              env: childProcessEnvironment,
-              shell: false,
-              stdio: "inherit",
-              windowsHide: true,
-          });
+              });
 
     if (result.error !== undefined) {
         throw result.error;
@@ -238,176 +191,101 @@ export function runCommand({
             `Command failed (${String(result.status)}): ${command} ${args.join(" ")}`
         );
     }
+
+    return typeof result.stdout === "string" ? result.stdout : "";
 }
 
 /**
  * @param {Readonly<{
- *     packageJsonPath: string;
- *     packageLockJsonPath: string;
- *     tempBackupDirectory: string;
- * }>} input
- *
- * @returns {{ packageJsonBackupPath: string; packageLockBackupPath: string }}
- */
-const createBackupPaths = ({ tempBackupDirectory }) => ({
-    packageJsonBackupPath: join(tempBackupDirectory, "package.json"),
-    packageLockBackupPath: join(tempBackupDirectory, "package-lock.json"),
-});
-
-/**
- * Temporarily install Stylelint 16, run the compat smoke script, and restore
- * the working dependency installation and manifests afterwards.
- *
- * @param {Readonly<{
- *     copyFileFn?: typeof copyFile;
- *     cpFn?: typeof cp;
- *     mkdtempFn?: ((prefix: string) => Promise<string>) | undefined;
- *     nodeCommand?: string;
- *     npmCommand?: string;
- *     packageJsonPath?: string;
- *     packageLockJsonPath?: string;
- *     platform?: string;
- *     repositoryRootPath?: string;
- *     rmFn?: typeof rm;
- *     runCommandFn?:
- *         | ((
- *               input: CommandSpec & {
- *                   repositoryRootPath?: string;
- *                   windowsCommandShell?: string;
- *               }
- *           ) => void)
- *         | undefined;
- *     stylelintCompatSmokeScriptPath?: string;
- *     tmpDirectoryPath?: string;
- *     windowsCommandShell?: string;
+ *     copyFileFn?: typeof copyFile | undefined;
+ *     mkdtempFn?: typeof mkdtemp | undefined;
+ *     nodeCommand?: string | undefined;
+ *     npmCommand?: string | undefined;
+ *     platform?: string | undefined;
+ *     repositoryRootPath?: string | undefined;
+ *     rmFn?: typeof rm | undefined;
+ *     runCommandFn?: typeof runCommand | undefined;
+ *     smokeScriptPath?: string | undefined;
+ *     tempRootPath?: string | undefined;
+ *     windowsCommandShell?: string | undefined;
+ *     writeFileFn?: typeof writeFile | undefined;
  * }>} [input]
- *
- * @returns {Promise<void>}
  */
 export async function runStylelint16Compat({
     copyFileFn = copyFile,
-    cpFn = cp,
     mkdtempFn = mkdtemp,
     nodeCommand = process.execPath,
     npmCommand = getNpmCommand(),
-    packageJsonPath: targetPackageJsonPath = packageJsonPath,
-    packageLockJsonPath: targetPackageLockJsonPath = packageLockJsonPath,
     platform = process.platform,
     repositoryRootPath: targetRepositoryRootPath = repositoryRootPath,
     rmFn = rm,
     runCommandFn = runCommand,
-    stylelintCompatSmokeScriptPath:
-        targetSmokeScriptPath = stylelintCompatSmokeScriptPath,
-    tmpDirectoryPath = tmpdir(),
+    smokeScriptPath = stylelintCompatSmokeScriptPath,
+    tempRootPath = tmpdir(),
     windowsCommandShell = getWindowsCommandShell(),
+    writeFileFn = writeFile,
 } = {}) {
-    const tempBackupDirectory = await mkdtempFn(
-        join(tmpDirectoryPath, "stylelint-plugin-font-stylelint16-")
+    const consumerDirectoryPath = await mkdtempFn(
+        join(tempRootPath, "stylelint-plugin-font-stylelint16-consumer-")
     );
-    const { packageJsonBackupPath, packageLockBackupPath } = createBackupPaths({
-        packageJsonPath: targetPackageJsonPath,
-        packageLockJsonPath: targetPackageLockJsonPath,
-        tempBackupDirectory,
-    });
-
-    await copyFileFn(targetPackageJsonPath, packageJsonBackupPath);
-    await copyFileFn(targetPackageLockJsonPath, packageLockBackupPath);
-
-    /** @type {Error | undefined} */
-    let primaryError;
-    /** @type {Error[]} */
-    const cleanupErrors = [];
+    const consumerSmokeScriptPath = join(
+        consumerDirectoryPath,
+        "stylelint-compat-smoke.mjs"
+    );
 
     try {
-        for (const command of createCompatibilityCheckCommands({
+        const commands = createCompatibilityCheckCommands({
+            consumerDirectoryPath,
+            consumerSmokeScriptPath,
             nodeCommand,
             npmCommand,
             platform,
-            stylelintCompatSmokeScriptPath: targetSmokeScriptPath,
-        })) {
-            runCommandFn({
-                ...command,
-                repositoryRootPath: targetRepositoryRootPath,
-                windowsCommandShell,
-            });
+            repositoryRootPath: targetRepositoryRootPath,
+        });
+        const [buildCommand, ...consumerCommands] = commands;
+
+        if (buildCommand === undefined) {
+            throw new Error(
+                "The Stylelint compatibility build command is missing."
+            );
         }
-    } catch (error) {
-        primaryError = toError(
-            error,
-            "Stylelint 16 compatibility check failed."
+
+        runCommandFn(buildCommand, { windowsCommandShell });
+
+        const packMetadata = runCommandFn(
+            {
+                args: [
+                    "pack",
+                    "--json",
+                    "--pack-destination",
+                    consumerDirectoryPath,
+                ],
+                command: npmCommand,
+                cwd: targetRepositoryRootPath,
+                shell: platform === "win32",
+            },
+            { captureStdout: true, windowsCommandShell }
         );
-    }
+        const tarballFilename = parseNpmPackFilename(packMetadata);
+        const tarballPath = join(consumerDirectoryPath, tarballFilename);
 
-    await runCleanupStep(
-        cleanupErrors,
-        "Failed to restore dependencies after the Stylelint 16 compatibility check.",
-        () => {
-            runCommandFn({
-                ...createRestoreDependenciesCommand({
-                    npmCommand,
-                    platform,
-                }),
-                repositoryRootPath: targetRepositoryRootPath,
-                windowsCommandShell,
-            });
-        }
-    );
-    await runCleanupStep(
-        cleanupErrors,
-        "Failed to restore package.json after the Stylelint 16 compatibility check.",
-        async () => {
-            await cpFn(packageJsonBackupPath, targetPackageJsonPath, {
-                force: true,
-            });
-        }
-    );
-    await runCleanupStep(
-        cleanupErrors,
-        "Failed to restore package-lock.json after the Stylelint 16 compatibility check.",
-        async () => {
-            await cpFn(packageLockBackupPath, targetPackageLockJsonPath, {
-                force: true,
-            });
-        }
-    );
-    await runCleanupStep(
-        cleanupErrors,
-        `Failed to remove temporary backup directory: ${tempBackupDirectory}`,
-        async () => {
-            await rmFn(tempBackupDirectory, {
-                force: true,
-                recursive: true,
-            });
-        }
-    );
-    if (primaryError !== undefined && cleanupErrors.length > 0) {
-        throw new AggregateError(
-            [primaryError, ...cleanupErrors],
-            "Stylelint 16 compatibility check failed and cleanup encountered additional errors."
-        );
-    }
+        await Promise.all([
+            copyFileFn(smokeScriptPath, consumerSmokeScriptPath),
+            writeFileFn(
+                join(consumerDirectoryPath, "package.json"),
+                `${JSON.stringify(createConsumerManifest(tarballPath), null, 2)}\n`,
+                "utf8"
+            ),
+        ]);
 
-    if (primaryError !== undefined) {
-        throw primaryError;
-    }
-
-    if (cleanupErrors.length === 1) {
-        throw cleanupErrors[0];
-    }
-
-    if (cleanupErrors.length > 1) {
-        throw new AggregateError(
-            cleanupErrors,
-            "Stylelint 16 compatibility cleanup failed."
-        );
+        for (const command of consumerCommands) {
+            runCommandFn(command, { windowsCommandShell });
+        }
+    } finally {
+        await rmFn(consumerDirectoryPath, { force: true, recursive: true });
     }
 }
 
-/**
- * CLI entrypoint for the Stylelint 16 compatibility wrapper.
- *
- * @returns {Promise<void>}
- */
 export async function runCli() {
     await runStylelint16Compat();
 }
@@ -418,10 +296,8 @@ if (
         currentImportUrl: import.meta.url,
     })
 ) {
-    try {
-        await runCli();
-    } catch (error) {
+    runCli().catch((error) => {
         console.error("Stylelint 16 compatibility check failed:", error);
         process.exitCode = 1;
-    }
+    });
 }

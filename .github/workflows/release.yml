@@ -128,7 +128,7 @@ jobs:
               working-directory: "${{ runner.temp }}"
               run: |
                   npm_version=$(node -p "require(process.env.GITHUB_WORKSPACE + '/package.json').packageManager.split('@').at(-1)")
-                  npm install --global "npm@${npm_version}"
+                  npm install --global --ignore-scripts "npm@${npm_version}"
                   test "$(npm --version)" = "$npm_version"
 
             - name: "Configure npm cache and registry"

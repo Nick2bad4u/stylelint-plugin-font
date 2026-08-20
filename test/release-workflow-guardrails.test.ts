@@ -24,13 +24,13 @@ const installWorkflowPaths = [
 
 describe("release workflow guardrails", () => {
     it("keeps verification and release identities fail-closed", async () => {
-        expect.assertions(15);
+        expect.assertions(17);
 
         const workflow = await readFile(releaseWorkflowPath, "utf8");
 
         expect(workflow).toContain('run: "npm run release:check"');
-        expect(workflow).toContain("git add -- package.json package-lock.json");
-        expect(workflow).toContain("git push --atomic origin");
+        expect(workflow).toContain("Merge a checked version PR first.");
+        expect(workflow).toMatch(/git push origin "refs\/tags\/\$\{TAG\}"/v);
         expect(workflow).toContain('name: "Install declared npm version"');
         expect(workflow).toMatch(
             /npm install --global --ignore-scripts "npm@\$\{npm_version\}"/v
@@ -40,13 +40,13 @@ describe("release workflow guardrails", () => {
         expect(workflow).toContain("elif grep -q 'E404'");
         expect(workflow).toContain("node scripts/read-npm-pack-filename.mjs");
         expect(workflow).toContain("overwrite_files: false");
-        expect(workflow).toMatch(
-            /git commit -m "🔖 \[chore\] \(release\) Publish \$\{TAG\}"/v
-        );
+        expect(workflow).not.toContain('npm version "');
+        expect(workflow).not.toContain("git commit");
         expect(workflow).not.toContain("skip_verify");
         expect(workflow).not.toContain("git add -A");
         expect(workflow).not.toContain("npm ci --force");
         expect(workflow).not.toContain("git fetch --tags --force");
+        expect(workflow).not.toMatch(/HEAD:refs\/heads\/\$\{BRANCH\}/v);
     });
 
     it("runs only reviewed dependency lifecycle scripts", async () => {

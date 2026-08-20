@@ -5,6 +5,7 @@ import {
     ACTIONLINT_VERSION,
     calculateSha256,
     getActionlintAsset,
+    getTarCommand,
     isDirectExecution,
     verifyAssetPayload,
 } from "../scripts/run-actionlint.mjs";
@@ -91,5 +92,20 @@ describe("run-actionlint script", () => {
                 currentImportUrl: scriptUrl,
             })
         ).toBe(false);
+    });
+
+    it("bypasses Git for Windows tar when extracting absolute paths", () => {
+        expect.assertions(3);
+
+        expect(getTarCommand({ platform: "linux" })).toBe("tar");
+        expect(
+            getTarCommand({
+                environment: { SystemRoot: String.raw`C:\Windows` },
+                platform: "win32",
+            })
+        ).toBe(String.raw`C:\Windows\System32\tar.exe`);
+        expect(() => {
+            getTarCommand({ environment: {}, platform: "win32" });
+        }).toThrow(/SystemRoot or WINDIR/v);
     });
 });

@@ -22,6 +22,13 @@ export function verifyAssetPayload(
 
 export function verifyActionlintVersion(binaryPath: string): void;
 
+export function getTarCommand(
+    input?: Readonly<{
+        environment?: NodeJS.ProcessEnv | undefined;
+        platform?: string | undefined;
+    }>
+): string;
+
 export function prepareActionlint(
     input?: Readonly<{
         arch?: string | undefined;

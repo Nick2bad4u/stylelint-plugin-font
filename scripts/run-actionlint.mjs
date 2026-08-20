@@ -232,6 +232,35 @@ function runCheckedCommand(command, arguments_) {
     return `${result.stdout}${result.stderr}`;
 }
 
+/**
+ * Git for Windows prepends its own GNU tar to PATH when a workflow uses Bash.
+ * That binary interprets a drive-letter path as a remote archive (`C:...`).
+ * Select Windows' built-in bsdtar explicitly so absolute paths stay local.
+ *
+ * @param {Readonly<{
+ *     environment?: NodeJS.ProcessEnv | undefined;
+ *     platform?: string | undefined;
+ * }>} [input]
+ */
+export function getTarCommand({
+    environment = process.env,
+    platform = process.platform,
+} = {}) {
+    if (platform !== "win32") {
+        return "tar";
+    }
+
+    const windowsRoot = environment["SystemRoot"] ?? environment["WINDIR"];
+
+    if (windowsRoot === undefined || windowsRoot === "") {
+        throw new Error(
+            "SystemRoot or WINDIR is required to locate Windows bsdtar."
+        );
+    }
+
+    return join(windowsRoot, "System32", "tar.exe");
+}
+
 /** @param {string} binaryPath */
 export function verifyActionlintVersion(binaryPath) {
     const output = runCheckedCommand(binaryPath, ["-version"]);
@@ -282,7 +311,7 @@ export async function prepareActionlint({
     const binaryPath = join(extractionDirectoryPath, binaryName);
 
     try {
-        runCheckedCommand("tar", [
+        runCheckedCommand(getTarCommand({ environment, platform }), [
             "-xf",
             archivePath,
             "-C",

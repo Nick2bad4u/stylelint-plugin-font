@@ -68,9 +68,12 @@ const toFileHref = (filePath) => {
  *             code: string;
  *             codeFilename: string;
  *             config: import("stylelint").Config;
+ *             fix?: boolean;
  *         }>
  *     ) => Promise<
  *         Readonly<{
+ *             code?: string;
+ *             output?: string;
  *             results: readonly StylelintResultLike[];
  *         }>
  *     >;
@@ -562,6 +565,98 @@ export async function runConfigScenario(
 }
 
 /**
+ * Verify a diagnostic and an idempotent autofix through the installed public
+ * plugin. This catches the Stylelint 16.0 compatibility path that config-only
+ * smoke tests cannot exercise.
+ *
+ * @param {Pick<BuiltPluginSurface, "plugin">} surface
+ * @param {Readonly<{
+ *     logger?: InfoLogger | undefined;
+ *     stylelint: StylelintLike;
+ * }>} input
+ */
+export async function runFixScenario(
+    { plugin },
+    { logger = console, stylelint }
+) {
+    const code =
+        '@font-face { font-family: Inter; src: url("./inter.woff2") format("woff2"); }';
+    const fixedCode =
+        '@font-face { font-family: "Inter"; src: url("./inter.woff2") format("woff2"); }';
+    const codeFilename = "src/styles/autofix.css";
+    const config = {
+        plugins: Array.from(plugin),
+        rules: {
+            "font/no-unquoted-font-family-in-font-face": true,
+        },
+    };
+    const reported = await stylelint.lint({ code, codeFilename, config });
+    const [reportedResult] = reported.results;
+    const [warning] = reportedResult?.warnings ?? [];
+
+    if (
+        reportedResult === undefined ||
+        (reportedResult.parseErrors ?? []).length > 0 ||
+        (reportedResult.invalidOptionWarnings ?? []).length > 0 ||
+        warning === undefined ||
+        warning.rule !== "font/no-unquoted-font-family-in-font-face" ||
+        warning.severity !== "error" ||
+        warning.line !== 1 ||
+        warning.column !== 27 ||
+        warning.endLine !== 1 ||
+        warning.endColumn !== 32
+    ) {
+        throw new Error(
+            "autofix-diagnostic: expected the precise unquoted-family diagnostic."
+        );
+    }
+
+    const fixed = await stylelint.lint({
+        code,
+        codeFilename,
+        config,
+        fix: true,
+    });
+    const [fixedResult] = fixed.results;
+    const firstFixedCode = fixed.code ?? fixed.output;
+
+    if (
+        fixedResult === undefined ||
+        (fixedResult.parseErrors ?? []).length > 0 ||
+        (fixedResult.invalidOptionWarnings ?? []).length > 0 ||
+        (fixedResult.warnings ?? []).length > 0 ||
+        firstFixedCode !== fixedCode
+    ) {
+        throw new Error(
+            "autofix-application: the expected fix was not applied cleanly."
+        );
+    }
+
+    const secondPass = await stylelint.lint({
+        code: firstFixedCode,
+        codeFilename,
+        config,
+        fix: true,
+    });
+    const [secondPassResult] = secondPass.results;
+    const secondFixedCode = secondPass.code ?? secondPass.output;
+
+    if (
+        secondPassResult === undefined ||
+        (secondPassResult.parseErrors ?? []).length > 0 ||
+        (secondPassResult.invalidOptionWarnings ?? []).length > 0 ||
+        (secondPassResult.warnings ?? []).length > 0 ||
+        secondFixedCode !== fixedCode
+    ) {
+        throw new Error(
+            "autofix-idempotence: a second fix pass changed or rejected the fixed CSS."
+        );
+    }
+
+    logger.log("✓ autofix diagnostic, application, and idempotence passed.");
+}
+
+/**
  * @param {Pick<BuiltPluginSurface, "fontPluginConfigs" | "plugin">} input
  *
  * @returns {readonly ConfigScenario[]}
@@ -674,6 +769,8 @@ export async function runStylelintCompatSmoke({
             stylelint,
         });
     }
+
+    await runFixScenario(builtPluginSurface, { logger, stylelint });
 
     logger.log("Stylelint compatibility smoke checks passed.");
 }

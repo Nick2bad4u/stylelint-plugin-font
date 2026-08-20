@@ -15,8 +15,9 @@ import {
     createRuleDocsUrl,
     createRuleName,
 } from "../_internal/plugin-constants.js";
+import { reportWithFixCompatibility } from "../_internal/report-with-fix-compatibility.js";
 
-const { report, ruleMessages, validateOptions } = stylelint.utils;
+const { ruleMessages, validateOptions } = stylelint.utils;
 const ruleName = createRuleName("no-whitespace-in-unquoted-family");
 const messages: { rejected: (family: string) => string } = ruleMessages(
     ruleName,
@@ -47,7 +48,7 @@ function quoteUnquotedWhitespaceTokens(value: string): string {
 }
 
 const ruleFunction: RuleBase<boolean, undefined> =
-    (primary) => (root, result) => {
+    (primary, _secondaryOptions, context) => (root, result) => {
         const isValid = validateOptions(result, ruleName, {
             actual: primary,
             possible: [true],
@@ -71,15 +72,18 @@ const ruleFunction: RuleBase<boolean, undefined> =
             const firstFamily =
                 arrayAt(parseFamilyList(decl.value), 0) ?? "(unknown family)";
 
-            report({
-                fix() {
-                    decl.value = quoteUnquotedWhitespaceTokens(decl.value);
+            reportWithFixCompatibility(
+                {
+                    fix() {
+                        decl.value = quoteUnquotedWhitespaceTokens(decl.value);
+                    },
+                    message: messages.rejected(firstFamily),
+                    node: decl,
+                    result,
+                    ruleName,
                 },
-                message: messages.rejected(firstFamily),
-                node: decl,
-                result,
-                ruleName,
-            });
+                context
+            );
         });
     };
 

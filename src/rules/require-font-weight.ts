@@ -10,8 +10,9 @@ import {
     createRuleDocsUrl,
     createRuleName,
 } from "../_internal/plugin-constants.js";
+import { reportWithFixCompatibility } from "../_internal/report-with-fix-compatibility.js";
 
-const { report, ruleMessages, validateOptions } = stylelint.utils;
+const { ruleMessages, validateOptions } = stylelint.utils;
 const ruleName = createRuleName("require-font-weight");
 const messages: { rejected: () => string } = ruleMessages(ruleName, {
     rejected: (): string =>
@@ -24,7 +25,7 @@ const docs = {
 } as const;
 
 const ruleFunction: RuleBase<boolean, undefined> =
-    (primary) => (root, result) => {
+    (primary, _secondaryOptions, context) => (root, result) => {
         const isValid = validateOptions(result, ruleName, {
             actual: primary,
             possible: [true],
@@ -39,18 +40,21 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 continue;
             }
 
-            report({
-                fix() {
-                    block.atRule.append({
-                        prop: "font-weight",
-                        value: "400",
-                    });
+            reportWithFixCompatibility(
+                {
+                    fix() {
+                        block.atRule.append({
+                            prop: "font-weight",
+                            value: "400",
+                        });
+                    },
+                    message: messages.rejected(),
+                    node: block.atRule,
+                    result,
+                    ruleName,
                 },
-                message: messages.rejected(),
-                node: block.atRule,
-                result,
-                ruleName,
-            });
+                context
+            );
         }
     };
 

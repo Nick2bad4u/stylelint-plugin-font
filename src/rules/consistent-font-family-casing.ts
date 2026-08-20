@@ -14,8 +14,9 @@ import {
     createRuleDocsUrl,
     createRuleName,
 } from "../_internal/plugin-constants.js";
+import { reportWithFixCompatibility } from "../_internal/report-with-fix-compatibility.js";
 
-const { report, ruleMessages, validateOptions } = stylelint.utils;
+const { ruleMessages, validateOptions } = stylelint.utils;
 const ruleName = createRuleName("consistent-font-family-casing");
 const messages: {
     rejected: (expected: string, actual: string) => string;
@@ -48,7 +49,7 @@ function normalizeTokenWithCanonicalCase(
 }
 
 const ruleFunction: RuleBase<boolean, undefined> =
-    (primary) => (root, result) => {
+    (primary, _secondaryOptions, context) => (root, result) => {
         const isValid = validateOptions(result, ruleName, {
             actual: primary,
             possible: [true],
@@ -79,21 +80,24 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 continue;
             }
 
-            report({
-                fix() {
-                    familyDecl.value = normalizeTokenWithCanonicalCase(
-                        familyDecl.value,
-                        canonical
-                    );
+            reportWithFixCompatibility(
+                {
+                    fix() {
+                        familyDecl.value = normalizeTokenWithCanonicalCase(
+                            familyDecl.value,
+                            canonical
+                        );
+                    },
+                    message: messages.rejected(
+                        canonical,
+                        stripSurroundingQuotes(familyDecl.value)
+                    ),
+                    node: familyDecl,
+                    result,
+                    ruleName,
                 },
-                message: messages.rejected(
-                    canonical,
-                    stripSurroundingQuotes(familyDecl.value)
-                ),
-                node: familyDecl,
-                result,
-                ruleName,
-            });
+                context
+            );
         }
     };
 

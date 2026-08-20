@@ -68,7 +68,7 @@ export const getWindowsCommandShell = (environment = process.env) =>
 export const createConsumerManifest = (tarballPath) => ({
     dependencies: {
         "stylelint-plugin-font": pathToFileURL(resolve(tarballPath)).href,
-        stylelint: "^16.0.0",
+        stylelint: "16.0.0",
     },
     name: "stylelint-plugin-font-stylelint16-consumer",
     private: true,

@@ -192,7 +192,7 @@ const config = {
                 "@type": "WebSite",
                 description: siteDescription,
                 image: socialCardImageUrl,
-                name: "stylelint-plugin-font",
+                name: projectName,
                 publisher: {
                     "@type": "Person",
                     name: "Nick2bad4u",
@@ -497,7 +497,7 @@ const config = {
                 name: "twitter:card",
             },
             {
-                content: "stylelint-plugin-font",
+                content: projectName,
                 property: "og:site_name",
             },
         ],
@@ -613,7 +613,7 @@ const config = {
                 width: 32,
             },
             style: "dark",
-            title: "stylelint-plugin-font",
+            title: projectName,
         },
         prism: {
             additionalLanguages: [
@@ -672,7 +672,7 @@ const config = {
             },
         ],
     ],
-    title: "stylelint-plugin-font",
+    title: projectName,
     trailingSlash: false,
     url: siteOrigin,
 } satisfies Config;

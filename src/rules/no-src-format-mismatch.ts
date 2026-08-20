@@ -86,9 +86,9 @@ const ruleFunction: RuleBase<boolean, undefined> =
 
                 // Only check URL-based entries that have an explicit format hint.
                 if (
+                    entry.isLocal ||
                     !isDefined(url) ||
-                    !isDefined(declaredFmt) ||
-                    entry.isLocal
+                    !isDefined(declaredFmt)
                 ) {
                     continue;
                 }
@@ -102,7 +102,7 @@ const ruleFunction: RuleBase<boolean, undefined> =
                 const expectedFmt = EXTENSION_TO_FORMAT.get(ext);
 
                 // If the extension is unrecognised or the formats match, skip.
-                if (!isDefined(expectedFmt) || expectedFmt === declaredFmt) {
+                if (expectedFmt === declaredFmt || !isDefined(expectedFmt)) {
                     continue;
                 }
 

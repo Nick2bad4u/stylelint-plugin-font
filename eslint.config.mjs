@@ -1,5 +1,7 @@
 import nick2bad4u from "eslint-config-nick2bad4u";
 
+const repositoryRoot = process.cwd();
+
 /** @type {import("eslint").Linter.Config[]} */
 const config = [
     {
@@ -12,6 +14,30 @@ const config = [
     },
 
     ...nick2bad4u.configs.all,
+
+    {
+        files: ["eslint.config.mjs"],
+        languageOptions: {
+            parserOptions: {
+                project: ["./tsconfig.js.json"],
+                projectService: false,
+                tsconfigRootDir: repositoryRoot,
+            },
+        },
+        name: "Repository override: type-aware ESLint config linting",
+    },
+
+    {
+        files: [".npm-extension.mjs"],
+        languageOptions: {
+            parserOptions: {
+                project: ["./tsconfig.npm-extension.json"],
+                projectService: false,
+                tsconfigRootDir: repositoryRoot,
+            },
+        },
+        name: "Repository override: type-aware npm extension linting",
+    },
 
     {
         files: ["src/**/*.ts", "test/**/*.ts"],
@@ -41,9 +67,10 @@ const config = [
     },
 
     {
-        files: ["src/rules/**/*.ts"],
+        files: ["src/_internal/font-analysis.ts", "src/rules/**/*.ts"],
         name: "Repository override: allow rule visitor guard continues",
         rules: {
+            "sonarjs/too-many-break-or-continue-in-loop": "off",
             "unicorn/no-break-in-nested-loop": "off",
         },
     },

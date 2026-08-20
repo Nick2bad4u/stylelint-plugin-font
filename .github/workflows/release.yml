@@ -27,16 +27,6 @@ on:
                 description: "Explicit release version in x.y.z format (overrides release_type)"
                 required: false
                 type: "string"
-            ref:
-                description: "Branch to release from when running manually"
-                required: false
-                default: "main"
-                type: "string"
-            skip_verify:
-                description: "Skip package verification (manual dispatch only; use with caution)"
-                required: false
-                default: false
-                type: "boolean"
 
 defaults:
     run:
@@ -75,23 +65,12 @@ jobs:
 
             - name: "Resolve target ref"
               id: "target_ref"
-              env:
-                  WORKFLOW_DISPATCH_REF: "${{ inputs.ref }}"
               run: |
                   set -euo pipefail
                   if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-                    branch="${WORKFLOW_DISPATCH_REF:-}"
-                    if [ -z "$branch" ]; then
-                      branch="${DEFAULT_RELEASE_BRANCH}"
-                    fi
-                    branch="${branch#refs/heads/}"
-                    if [[ "$branch" == refs/tags/* ]]; then
-                      echo "workflow_dispatch ref must be a branch, not a tag: $branch" >&2
-                      exit 1
-                    fi
                     {
-                      echo "ref=$branch"
-                      echo "branch=$branch"
+                      echo "ref=${DEFAULT_RELEASE_BRANCH}"
+                      echo "branch=${DEFAULT_RELEASE_BRANCH}"
                     } >> "$GITHUB_OUTPUT"
                   else
                     {
@@ -108,7 +87,51 @@ jobs:
                   ref: "${{ steps.target_ref.outputs.ref }}"
                   token: "${{ secrets.GITHUB_TOKEN }}"
 
+            - name: "Verify exact release source"
+              id: "source"
+              env:
+                  BRANCH: "${{ steps.target_ref.outputs.branch }}"
+              run: |
+                  set -euo pipefail
+                  git fetch --no-tags origin "refs/heads/${DEFAULT_RELEASE_BRANCH}"
+
+                  source_sha=$(git rev-parse HEAD)
+                  remote_main_sha=$(git rev-parse FETCH_HEAD)
+                  if [ "$source_sha" != "$remote_main_sha" ]; then
+                    echo "Release source ${source_sha} is not exact ${DEFAULT_RELEASE_BRANCH} (${remote_main_sha})." >&2
+                    exit 1
+                  fi
+
+                  if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "$BRANCH" != "$DEFAULT_RELEASE_BRANCH" ]; then
+                    echo "Manual releases must target ${DEFAULT_RELEASE_BRANCH}; received ${BRANCH}." >&2
+                    exit 1
+                  fi
+
+                  if [ -n "$(git status --porcelain=v1 --untracked-files=all)" ]; then
+                    echo "Release checkout is not clean before dependency installation." >&2
+                    git status --short
+                    exit 1
+                  fi
+
+                  {
+                    echo "sha=$source_sha"
+                    echo "remote_main_sha=$remote_main_sha"
+                  } >> "$GITHUB_OUTPUT"
+
             - name: "Setup Node.js"
+              uses: "actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e" # v6.4.0
+              with:
+                  node-version-file: ".node-version"
+                  package-manager-cache: false
+
+            - name: "Install declared npm version"
+              working-directory: "${{ runner.temp }}"
+              run: |
+                  npm_version=$(node -p "require(process.env.GITHUB_WORKSPACE + '/package.json').packageManager.split('@').at(-1)")
+                  npm install --global --ignore-scripts "npm@${npm_version}"
+                  test "$(npm --version)" = "$npm_version"
+
+            - name: "Configure npm cache and registry"
               uses: "actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e" # v6.4.0
               with:
                   node-version-file: ".node-version"
@@ -117,14 +140,9 @@ jobs:
                   cache-dependency-path: "package-lock.json"
 
             - name: "Install dependencies"
-              run: "npm ci --force"
-
-            - name: "Install Gitleaks"
               run: |
-                  set -euo pipefail
-                  go install github.com/zricethezav/gitleaks/v8@v8.30.1
-                  echo "${HOME}/go/bin" >> "${GITHUB_PATH}"
-                  "${HOME}/go/bin/gitleaks" version
+                  npm ci --ignore-scripts
+                  npm rebuild --foreground-scripts
 
             - name: "Configure Git for release automation"
               if: "github.event_name == 'workflow_dispatch'"
@@ -132,7 +150,7 @@ jobs:
                   set -euo pipefail
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
-                  git fetch --tags --force
+                  git fetch --tags
 
             - name: "Validate workflow_dispatch release input"
               if: "github.event_name == 'workflow_dispatch'"
@@ -171,22 +189,14 @@ jobs:
                     exit 1
                   fi
 
-            - name: "Warn when package verification is skipped"
-              if: "${{ github.event_name == 'workflow_dispatch' && inputs.skip_verify }}"
-              run: |
-                  echo "::warning::Skipping 'Verify package' because workflow_dispatch input 'skip_verify' is true."
-                  echo "::warning::Use this only when release checks were validated locally before dispatch."
-
             - name: "Verify package"
-              if: "${{ github.event_name != 'workflow_dispatch' || !inputs.skip_verify }}"
               run: "npm run release:check"
 
             - name: "Ensure verification did not modify tracked files"
-              if: "startsWith(github.ref, 'refs/tags/v')"
               run: |
                   set -euo pipefail
-                  if ! git diff --quiet || ! git diff --cached --quiet; then
-                    echo "release:check modified files on a tag-triggered release. Ensure main is clean before tagging." >&2
+                  if [ -n "$(git status --porcelain=v1 --untracked-files=all)" ]; then
+                    echo "release:check modified the release checkout." >&2
                     git status --short
                     exit 1
                   fi
@@ -231,6 +241,30 @@ jobs:
               if: "github.event_name == 'workflow_dispatch'"
               run: "npm run build"
 
+            - name: "Validate manual release mutation boundary"
+              if: "github.event_name == 'workflow_dispatch'"
+              run: |
+                  set -euo pipefail
+                  if ! git diff --cached --quiet; then
+                    echo "The index must remain empty before the release allowlist is staged." >&2
+                    git diff --cached --name-status
+                    exit 1
+                  fi
+
+                  if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+                    echo "The version/build steps created unexpected untracked files." >&2
+                    git ls-files --others --exclude-standard
+                    exit 1
+                  fi
+
+                  expected_paths=$(printf '%s\n' package-lock.json package.json)
+                  actual_paths=$(git diff --name-only | LC_ALL=C sort)
+                  if [ "$actual_paths" != "$expected_paths" ]; then
+                    echo "Expected only package.json and package-lock.json to change during versioning." >&2
+                    git status --short
+                    exit 1
+                  fi
+
             - name: "Check whether version is already published"
               id: "npm_check"
               env:
@@ -238,12 +272,22 @@ jobs:
                   VERSION: "${{ steps.version.outputs.version }}"
               run: |
                   set -euo pipefail
-                  if npm view "${PACKAGE_NAME}@${VERSION}" version >/dev/null 2>&1; then
+                  mkdir -p temp
+                  set +e
+                  npm view "${PACKAGE_NAME}@${VERSION}" version --json > temp/npm-version.json 2> temp/npm-version-error.log
+                  npm_view_exit=$?
+                  set -e
+
+                  if [ "$npm_view_exit" -eq 0 ]; then
                     echo "already_published=true" >> "$GITHUB_OUTPUT"
                     echo "Version ${VERSION} is already published to npm."
-                  else
+                  elif grep -q 'E404' temp/npm-version-error.log; then
                     echo "already_published=false" >> "$GITHUB_OUTPUT"
                     echo "Version ${VERSION} is available for publishing."
+                  else
+                    echo "Unable to determine whether ${PACKAGE_NAME}@${VERSION} exists." >&2
+                    cat temp/npm-version-error.log >&2
+                    exit "$npm_view_exit"
                   fi
 
             - name: "Prevent duplicate workflow_dispatch release version"
@@ -254,29 +298,83 @@ jobs:
                   echo "Version ${VERSION} is already published. Choose a new release type/version." >&2
                   exit 1
 
+            - name: "Preflight immutable release identities"
+              env:
+                  TAG: "${{ steps.version.outputs.tag }}"
+                  GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+              run: |
+                  set -euo pipefail
+
+                  if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                    if git show-ref --verify --quiet "refs/tags/${TAG}"; then
+                      echo "Tag ${TAG} already exists locally." >&2
+                      exit 1
+                    fi
+
+                    if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+                      echo "Tag ${TAG} already exists on origin." >&2
+                      exit 1
+                    fi
+                  fi
+
+                  mkdir -p temp
+                  gh release list --limit 1000 --json tagName > temp/release-preflight.json
+                  if TAG="$TAG" node -e "const releases = require('./temp/release-preflight.json'); process.exit(releases.some(({ tagName }) => tagName === process.env.TAG) ? 0 : 1);"; then
+                    echo "GitHub release ${TAG} already exists." >&2
+                    exit 1
+                  fi
+
             - name: "Commit and push release version + tag"
               if: "github.event_name == 'workflow_dispatch'"
               env:
                   BRANCH: "${{ steps.target_ref.outputs.branch }}"
+                  SOURCE_SHA: "${{ steps.source.outputs.sha }}"
                   TAG: "${{ steps.version.outputs.tag }}"
               run: |
                   set -euo pipefail
 
-                  if git rev-parse "$TAG" >/dev/null 2>&1; then
-                    echo "Tag $TAG already exists locally." >&2
+                  remote_branch_sha=$(git ls-remote --heads origin "refs/heads/${BRANCH}" | awk '{print $1}')
+                  if [ "$remote_branch_sha" != "$SOURCE_SHA" ]; then
+                    echo "Branch ${BRANCH} moved from ${SOURCE_SHA} to ${remote_branch_sha}; aborting release." >&2
                     exit 1
                   fi
 
-                  git add -A
+                  git add -- package.json package-lock.json
                   if git diff --cached --quiet; then
                     echo "No staged changes found for release commit." >&2
                     exit 1
                   fi
 
-                  git commit -m "chore: release ${TAG}"
+                  expected_paths=$(printf '%s\n' package-lock.json package.json)
+                  staged_paths=$(git diff --cached --name-only | LC_ALL=C sort)
+                  if [ "$staged_paths" != "$expected_paths" ]; then
+                    echo "The staged release mutation does not match the explicit allowlist." >&2
+                    git diff --cached --name-status
+                    exit 1
+                  fi
+
+                  if ! git diff --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+                    echo "Unexpected unstaged or untracked changes remain after staging the release allowlist." >&2
+                    git status --short
+                    exit 1
+                  fi
+
+                  git commit -m "🔖 [chore] (release) Publish ${TAG}"
+                  if [ "$(git rev-parse HEAD^)" != "$SOURCE_SHA" ]; then
+                    echo "Release commit parent does not match the verified source SHA ${SOURCE_SHA}." >&2
+                    exit 1
+                  fi
+
                   git tag -a "$TAG" -m "$TAG"
-                  git push origin "HEAD:${BRANCH}"
-                  git push origin "$TAG"
+                  git push --atomic origin "HEAD:refs/heads/${BRANCH}" "refs/tags/${TAG}"
+
+                  published_branch_sha=$(git ls-remote --heads origin "refs/heads/${BRANCH}" | awk '{print $1}')
+                  published_tag_sha=$(git ls-remote --tags origin "refs/tags/${TAG}^{}" | awk '{print $1}')
+                  release_sha=$(git rev-parse HEAD)
+                  if [ "$published_branch_sha" != "$release_sha" ] || [ "$published_tag_sha" != "$release_sha" ]; then
+                    echo "Atomic push verification failed for ${TAG} at ${release_sha}." >&2
+                    exit 1
+                  fi
 
             - name: "Generate release notes from git-cliff"
               env:
@@ -340,7 +438,7 @@ jobs:
                   npm pack --json --pack-destination "$assets_dir" > "$pack_metadata_path"
 
                   tarball_filename=$(
-                    node -e "const fs = require('node:fs'); const packMetadata = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(packMetadata[0].filename);" "$pack_metadata_path"
+                    node scripts/read-npm-pack-filename.mjs "$pack_metadata_path"
                   )
                   tarball_path="${assets_dir}/${tarball_filename}"
                   safe_package_name=$(printf '%s' "$PACKAGE_NAME" | sed 's/^@//; s#/#-#g')
@@ -374,7 +472,7 @@ jobs:
                       ${{ steps.release_assets.outputs.zip_path }}
                   fail_on_unmatched_files: true
                   generate_release_notes: false
-                  overwrite_files: true
+                  overwrite_files: false
                   prerelease: false
               env:
                   GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

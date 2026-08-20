@@ -109,8 +109,10 @@ if (
     process.argv[1] !== undefined &&
     import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
-    runCli().catch((error) => {
+    try {
+        await runCli();
+    } catch (error) {
         console.error(error instanceof Error ? error.message : String(error));
         process.exitCode = 1;
-    });
+    }
 }

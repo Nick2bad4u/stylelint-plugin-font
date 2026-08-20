@@ -15,7 +15,10 @@ import { dirname, extname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import pc from "picocolors";
 
-import { stripMarkdownCode as stripMarkdownCodeInternal } from "./_internal/strip-markdown-code.mjs";
+import {
+    extractMarkdownInlineLinks,
+    stripMarkdownCode as stripMarkdownCodeInternal,
+} from "./_internal/strip-markdown-code.mjs";
 
 const argv = process.argv.slice(2);
 const isVerbose = argv.includes("--verbose") || argv.includes("-v");
@@ -117,10 +120,6 @@ const IGNORED_DIRECTORIES = new Set([
     ".stryker-tmp",
 ]);
 
-// Capture Markdown links like [text](url) and images ![alt](url).
-// NOTE: this intentionally stays lightweight for MDX-heavy docs, so the
-// surrounding helpers strip code spans/blocks and normalize destinations.
-const LINK_PATTERN = /!?\[[^\]]*]\(([^)]+)\)/g;
 const HTML_ANCHOR_HREF_PATTERN =
     /<a\b[^>]*\bhref\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s"'=<>`]+))/giu;
 
@@ -229,10 +228,10 @@ export function stripMarkdownCode(markdown) {
  *
  * @param {string} content
  *
- * @returns {readonly RegExpMatchArray[]}
+ * @returns {ReturnType<typeof extractMarkdownInlineLinks>}
  */
 export function extractMarkdownLinkMatches(content) {
-    return Array.from(stripMarkdownCode(content).matchAll(LINK_PATTERN));
+    return extractMarkdownInlineLinks(content);
 }
 
 /**
@@ -481,7 +480,7 @@ async function checkFile(markdownPath, issues, issueSet, metrics) {
 
     const content = await readFile(markdownPath, "utf8");
     const strippedContent = stripMarkdownCode(content);
-    const matches = Array.from(strippedContent.matchAll(LINK_PATTERN));
+    const matches = extractMarkdownInlineLinks(strippedContent);
     const htmlAnchorLinks = Array.from(
         strippedContent.matchAll(HTML_ANCHOR_HREF_PATTERN),
         (match) => match[1] ?? match[2] ?? match[3] ?? ""
@@ -494,16 +493,14 @@ async function checkFile(markdownPath, issues, issueSet, metrics) {
     }
 
     for (const match of matches) {
-        const fullMatch = match[0];
-        const link = match[1];
-        if (fullMatch.startsWith("!")) {
+        if (match.isImage) {
             metrics.imageLinksIgnored++;
             continue;
         }
-        if (link) {
+        if (match.destination.length > 0) {
             const broken = await validateLink(
                 markdownPath,
-                link,
+                match.destination,
                 issues,
                 issueSet,
                 metrics

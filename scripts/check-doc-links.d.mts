@@ -7,9 +7,12 @@ export function parsePositiveIntegerFlag(
     aliases?: readonly string[]
 ): number;
 
-export function extractMarkdownLinkMatches(
-    content: string
-): readonly RegExpMatchArray[];
+export function extractMarkdownLinkMatches(content: string): readonly Readonly<{
+    destination: string;
+    fullMatch: string;
+    isImage: boolean;
+    label: string;
+}>[];
 
 export function extractHtmlAnchorLinks(content: string): readonly string[];
 

@@ -296,8 +296,10 @@ if (
         currentImportUrl: import.meta.url,
     })
 ) {
-    runCli().catch((error) => {
+    try {
+        await runCli();
+    } catch (error) {
         console.error("Stylelint 16 compatibility check failed:", error);
         process.exitCode = 1;
-    });
+    }
 }

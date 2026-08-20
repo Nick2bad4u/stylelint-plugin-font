@@ -8,32 +8,64 @@
 /**
  * @param {string} line
  *
- * @returns {FencedCodeBlockState | undefined}
+ * @returns {Readonly<{
+ *           fenceCharacter: "`" | "~";
+ *           fenceLength: number;
+ *           rest: string;
+ *       }>
+ *     | undefined}
  */
-function parseOpeningFence(line) {
-    const openingFenceMatch =
-        /^(?: {0,3})(?<fence>`{3,}|~{3,})(?<rest>[^\r\n]*)$/u.exec(line);
+function parseFenceLine(line) {
+    let indentationLength = 0;
 
-    if (openingFenceMatch?.groups === undefined) {
+    while (line[indentationLength] === " ") {
+        indentationLength += 1;
+    }
+
+    if (indentationLength > 3) {
         return undefined;
     }
 
-    const fence = openingFenceMatch.groups["fence"];
-
-    if (fence === undefined) {
+    const candidateFenceCharacter = line[indentationLength];
+    if (candidateFenceCharacter !== "`" && candidateFenceCharacter !== "~") {
         return undefined;
     }
 
-    const rest = openingFenceMatch.groups["rest"] ?? "";
-    const fenceCharacter = /** @type {"`" | "~"} */ (fence[0]);
+    let fenceLength = 0;
+    while (line[indentationLength + fenceLength] === candidateFenceCharacter) {
+        fenceLength += 1;
+    }
 
-    if (fenceCharacter === "`" && rest.includes("`")) {
+    if (fenceLength < 3) {
         return undefined;
     }
 
     return {
-        fenceCharacter,
-        minimumFenceLength: fence.length,
+        fenceCharacter: candidateFenceCharacter,
+        fenceLength,
+        rest: line.slice(indentationLength + fenceLength),
+    };
+}
+
+/**
+ * @param {string} line
+ *
+ * @returns {FencedCodeBlockState | undefined}
+ */
+function parseOpeningFence(line) {
+    const parsedFence = parseFenceLine(line);
+
+    if (parsedFence === undefined) {
+        return undefined;
+    }
+
+    if (parsedFence.fenceCharacter === "`" && parsedFence.rest.includes("`")) {
+        return undefined;
+    }
+
+    return {
+        fenceCharacter: parsedFence.fenceCharacter,
+        minimumFenceLength: parsedFence.fenceLength,
     };
 }
 
@@ -44,23 +76,17 @@ function parseOpeningFence(line) {
  * @returns {boolean}
  */
 function isClosingFence(line, fencedCodeBlockState) {
-    const closingFenceMatch = /^(?: {0,3})(?<fence>`{3,}|~{3,})[ \t]*$/u.exec(
-        line
-    );
-
-    if (closingFenceMatch?.groups === undefined) {
-        return false;
-    }
-
-    const fence = closingFenceMatch.groups["fence"];
-
-    if (fence === undefined) {
+    const parsedFence = parseFenceLine(line);
+    if (parsedFence === undefined) {
         return false;
     }
 
     return (
-        fence.startsWith(fencedCodeBlockState.fenceCharacter) &&
-        fence.length >= fencedCodeBlockState.minimumFenceLength
+        parsedFence.fenceCharacter === fencedCodeBlockState.fenceCharacter &&
+        parsedFence.fenceLength >= fencedCodeBlockState.minimumFenceLength &&
+        [...parsedFence.rest].every(
+            (character) => character === " " || character === "\t"
+        )
     );
 }
 
@@ -155,4 +181,122 @@ export function stripMarkdownCode(content) {
     }
 
     return sanitizedContent;
+}
+
+/**
+ * @typedef {Readonly<{
+ *     destination: string;
+ *     fullMatch: string;
+ *     isImage: boolean;
+ *     label: string;
+ * }>} MarkdownInlineLink
+ */
+
+/**
+ * Extract Markdown inline links and images in one bounded linear scan. Fenced
+ * and inline code are removed first so example syntax is ignored.
+ *
+ * @param {string} content
+ *
+ * @returns {readonly MarkdownInlineLink[]}
+ */
+export function extractMarkdownInlineLinks(content) {
+    const proseContent = stripMarkdownCode(content);
+    /** @type {MarkdownInlineLink[]} */
+    const links = [];
+
+    for (let offset = 0; offset < proseContent.length; offset += 1) {
+        const isImage =
+            proseContent[offset] === "!" && proseContent[offset + 1] === "[";
+        if (!isImage && proseContent[offset] !== "[") {
+            continue;
+        }
+
+        const matchStart = offset;
+        const labelStart = offset + (isImage ? 2 : 1);
+        let labelEnd = -1;
+        let isEscaped = false;
+
+        for (
+            let characterOffset = labelStart;
+            characterOffset < proseContent.length;
+            characterOffset += 1
+        ) {
+            const character = proseContent[characterOffset];
+            if (isEscaped) {
+                isEscaped = false;
+                continue;
+            }
+
+            if (character === "\\") {
+                isEscaped = true;
+                continue;
+            }
+
+            if (character === "]") {
+                labelEnd = characterOffset;
+                break;
+            }
+        }
+
+        if (labelEnd === -1) {
+            break;
+        }
+
+        if (proseContent[labelEnd + 1] !== "(") {
+            offset = labelEnd;
+            continue;
+        }
+
+        const destinationStart = labelEnd + 2;
+        let destinationEnd = -1;
+        let parenthesisDepth = 1;
+        isEscaped = false;
+
+        for (
+            let characterOffset = destinationStart;
+            characterOffset < proseContent.length;
+            characterOffset += 1
+        ) {
+            const character = proseContent[characterOffset];
+            if (isEscaped) {
+                isEscaped = false;
+                continue;
+            }
+
+            if (character === "\\") {
+                isEscaped = true;
+                continue;
+            }
+
+            if (character === "(") {
+                parenthesisDepth += 1;
+            } else if (character === ")") {
+                parenthesisDepth -= 1;
+                if (parenthesisDepth === 0) {
+                    destinationEnd = characterOffset;
+                    break;
+                }
+            }
+        }
+
+        if (destinationEnd === -1) {
+            break;
+        }
+
+        if (destinationEnd === destinationStart) {
+            offset = destinationEnd;
+            continue;
+        }
+
+        links.push({
+            destination: proseContent.slice(destinationStart, destinationEnd),
+            fullMatch: proseContent.slice(matchStart, destinationEnd + 1),
+            isImage,
+            label: proseContent.slice(labelStart, labelEnd),
+        });
+        offset = destinationEnd;
+    }
+
+    return links;
 }

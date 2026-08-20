@@ -77,6 +77,9 @@ jobs:
                   npm ci --ignore-scripts
                   npm rebuild --foreground-scripts
 
+            - name: "Lint GitHub Actions workflows"
+              run: "npm run lint:actions"
+
             - name: "Build package"
               run: "npm run build"
 

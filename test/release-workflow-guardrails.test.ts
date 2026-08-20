@@ -11,6 +11,9 @@ const ciWorkflowPath = fileURLToPath(
 const packageJsonPath = fileURLToPath(
     new URL("../package.json", import.meta.url)
 );
+const actionlintScriptPath = fileURLToPath(
+    new URL("../scripts/run-actionlint.mjs", import.meta.url)
+);
 const installWorkflowPaths = [
     ciWorkflowPath,
     fileURLToPath(
@@ -58,19 +61,51 @@ describe("release workflow guardrails", () => {
     });
 
     it("uses locked local binaries for hosted verification and docs", async () => {
-        expect.assertions(5);
+        expect.assertions(15);
 
-        const [ciWorkflow, packageJson] = await Promise.all([
+        const [
+            actionlintScript,
+            ciWorkflow,
+            packageJsonText,
+        ] = await Promise.all([
+            readFile(actionlintScriptPath, "utf8"),
             readFile(ciWorkflowPath, "utf8"),
             readFile(packageJsonPath, "utf8"),
         ]);
+        const packageJson = JSON.parse(packageJsonText) as {
+            devDependencies: Record<string, string>;
+            scripts: Record<string, string>;
+        };
 
         expect(ciWorkflow).toContain('run: "npm run test:coverage:ci"');
         expect(ciWorkflow).not.toContain("npx vitest");
-        expect(packageJson).toContain('"stylelint-config-inspector": "^2.3.5"');
-        expect(packageJson).not.toContain("config-inspector@latest");
-        expect(packageJson).toContain(
-            '"test:coverage:ci": "vitest run --coverage'
+        expect(ciWorkflow).toContain('run: "npm run lint:actions"');
+        expect(packageJson.devDependencies).not.toHaveProperty("actionlint");
+        expect(packageJson.devDependencies).toHaveProperty(
+            "stylelint-config-inspector",
+            "^2.3.5"
+        );
+        expect(packageJson.scripts["lint:actions"]).toBe(
+            "node scripts/run-actionlint.mjs -color -shellcheck= -pyflakes="
+        );
+        expect(packageJsonText).not.toContain("config-inspector@latest");
+        expect(packageJson.scripts["test:coverage:ci"]).toContain(
+            "vitest run --coverage"
+        );
+        expect(actionlintScript).toContain(
+            "https://github.com/rhysd/actionlint/releases/download/"
+        );
+        expect(actionlintScript).toContain(
+            'export const ACTIONLINT_VERSION = "1.7.12"'
+        );
+        expect(actionlintScript).toContain(
+            "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+        );
+        expect(actionlintScript).toContain("getDefaultCacheDirectory()");
+        expect(actionlintScript).toContain("await lstat(cacheDirectoryPath)");
+        expect(actionlintScript).toContain('flag: "wx"');
+        expect(actionlintScript).toMatch(
+            /invocation-\$\{platform\}-\$\{arch\}-/v
         );
     });
 });

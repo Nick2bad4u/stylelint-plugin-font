@@ -215,7 +215,7 @@ export const resolveMinimumEngineVersion = (enginesValue) => {
 
     const minimumVersionAndRemainder = nodeEngineRange.slice(2).trimStart();
     const firstWhitespaceOffset = [...minimumVersionAndRemainder].findIndex(
-        (character) => character === " " || character === "\t"
+        (character) => character.trim().length === 0
     );
     const minimumVersion =
         firstWhitespaceOffset === -1

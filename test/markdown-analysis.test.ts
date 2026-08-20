@@ -38,16 +38,56 @@ describe("markdown analysis helpers", () => {
             )
         ).toStrictEqual([
             {
-                destination: './folder_(name).md "Title"',
+                destination: "./folder_(name).md",
                 fullMatch: String.raw`[label \] text](./folder_(name).md "Title")`,
                 isImage: false,
-                label: String.raw`label \] text`,
+                label: "label ] text",
             },
             {
                 destination: "image.png",
                 fullMatch: "![alt](image.png)",
                 isImage: true,
                 label: "alt",
+            },
+        ]);
+    });
+
+    it("recovers links after malformed destinations", () => {
+        expect.assertions(1);
+
+        expect(
+            extractMarkdownLinkMatches(
+                "[draft](unfinished [real](./missing.md)"
+            )
+        ).toStrictEqual([
+            {
+                destination: "./missing.md",
+                fullMatch: "[real](./missing.md)",
+                isImage: false,
+                label: "real",
+            },
+        ]);
+    });
+
+    it("ignores parentheses inside quoted link titles", () => {
+        expect.assertions(1);
+
+        expect(
+            extractMarkdownLinkMatches(
+                '[link](./target.md "API (legacy") [next](./next.md)'
+            )
+        ).toStrictEqual([
+            {
+                destination: "./target.md",
+                fullMatch: '[link](./target.md "API (legacy")',
+                isImage: false,
+                label: "link",
+            },
+            {
+                destination: "./next.md",
+                fullMatch: "[next](./next.md)",
+                isImage: false,
+                label: "next",
             },
         ]);
     });
@@ -77,6 +117,8 @@ describe("markdown analysis helpers", () => {
         [{ node: ">=22.22" }, "22.22.0"],
         [{ node: ">=22.22.2 <27" }, "22.22.2"],
         [{ node: ">= 24.15.0" }, "24.15.0"],
+        [{ node: ">=22.0.0\n<27" }, "22.0.0"],
+        [{ node: ">=22.0.0\u{A0}<27" }, "22.0.0"],
         [{ node: "^22.0.0" }, null],
         [{ node: ">=22.0.0 || >=24.0.0" }, null],
         [{ node: ">=22.x" }, null],

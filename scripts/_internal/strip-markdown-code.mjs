@@ -1,3 +1,8 @@
+import { remark } from "remark";
+
+/** @typedef {import("mdast").Nodes} MarkdownNode */
+/** @typedef {import("mdast").Parent} MarkdownParent */
+
 /**
  * @typedef {{
  *     readonly fenceCharacter: "`" | "~";
@@ -192,145 +197,82 @@ export function stripMarkdownCode(content) {
  * }>} MarkdownInlineLink
  */
 
-/**
- * @typedef {Readonly<{
- *     link?: MarkdownInlineLink;
- *     nextOffset: number;
- * }>} MarkdownInlineLinkParseResult
- */
+/** @type {ReturnType<typeof remark>} */
+const markdownParser = remark();
 
 /**
- * @param {string} content
- * @param {number} labelStart
+ * @param {MarkdownNode} node
  *
- * @returns {number}
+ * @returns {node is MarkdownParent}
  */
-function findMarkdownLinkLabelEnd(content, labelStart) {
-    let isEscaped = false;
+function hasMarkdownChildren(node) {
+    return "children" in node && Array.isArray(node.children);
+}
 
-    for (let offset = labelStart; offset < content.length; offset += 1) {
-        const character = content[offset];
-        if (isEscaped) {
-            isEscaped = false;
-        } else if (character === "\\") {
-            isEscaped = true;
-        } else if (character === "]") {
-            return offset;
+/**
+ * @param {MarkdownNode} node
+ *
+ * @returns {string}
+ */
+function getMarkdownNodeText(node) {
+    if ("value" in node && typeof node.value === "string") {
+        return node.value;
+    }
+
+    if (node.type === "image") {
+        return node.alt ?? "";
+    }
+
+    return hasMarkdownChildren(node)
+        ? node.children.map((child) => getMarkdownNodeText(child)).join("")
+        : "";
+}
+
+/**
+ * @param {MarkdownNode} node
+ * @param {string} content
+ * @param {MarkdownInlineLink[]} links
+ */
+function collectMarkdownInlineLinks(node, content, links) {
+    if (node.type === "link" || node.type === "image") {
+        const startOffset = node.position?.start.offset;
+        const endOffset = node.position?.end.offset;
+
+        if (startOffset !== undefined && endOffset !== undefined) {
+            links.push({
+                destination: node.url,
+                fullMatch: content.slice(startOffset, endOffset),
+                isImage: node.type === "image",
+                label:
+                    node.type === "image"
+                        ? (node.alt ?? "")
+                        : getMarkdownNodeText(node),
+            });
+        }
+
+        return;
+    }
+
+    if (hasMarkdownChildren(node)) {
+        for (const child of node.children) {
+            collectMarkdownInlineLinks(child, content, links);
         }
     }
-
-    return -1;
 }
 
 /**
- * @param {string} content
- * @param {number} destinationStart
- *
- * @returns {number}
- */
-function findMarkdownLinkDestinationEnd(content, destinationStart) {
-    let parenthesisDepth = 1;
-    let isEscaped = false;
-
-    for (let offset = destinationStart; offset < content.length; offset += 1) {
-        const character = content[offset];
-        if (isEscaped) {
-            isEscaped = false;
-        } else if (character === "\\") {
-            isEscaped = true;
-        } else if (character === "(") {
-            parenthesisDepth += 1;
-        } else if (character === ")") {
-            parenthesisDepth -= 1;
-            if (parenthesisDepth === 0) {
-                return offset;
-            }
-        }
-    }
-
-    return -1;
-}
-
-/**
- * @param {string} content
- * @param {number} matchStart
- * @param {boolean} isImage
- *
- * @returns {MarkdownInlineLinkParseResult | undefined}
- */
-function parseMarkdownInlineLinkAt(content, matchStart, isImage) {
-    const labelStart = matchStart + (isImage ? 2 : 1);
-    const labelEnd = findMarkdownLinkLabelEnd(content, labelStart);
-    if (labelEnd === -1) {
-        return undefined;
-    }
-
-    if (content[labelEnd + 1] !== "(") {
-        return { nextOffset: labelEnd + 1 };
-    }
-
-    const destinationStart = labelEnd + 2;
-    const destinationEnd = findMarkdownLinkDestinationEnd(
-        content,
-        destinationStart
-    );
-    if (destinationEnd === -1) {
-        return undefined;
-    }
-
-    const nextOffset = destinationEnd + 1;
-    if (destinationEnd === destinationStart) {
-        return { nextOffset };
-    }
-
-    return {
-        link: {
-            destination: content.slice(destinationStart, destinationEnd),
-            fullMatch: content.slice(matchStart, nextOffset),
-            isImage,
-            label: content.slice(labelStart, labelEnd),
-        },
-        nextOffset,
-    };
-}
-
-/**
- * Extract Markdown inline links and images in one bounded linear scan. Fenced
- * and inline code are removed first so example syntax is ignored.
+ * Extract Markdown inline links and images through the repository's Markdown
+ * parser so code, escaping, titles, and malformed constructs follow the same
+ * grammar as the documentation toolchain.
  *
  * @param {string} content
  *
  * @returns {readonly MarkdownInlineLink[]}
  */
 export function extractMarkdownInlineLinks(content) {
-    const proseContent = stripMarkdownCode(content);
     /** @type {MarkdownInlineLink[]} */
     const links = [];
-    let offset = 0;
-
-    while (offset < proseContent.length) {
-        const isImage =
-            proseContent[offset] === "!" && proseContent[offset + 1] === "[";
-        if (!isImage && proseContent[offset] !== "[") {
-            offset += 1;
-            continue;
-        }
-
-        const parseResult = parseMarkdownInlineLinkAt(
-            proseContent,
-            offset,
-            isImage
-        );
-        if (parseResult === undefined) {
-            break;
-        }
-
-        if (parseResult.link !== undefined) {
-            links.push(parseResult.link);
-        }
-
-        offset = parseResult.nextOffset;
-    }
+    collectMarkdownInlineLinks(markdownParser.parse(content), content, links);
 
     return links;
 }

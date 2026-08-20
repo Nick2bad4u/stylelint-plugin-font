@@ -1,0 +1,29 @@
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
+
+const releaseWorkflowPath = fileURLToPath(
+    new URL("../.github/workflows/release.yml", import.meta.url)
+);
+
+describe("release workflow guardrails", () => {
+    it("keeps verification and release identities fail-closed", async () => {
+        expect.assertions(11);
+
+        const workflow = await readFile(releaseWorkflowPath, "utf8");
+
+        expect(workflow).toContain('run: "npm run release:check"');
+        expect(workflow).toContain("git add -- package.json package-lock.json");
+        expect(workflow).toContain("git push --atomic origin");
+        expect(workflow).toContain("elif grep -q 'E404'");
+        expect(workflow).toContain("node scripts/read-npm-pack-filename.mjs");
+        expect(workflow).toContain("overwrite_files: false");
+        expect(workflow).toMatch(
+            /git commit -m "🔖 \[chore\] \(release\) Publish \$\{TAG\}"/v
+        );
+        expect(workflow).not.toContain("skip_verify");
+        expect(workflow).not.toContain("git add -A");
+        expect(workflow).not.toContain("npm ci --force");
+        expect(workflow).not.toContain("git fetch --tags --force");
+    });
+});
